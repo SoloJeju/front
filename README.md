@@ -1,54 +1,46 @@
-# React + TypeScript + Vite
+# SoloJ Front-end Repository
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 👩‍💻FE 팀원
+| [구소민(gusomin)](https://github.com/gusomin) | [이나현(anit7215)](https://github.com/anit7215) | [이소민(somin2352)](https://github.com/somin2352) | [차채은(ChaeEunCha)](https://github.com/ChaeEunCha) |
+|-------------------------------------------------------|------------------------------------------------------|------------------------------------------------------------------|---------------------------------------------------------------|
+| ![구소민의 프로필 사진](https://avatars.githubusercontent.com/u/197756972?v=4) | ![이나현의 프로필 사진](https://avatars.githubusercontent.com/u/178766045?v=4) | ![이소민의 프로필 사진](https://avatars.githubusercontent.com/u/164002759?v=4) | ![차채은의 프로필 사진](https://avatars.githubusercontent.com/u/183046095?v=4) |
 
-Currently, two official plugins are available:
+## ⚙️기술 스택
+- **언어** : React + TypeScript
+- **빌드 툴** : Vite
+- **스타일링** : TailwindCSS
+- **라우팅** :  React Router
+- **상태관리** : Zustand
+- **데이터 캐싱** : Tanstack Query
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎀브랜치명 정의
+- 영어로 통일, 케밥케이스로 작성
+- 작성 형식: 브랜치 유형/브랜치명
+- 작성 예시
+  - feat/login-page
 
-## Expanding the ESLint configuration
+## 👑네이밍 컨벤션
+- `camelCase` : 변수, 일반함수
+    - ex) isError, handleSubmit
+- `UPPER_CASE_SNAKE_CASE` : 상수
+    - ex) BASE_URL
+- `PascalCase` : 클래스, 컴포넌트 함수, 타입, 인터페이스, 컴포넌트 파일
+    - ex) CardListProps
+- `kebab-case` : 파일, 폴더
+    - ex) main-layout, login-page
+    - 컴포넌트 파일 및 폴더만 예외로 파스칼 케이스로 작성
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 💎커밋 컨벤션
+| Feat | 새로운 기능 추가 |
+|:----:|:----------------:|
+| BugFix | 버그 수정 |
+| Docs | 문서 작성 | 
+| Modify | 코드 수정 |
+| Refactor | 리팩토링 |
+| Style | 코드 포매팅 | 
+| Design | 디자인 수정 |
+| Chore | 빌드 수정, 패키지 매니저 설정 |
+| Rename | 파일 혹은 폴더명 수정 |
+| Remove | 파일 혹은 폴더 삭제 | 
+| Merge | pull 과정 중 현재 commit과 병합이 일어난 경우 | 
+| Build | 새로운 라이브러리 혹은 패키지 추가 |
