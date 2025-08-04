@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CategoryButton from './CategoryButton';
 import Menu from '../../../assets/menu.svg?react';
 import Help from '../../../assets/question.svg?react';
