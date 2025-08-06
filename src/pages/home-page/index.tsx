@@ -8,6 +8,7 @@ import ExamplePlace from '/src/assets/ex-place.png';
 import MoreArrow from '/src/assets/arrow-more.svg';
 import RecommendPlace from '../../components/HomePage/RecommendPlace';
 import RecentReviewCard from '../../components/HomePage/RecentReviewCard';
+import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 
 const exPlaceData = [
   {
@@ -123,6 +124,7 @@ export default function HomePage() {
               더보기 <img src={MoreArrow} />
             </button>
           </div>
+          <RoomCardList />
         </section>
       </main>
     </div>
