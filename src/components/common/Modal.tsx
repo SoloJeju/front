@@ -31,7 +31,7 @@ const Modal = ({ title, children, buttons = [], onClose }: ModalProps) => {
       className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4">
       <div className="w-full max-w-[480px] bg-white p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex flex-col gap-6">
         <div className="w-full flex justify-end">
-          <button onClick={onClose} aria-label="닫기">
+          <button onClick={onClose} aria-label="닫기" className="cursor-pointer">
             <CloseIcon />
           </button>
         </div>
@@ -45,7 +45,7 @@ const Modal = ({ title, children, buttons = [], onClose }: ModalProps) => {
                 <button
                   key={idx}
                   onClick={onClick}
-                  className={`w-full py-3 rounded-[10px] transition ${getButtonStyle(variant)}`}
+                  className={`w-full py-3 rounded-[10px] cursor-pointer transition ${getButtonStyle(variant)}`}
                 >
                   <span className="text-base font-medium">
                     {text}
