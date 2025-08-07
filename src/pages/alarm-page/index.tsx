@@ -1,4 +1,4 @@
-import AlarmCard from '../../components/Alarm/AlarmCard';
+import AlarmCard from '../../components/AlarmPage/AlarmCard';
 
 const mockData = [
   {
