@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import PublicLayout from './layouts/public-layout';
 import SearchPage from './pages/SearchPage';
-import CommunityPage from './pages/CommunityPage';
 import MyPage from './pages/MyPage';
 import HomePage from './pages/home-page';
+import CommunityPage from './pages/community-page';
 
 export default function App() {
   return (

@@ -30,6 +30,7 @@ const mockData = [
 export default function AlarmPage() {
   return (
     <div className='flex flex-col gap-3 pt-3 px-4'>
+      {/* 무한스크롤 처리 */}
       {mockData.map((data) => (
         <AlarmCard key={data.id} type={data.type} title={data.title} content={data.content} />
       ))}
