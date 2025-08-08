@@ -18,12 +18,21 @@ const categories = [
   { type: '챌린지', icon: <Challenge /> },
 ] as const;
 
-export default function CategoryGroup({ selected, setSelected }: CategoryGroupProps) {
+export default function CategoryGroup({
+  selected,
+  setSelected,
+}: CategoryGroupProps) {
   return (
-    <div className='overflow-x-auto scrollbar-hide'>
-      <div className='flex gap-2 whitespace-nowrap px-1 py-3 w-max'>
+    <div className="fixed overflow-x-auto scrollbar-hide bg-[#fffffd]">
+      <div className="flex gap-2 whitespace-nowrap px-1 py-3 w-max">
         {categories.map(({ type, icon }) => (
-          <CategoryButton key={type} icon={icon} label={type} selected={selected === type} onClick={() => setSelected(type)} />
+          <CategoryButton
+            key={type}
+            icon={icon}
+            label={type}
+            selected={selected === type}
+            onClick={() => setSelected(type)}
+          />
         ))}
       </div>
     </div>
