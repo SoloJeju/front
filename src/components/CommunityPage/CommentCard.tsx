@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultProfile from '/src/assets/DefaultProfile.png';
+import DefaultProfile from '/src/assets/defaultProfile.png';
 import MoreButton from './MoreButton';
 import More from '/src/assets/more.svg';
 
