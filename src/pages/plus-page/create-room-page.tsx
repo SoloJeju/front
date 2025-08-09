@@ -20,7 +20,7 @@ const CreateRoomPage = () => {
       <div className="w-full max-w-[480px] pb-10">
         <Header title="동행방 개설" />
         
-        <div className="flex flex-col gap-4 pt-3 font-['Pretendard']">
+        <div className="flex flex-col gap-6 pt-3 font-['Pretendard']">
           <div>
             <label className="text-black text-base font-medium leading-none">제목</label>
             <input
@@ -70,7 +70,7 @@ const CreateRoomPage = () => {
           </div>
 
           <div>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between pb-1">
               <label className="text-black text-base font-medium leading-none">인원 수</label>
               <span className="text-xs text-[#B4B4B4]">본인 포함</span>
             </div>
@@ -86,7 +86,7 @@ const CreateRoomPage = () => {
           </div>
 
           <div>
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between pb-1">
               <label className="text-black text-base font-medium leading-none">내용</label>
               <span className="text-xs text-[#B4B4B4]">선택</span>
             </div>
