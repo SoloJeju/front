@@ -9,8 +9,8 @@ import ClockIcon from '../../assets/clockStroke.svg?react';
 const CreateRoomPage = () => {
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isClockOpen, setIsClockOpen] = useState(false);
+  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  // const [isClockOpen, setIsClockOpen] = useState(false);
 
   const increaseCount = () => setCount(prev => prev + 1);
   const decreaseCount = () => setCount(prev => (prev > 1 ? prev - 1 : 1));
@@ -45,7 +45,7 @@ const CreateRoomPage = () => {
 
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" onClick={() => setIsCalendarOpen(true)}>
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" >
               <input
                 type="text"
                 placeholder="동행 날짜를 선택해주세요"
@@ -58,7 +58,7 @@ const CreateRoomPage = () => {
 
           <div>
             <label className="text-black text-base font-medium leading-none">시간</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" onClick={() => setIsClockOpen(true)}>
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" >
               <input
                 type="text"
                 placeholder="동행 시간을 선택해주세요"

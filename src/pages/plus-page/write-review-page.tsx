@@ -22,7 +22,7 @@ const MOCK_MOMENTS = [
 
 const WriteReviewPage = () => {
   const navigate = useNavigate();
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedMoments, setSelectedMoments] = useState<string[]>([]);
   const [moments, setMoments] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard' | null>(null);
@@ -66,7 +66,7 @@ const WriteReviewPage = () => {
           </div>
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" onClick={() => setIsCalendarOpen(true)}>
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2">
               <input
                 type="text"
                 placeholder="방문 날짜를 선택해주세요"

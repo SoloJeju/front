@@ -6,7 +6,7 @@ import MapIcon from '../../assets/map.svg?react';
 
 const PlanPage = () => {
   const navigate = useNavigate();
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+//   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [noPlaceSelected, setNoPlaceSelected] = useState(false);
   const [planType, setPlanType] = useState<'ai' | 'manual' | null>(null);
   const [selectedTransport, setSelectedTransport] = useState<string | null>(null);
@@ -21,8 +21,8 @@ const PlanPage = () => {
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
             <div
-              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2"
-              onClick={() => setIsCalendarOpen(true)}>
+              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2">
+            {/* onClick={() => setIsCalendarOpen(true)}> */}
               <input
                 type="text"
                 placeholder="여행 날짜를 선택해주세요"
