@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultProfile from '/src/assets/defaultProfile.png';
+import BasicProfile from '/src/assets/basicProfile.png';
 import MoreButton from './MoreButton';
 import More from '/src/assets/more.svg';
 
@@ -35,7 +35,7 @@ const CommentCard = ({
   return (
     <div className="relative">
       <img
-        src={image ? image : DefaultProfile}
+        src={image ? image : BasicProfile}
         alt={`${writer}의 프로필`}
         className="w-8 h-8 absolute top-5 -left-5"
       />

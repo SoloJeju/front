@@ -4,7 +4,7 @@ import With from '/src/assets/with.svg?react';
 import Tip from '/src/assets/tip.svg?react';
 import Challenge from '/src/assets/challenge.svg?react';
 import More from '/src/assets/more.svg';
-import DefaultProfile from '/src/assets/DefaultProfile.png';
+import BasicProfile from '/src/assets/basicProfile.png';
 import Comment from '/src/assets/comment.svg';
 import Script from '/src/assets/script.svg';
 import MoreButton from './MoreButton';
@@ -90,7 +90,7 @@ const PostDetailCard = ({
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <img
-            src={DefaultProfile}
+            src={BasicProfile}
             alt={writer ? writer : '익명'}
             className="w-6 h-6"
           />
