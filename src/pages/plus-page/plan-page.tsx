@@ -59,6 +59,7 @@ const PlanPage = () => {
                   readOnly/>
                 <MapIcon />
               </div>
+              {/* 선택한 관광지 목록 추가 */}
               <button
                 type="button"
                 className={`text-left h-12.5 px-4 py-2 rounded-xl text-sm border 
