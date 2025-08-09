@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/common/Navbar';
 
 const AppLayout = () => {
   return (
@@ -8,7 +7,6 @@ const AppLayout = () => {
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>
-        <Navbar />
       </div>
     </div>
   );

@@ -1,0 +1,27 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M40.4974 19.0519C40.4974 19.0519 39.667 8.5352 59.5618 11.223C59.5618 11.223 58.7542 19.7702 40.4974 19.0519Z" fill="#009245" stroke="#006259" stroke-width="2.85714" stroke-miterlimit="10"/>
+<ellipse cx="39.9998" cy="44.1774" rx="30.2857" ry="25.7143" fill="#006259"/>
+<ellipse cx="40" cy="44.1774" rx="26.8571" ry="22.2857" fill="#FF6B53"/>
+<circle cx="50.857" cy="41.8916" r="5.14286" fill="#FFEED9"/>
+<circle cx="49.9998" cy="41.6059" r="4.28571" fill="#006259"/>
+<circle cx="30.2857" cy="41.8916" r="5.14286" fill="#FFEED9"/>
+<circle cx="29.4285" cy="41.6059" r="4.28571" fill="#006259"/>
+<path d="M46.8572 37.3202H54.8572" stroke="#006259" stroke-width="1.71429" stroke-linecap="round"/>
+<path d="M26.2856 37.3202H34.2856" stroke="#006259" stroke-width="1.71429" stroke-linecap="round"/>
+<path d="M37.4091 39.7283C38.51 36.6298 42.892 36.6298 43.9928 39.7283L45.0951 42.8306C45.903 45.1048 44.2166 47.4936 41.8032 47.4936H39.5987C37.1853 47.4936 35.4989 45.1048 36.3069 42.8306L37.4091 39.7283Z" fill="#006259"/>
+<path d="M36.9999 53.1455C38.0955 52.0321 41.1954 50.377 44.8305 52.6636" stroke="#006259" stroke-width="4" stroke-linecap="round"/>
+<g filter="url(#filter0_g_863_2816)">
+<path d="M69.52 33.8572H69.5194C70.0059 34.7399 70.2857 35.764 70.2857 36.8572C70.2857 40.1709 67.7274 42.8572 64.5715 42.8572C61.4156 42.8572 58.8572 40.1709 58.8572 36.8572C58.8572 35.764 59.1371 34.7399 59.6235 33.8572H59.6229L64.5715 22.8572L69.52 33.8572Z" fill="#51A2FF"/>
+</g>
+<defs>
+<filter id="filter0_g_863_2816" x="58.5715" y="22.5715" width="11.9999" height="20.5714" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feTurbulence type="fractalNoise" baseFrequency="8.7500009536743164 8.7500009536743164" numOctaves="3" seed="6888" />
+<feDisplacementMap in="shape" scale="0.57142853736877441" xChannelSelector="R" yChannelSelector="G" result="displacedImage" width="100%" height="100%" />
+<feMerge result="effect1_texture_863_2816">
+<feMergeNode in="displacedImage"/>
+</feMerge>
+</filter>
+</defs>
+</svg>
