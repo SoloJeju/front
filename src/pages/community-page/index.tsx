@@ -3,6 +3,7 @@ import CategoryGroup from '../../components/common/Category/Category';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 import Write from '/src/assets/write.svg';
+import { useNavigate } from 'react-router-dom';
 
 const mockData = [
   {
@@ -41,12 +42,17 @@ const mockData = [
 ];
 
 export default function CommunityPage() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState('전체');
 
   const filteredData =
     selected === '전체'
       ? mockData
       : mockData.filter((data) => data.type === selected);
+
+  const handleNewPost = () => {
+    navigate('/community/new-post');
+  };
 
   return (
     <>
@@ -78,12 +84,15 @@ export default function CommunityPage() {
         </div>
       )}
 
-      <button
-        type="button"
-        className="fixed bottom-25 right-6 p-3 rounded-full bg-[#F78938] cursor-pointer"
-      >
-        <img src={Write} alt="게시글쓰기" />
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          className="fixed bottom-25 p-3 rounded-full bg-[#F78938] cursor-pointer"
+          onClick={handleNewPost}
+        >
+          <img src={Write} alt="게시글쓰기" />
+        </button>
+      </div>
     </>
   );
 }
