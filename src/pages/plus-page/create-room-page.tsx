@@ -1,19 +1,30 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+dayjs.locale('ko');
 import Header from '../../components/common/Headers/BackHeader';
+import Calendar from '../../components/Plus/CalendarPannel';
 import MinusIcon from '../../assets/minusIcon.svg?react';
 import PlusIcon from '../../assets/plusIcon.svg?react';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import MapIcon from '../../assets/map.svg?react';
 import ClockIcon from '../../assets/clockStroke.svg?react';
+
 const CreateRoomPage = () => {
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
-  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  // const [isClockOpen, setIsClockOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const increaseCount = () => setCount(prev => prev + 1);
   const decreaseCount = () => setCount(prev => (prev > 1 ? prev - 1 : 1));
+  const handleDateSelect = (start: string, end: string | null) => {
+    setSelectedDate(start); 
+    setIsCalendarOpen(false); 
+  };
+
+  const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY. MM. DD (ddd)') : '';
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
@@ -33,23 +44,20 @@ const CreateRoomPage = () => {
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>
             <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" onClick={() => navigate('/search')}>
-              <input
-                type="text"
-                placeholder="장소를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
-                readOnly
-              />
+              <input type="text" placeholder="장소를 선택해주세요" className="w-full focus:outline-none font-medium" readOnly />
               <MapIcon/>
             </div>
           </div>
 
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" >
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
+            onClick={() => setIsCalendarOpen(true)}>
               <input
                 type="text"
                 placeholder="동행 날짜를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
+                className="w-full focus:outline-none font-medium bg-transparent cursor-pointer"
+                value={formattedDate}
                 readOnly
               />
               <CalendarIcon/>
@@ -75,13 +83,9 @@ const CreateRoomPage = () => {
               <span className="text-xs text-[#B4B4B4]">본인 포함</span>
             </div>
             <div className="flex items-center justify-between w-full border border-[#D9D9D9] rounded-xl px-4 py-3 mt-2">
-              <button onClick={decreaseCount} className="text-xl text-[#F78938] cursor-pointer">
-                <MinusIcon/>
-              </button>
+              <button onClick={decreaseCount} className="text-xl text-[#F78938] cursor-pointer"><MinusIcon/></button>
               <span className="text-lg font-semibold">{count}</span>
-              <button onClick={increaseCount} className="text-xl text-[#F78938] cursor-pointer">
-                <PlusIcon />
-              </button>
+              <button onClick={increaseCount} className="text-xl text-[#F78938] cursor-pointer"><PlusIcon /></button>
             </div>
           </div>
 
@@ -105,6 +109,21 @@ const CreateRoomPage = () => {
           </div>
         </div>
       </div>
+      {isCalendarOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out"
+          onClick={() => setIsCalendarOpen(false)}>
+          <div
+            className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}>
+            <Calendar 
+              onSelect={handleDateSelect} 
+              mode="single"/>
+          </div>
+        </div>
+      )}
+      
+
     </div>
   );
 };

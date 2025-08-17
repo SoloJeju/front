@@ -11,6 +11,10 @@ import NoNormal from '../../assets/noNORMAL.svg?react';
 import NoHard from '../../assets/noHARD.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import ImageIcon from '../../assets/imageIcon.svg?react';
+import Calendar from '../../components/Plus/CalendarPannel';
+import dayjs from 'dayjs'; 
+import 'dayjs/locale/ko';
+dayjs.locale('ko');
 
 const MOCK_MOMENTS = [
   '1인 좌석이 잘 되어있어요',
@@ -22,7 +26,8 @@ const MOCK_MOMENTS = [
 
 const WriteReviewPage = () => {
   const navigate = useNavigate();
-  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedMoments, setSelectedMoments] = useState<string[]>([]);
   const [moments, setMoments] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard' | null>(null);
@@ -46,7 +51,13 @@ const WriteReviewPage = () => {
         const files = Array.from(e.target.files);
         setSelectedImages(prev => [...prev, ...files]);
     }};
+    const handleDateSelect = (start: string, end: string | null) => {
+    setSelectedDate(start);
+    setIsCalendarOpen(false);
+  };
 
+  const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY. MM. DD (ddd)') : '';
+  
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-10">
@@ -66,11 +77,13 @@ const WriteReviewPage = () => {
           </div>
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2">
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
+            onClick={() => setIsCalendarOpen(true)}>
               <input
                 type="text"
                 placeholder="방문 날짜를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
+                className="w-full focus:outline-none font-medium bg-transparent cursor-pointer"
+                value={formattedDate}
                 readOnly/>
               <CalendarIcon/>
             </div>
@@ -170,8 +183,19 @@ const WriteReviewPage = () => {
         </div>
     </div>
     )}
-
-
+      {isCalendarOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out"
+          onClick={() => setIsCalendarOpen(false)}>
+          <div
+            className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}>
+            <Calendar 
+              onSelect={handleDateSelect} 
+              mode="single"/>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

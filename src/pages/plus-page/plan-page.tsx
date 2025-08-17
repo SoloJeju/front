@@ -1,17 +1,37 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+dayjs.locale('ko');
 import Header from '../../components/common/Headers/BackHeader';
+import Calendar from '../../components/Plus/CalendarPannel';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import MapIcon from '../../assets/map.svg?react';
 
 const PlanPage = () => {
   const navigate = useNavigate();
-//   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
+    start: null,
+    end: null,
+  });
+
   const [noPlaceSelected, setNoPlaceSelected] = useState(false);
   const [planType, setPlanType] = useState<'ai' | 'manual' | null>(null);
   const [selectedTransport, setSelectedTransport] = useState<string | null>(null);
 
   const transports = ['🚶‍♂️ 도보', '🚗 자차', '🚌 버스', '🚕 택시','🚆 기차', '🚲 자전거'];
+
+  const handleDateSelect = (start: string, end: string | null) => {
+    if (end) {
+      setDateRange({ start, end });
+    }
+    setIsCalendarOpen(false); 
+  };
+  
+  const formattedDateRange = dateRange.start && dateRange.end
+    ? `${dayjs(dateRange.start).format('YYYY. MM. DD (ddd)')} ~ ${dayjs(dateRange.end).format('YYYY. MM. DD (ddd)')}`
+    : '';
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
@@ -21,13 +41,13 @@ const PlanPage = () => {
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
             <div
-              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2">
-            {/* onClick={() => setIsCalendarOpen(true)}> */}
+              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
+              onClick={() => setIsCalendarOpen(true)}>
               <input
                 type="text"
                 placeholder="여행 날짜를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
-                readOnly/>
+                className="w-full focus:outline-none font-medium bg-transparent cursor-pointer"
+                value={formattedDateRange}/>
               <CalendarIcon />
             </div>
           </div>
@@ -41,8 +61,7 @@ const PlanPage = () => {
                   onClick={() => setSelectedTransport(item)}
                   className={`px-7.5 py-4 rounded-xl outline outline-1 outline-offset-[-1px] 
                     flex-shrink-0 inline-flex justify-center items-center gap-2.5 text-[14px] font-regular font-['Pretendard'] leading-none
-                    ${ selectedTransport === item ? 'bg-[#F78937] text-white outline-[#F78937]'
-                        : 'bg-white text-gray-600 outline-gray-300'}`}>{item}</button>
+                    ${selectedTransport === item ? 'bg-[#F78937] text-white outline-[#F78937]' : 'bg-white text-gray-600 outline-gray-300'}`}>{item}</button>
               ))}
             </div>
           </div>
@@ -59,12 +78,10 @@ const PlanPage = () => {
                   readOnly/>
                 <MapIcon />
               </div>
-              {/* 선택한 관광지 목록 추가 */}
               <button
                 type="button"
                 className={`text-left h-12.5 px-4 py-2 rounded-xl text-sm border 
-                    ${ noPlaceSelected ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium'
-                    : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
+                  ${noPlaceSelected ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium' : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
                 onClick={() => setNoPlaceSelected(prev => !prev)}>관광지 선택없이 계획짜기</button>
             </div>
           </div>
@@ -74,16 +91,14 @@ const PlanPage = () => {
               <button
                 type="button"
                 className={`text-left h-12.5 px-4 py-2 rounded-xl text-sm border 
-                    ${ planType === 'ai' ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium'
-                    : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
+                  ${planType === 'ai' ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium' : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
                 onClick={() => setPlanType('ai')}>
                 ✨ AI가 추천하는 계획으로 시작할게요
               </button>
               <button
                 type="button"
                 className={`text-left h-12.5 px-4 py-2 rounded-xl text-sm border 
-                    ${planType === 'manual' ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium'
-                    : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
+                  ${planType === 'manual' ? 'text-[#F78937] border-[#F78937] border-[1.5px] font-medium' : 'bg-[#FFFFFD] text-[#5D5D5D] border-[#D9D9D9]'}`}
                 onClick={() => setPlanType('manual')}>✏️ 제가 직접 계획할게요</button>
             </div>
           </div>
@@ -96,6 +111,18 @@ const PlanPage = () => {
           </div>
         </div>
       </div>
+      {isCalendarOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out"
+          onClick={() => setIsCalendarOpen(false)}>
+          <div
+            className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}>
+            <Calendar onSelect={handleDateSelect} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
