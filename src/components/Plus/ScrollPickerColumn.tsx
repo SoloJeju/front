@@ -1,8 +1,8 @@
-import { useRef, useEffect, useCallback, useMemo } from "react";
+import { useRef, useEffect, useMemo } from "react";
 
-const debounce = (func: (...args: any[]) => void, delay: number) => {
+const debounce = <T extends any[]>(func: (...args: T) => void, delay: number) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
+  return (...args: T) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       func.apply(this, args);
@@ -40,8 +40,8 @@ const ScrollPickerColumn = <T extends string | number>({
     return values;
   }, [values, isInfinite]);
 
-  const handleScroll = useCallback(
-    debounce(() => {
+  const handleScroll = useMemo(
+    () => debounce(() => {
       if (!scrollRef.current) return;
       const { scrollTop } = scrollRef.current;
       const centeredIndex = Math.round(scrollTop / itemHeight);
