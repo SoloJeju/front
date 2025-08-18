@@ -10,6 +10,9 @@ import WriteReviewPage from './pages/plus-page/write-review-page';
 import CreateRoomPage from './pages/plus-page/create-room-page';
 import PlanPage from './pages/plus-page/plan-page';
 import PostWritePage from './pages/community-page/post-write-page';
+import RoomPage from './pages/room-page';
+import ChatRoomPage from './pages/room-page/chat-room-page';
+import UserProfilePage from './pages/profile-page/user-profile-page';
 
 export default function App() {
   return (
@@ -26,6 +29,9 @@ export default function App() {
         <Route path="/plan" element={<PlanPage />} />
         <Route path="/create-room" element={<CreateRoomPage />} />
         <Route path="community/new-post" element={<PostWritePage />} />
+        <Route path="/room/:roomId" element={<RoomPage />} />
+        <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
+        <Route path="/profile/:userId" element={<UserProfilePage />} />
       </Route>
     </Routes>
   );
