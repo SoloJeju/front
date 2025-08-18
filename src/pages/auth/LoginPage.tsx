@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Input from "../../components/common/Input";
-import Button from "../../components/common/Button";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -21,12 +21,12 @@ const LoginPage = () => {
 
   // 카카오 로그인 버튼 클릭 시 동작 (UI 테스트용)
   const handleKakaoLogin = () => {
-    alert("UI 테스트: 카카오로 시작하기 버튼 클릭");
+    alert('UI 테스트: 카카오로 시작하기 버튼 클릭');
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 font-Pretendard bg-white">
-      <main className="w-full max-w-sm mx-auto mb-20">
+      <main className="w-full mx-auto mb-20">
         {/* 로고 영역 */}
         <div className="my-16 text-center">
           <img
@@ -73,10 +73,10 @@ const LoginPage = () => {
         <button
           type="button"
           onClick={handleKakaoLogin}
-          className="flex items-center justify-center w-full py-3 bg-[#FEE500] rounded-lg hover:opacity-75"
+          className="flex items-center justify-center w-full py-3 bg-[#FEE500] rounded-[10px] hover:opacity-75"
         >
           <img src="/kakao.svg" alt="카카오 로고" className="w-5 h-5" />
-          <span className="ml-2 text-lg font-bold text-black text-opacity-85">
+          <span className="ml-2 text-[16px] font-SemiBold text-black text-opacity-85">
             카카오 로그인
           </span>
         </button>

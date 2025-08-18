@@ -1,6 +1,6 @@
 // 여행 성향 질문 시작을 알리는 인트로 화면
-import Button from "../../common/Button";
-import { useProfileStore } from "../../../stores/profile-store";
+import Button from '../../common/Button';
+import { useProfileStore } from '../../../stores/profile-store';
 
 export default function IntroStep({ onNext }: { onNext: () => void }) {
   const nickname = useProfileStore((state) => state.nickname);
@@ -18,7 +18,7 @@ export default function IntroStep({ onNext }: { onNext: () => void }) {
           <br />
           여행 성향을 알려주세요!
         </h2>
-        <p className="text-gray-500">
+        <p className="text-[#939393]">
           답변은 AI 계획 추천과 홈 콘텐츠 개인화에 사용됩니다
         </p>
       </div>

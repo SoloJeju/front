@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import Input from "../../components/common/Input";
-import Button from "../../components/common/Button";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 
 export default function SignupPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
-  const [authCode, setAuthCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
+  const [email, setEmail] = useState('');
+  const [authCode, setAuthCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [timer, setTimer] = useState(180);
@@ -37,33 +37,33 @@ export default function SignupPage() {
 
   // 비밀번호 일치 체크
   useEffect(() => {
-    setPasswordError(passwordCheck !== "" && password !== passwordCheck);
+    setPasswordError(passwordCheck !== '' && password !== passwordCheck);
   }, [password, passwordCheck]);
 
   const handleSendCode = () => {
     if (!isEmailValid) return;
     setTimer(180);
     setIsCodeSent(true);
-    toast.success("인증번호가 전송되었습니다.");
+    toast.success('인증번호가 전송되었습니다.');
   };
 
   const handleVerifyCode = () => {
-    if (authCode === "123455") {
+    if (authCode === '123455') {
       setIsVerified(true);
-      toast.success("인증되었습니다.");
+      toast.success('인증되었습니다.');
     } else {
       setIsVerified(false);
-      toast.error("인증번호가 틀립니다.");
+      toast.error('인증번호가 틀립니다.');
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleVerifyCode();
+    if (e.key === 'Enter') handleVerifyCode();
   };
 
   if (step === 1)
     return (
-      <div className="px-6 pt-10 pb-6 bg-white min-h-screen">
+      <div className="px-6 pt-15 pb-6 bg-white min-h-screen">
         <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
         <div className="flex flex-col space-y-4">
           <Input
@@ -77,7 +77,7 @@ export default function SignupPage() {
                 disabled={!isEmailValid}
                 onClick={handleSendCode}
               >
-                {isCodeSent ? "재전송" : "인증"}
+                {isCodeSent ? '재전송' : '인증'}
               </Button>
             }
           />
@@ -98,7 +98,7 @@ export default function SignupPage() {
                 <span className="ml-4 text-[#B4B4B4]">
                   {`${Math.floor(timer / 60)}:${String(timer % 60).padStart(
                     2,
-                    "0"
+                    '0'
                   )}`}
                 </span>
               )
@@ -115,7 +115,7 @@ export default function SignupPage() {
 
   if (step === 2)
     return (
-      <div className="px-6 pt-10 pb-6 bg-white min-h-screen">
+      <div className="px-6 pt-15 pb-6 bg-white min-h-screen">
         <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
         <div className="flex flex-col space-y-4">
           <Input
@@ -142,7 +142,7 @@ export default function SignupPage() {
         <div className="mt-8">
           {/* navigate로 프로필 페이지 이동 */}
           <Button
-            onClick={() => navigate("/profile/create")}
+            onClick={() => navigate('/profile/create')}
             disabled={!isPasswordFormValid}
           >
             프로필 생성하러 가기

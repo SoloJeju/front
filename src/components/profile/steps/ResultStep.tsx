@@ -1,13 +1,13 @@
 // 모든 답변을 종합해서 보여주는 최종 결과 화면
-import Button from "../../common/Button";
-import { useProfileStore } from "../../../stores/profile-store";
+import Button from '../../common/Button';
+import { useProfileStore } from '../../../stores/profile-store';
 
 export default function ResultStep() {
   const storeData = useProfileStore();
 
   const handleSubmit = () => {
-    console.log("Submitting Profile Data:", storeData);
-    alert("프로필 생성 완료!");
+    console.log('Submitting Profile Data:', storeData);
+    alert('프로필 생성 완료!');
   };
 
   return (

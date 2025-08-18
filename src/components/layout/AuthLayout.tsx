@@ -1,5 +1,5 @@
 //회원가입, 로그인 페이지에 공통으로 사용
-import React from "react";
+import React from 'react';
 
 interface AuthLayoutProps {
   title: string;

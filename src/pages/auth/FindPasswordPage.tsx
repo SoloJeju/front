@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import Input from "../../components/common/Input";
-import Button from "../../components/common/Button";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 
 export default function FindPasswordPage() {
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
-  const [authCode, setAuthCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
+  const [email, setEmail] = useState('');
+  const [authCode, setAuthCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
 
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -39,7 +39,7 @@ export default function FindPasswordPage() {
 
   // 비밀번호 일치 체크
   useEffect(() => {
-    setPasswordError(passwordCheck !== "" && password !== passwordCheck);
+    setPasswordError(passwordCheck !== '' && password !== passwordCheck);
   }, [password, passwordCheck]);
 
   // UI 테스트용 핸들러들
@@ -47,32 +47,32 @@ export default function FindPasswordPage() {
     if (!isEmailValid) return;
     setTimer(180);
     setIsCodeSent(true);
-    toast.success("인증번호가 전송되었습니다.");
+    toast.success('인증번호가 전송되었습니다.');
   };
 
   const handleVerifyCode = () => {
-    if (authCode === "123456") {
+    if (authCode === '123456') {
       // 테스트용 인증번호
       setIsVerified(true);
-      toast.success("인증되었습니다.");
+      toast.success('인증되었습니다.');
       setStep(2); // 인증 성공 시 다음 단계로 자동 이동
     } else {
       setIsVerified(false);
-      toast.error("인증번호가 틀립니다.");
+      toast.error('인증번호가 틀립니다.');
     }
   };
 
   const handlePasswordReset = () => {
     if (!isPasswordFormValid) return;
-    toast.success("비밀번호가 성공적으로 변경되었습니다.");
-    navigate("/login"); // 로그인 페이지로 이동
+    toast.success('비밀번호가 성공적으로 변경되었습니다.');
+    navigate('/login'); // 로그인 페이지로 이동
   };
 
   // Step 1: 이메일 인증
   if (step === 1) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 font-Pretendard bg-white">
-        <main className="w-full max-w-sm mx-auto mb-20">
+      <div className="min-h-screen px-6 pt-15 pb-6 font-Pretendard bg-white">
+        <main className="w-full mx-auto mb-20">
           <h1 className="text-2xl font-bold mb-8">비밀번호 찾기</h1>
           <div className="flex flex-col space-y-4">
             <Input
@@ -86,7 +86,7 @@ export default function FindPasswordPage() {
                   disabled={!isEmailValid}
                   onClick={handleSendCode}
                 >
-                  {isCodeSent ? "재전송" : "인증"}
+                  {isCodeSent ? '재전송' : '인증'}
                 </Button>
               }
             />
@@ -101,7 +101,7 @@ export default function FindPasswordPage() {
                   <span className="ml-4 text-[#B4B4B4]">
                     {`${Math.floor(timer / 60)}:${String(timer % 60).padStart(
                       2,
-                      "0"
+                      '0'
                     )}`}
                   </span>
                 )
@@ -113,7 +113,7 @@ export default function FindPasswordPage() {
               onClick={handleVerifyCode}
               disabled={!authCode || isVerified}
             >
-              {isVerified ? "인증 완료" : "인증번호 확인"}
+              {isVerified ? '인증 완료' : '인증번호 확인'}
             </Button>
           </div>
         </main>
@@ -124,7 +124,7 @@ export default function FindPasswordPage() {
   // Step 2: 새 비밀번호 입력
   if (step === 2) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 font-Pretendard bg-white">
+      <div className="min-h-screen px-6 pt-15 pb-6 font-Pretendard bg-white">
         <main className="w-full max-w-sm mx-auto mb-20">
           <h1 className="text-2xl font-bold mb-8">새 비밀번호 설정</h1>
           <div className="flex flex-col space-y-4">

@@ -1,5 +1,5 @@
 // 5개의 모든 질문을 처리하는 재사용 가능한 질문 화면
-import Button from "../../common/Button";
+import Button from '../../common/Button';
 
 interface QuestionStepProps {
   question: string;
@@ -21,7 +21,7 @@ export default function QuestionStep({
   totalSteps,
 }: QuestionStepProps) {
   const isLastStep = step === totalSteps;
-  const buttonText = isLastStep ? "시작하기" : "다음으로";
+  const buttonText = isLastStep ? '시작하기' : '다음으로';
 
   return (
     <div className="p-6 flex flex-col min-h-screen font-Pretendard max-w-app mx-auto justify-between">
@@ -32,7 +32,7 @@ export default function QuestionStep({
             <span
               key={idx}
               className={`w-2 h-2 rounded-full ${
-                idx + 1 === step ? "bg-[#F78938]" : "bg-gray-300"
+                idx + 1 === step ? 'bg-[#F78938]' : 'bg-[#D9D9D9]'
               }`}
             />
           ))}
@@ -49,12 +49,12 @@ export default function QuestionStep({
               type="button"
               onClick={() => onSelect(option)}
               className={`
-                w-full rounded-2xl border border-[#F78938] p-4 text-center text-base font-medium
+                w-full rounded-[20px] border border-[#F78938] p-4 text-center text-base font-medium
                 transition-all duration-200
                 ${
                   selectedValue === option
-                    ? "bg-[#F78938] text-white scale-105"
-                    : "bg-white text-gray-700"
+                    ? 'bg-[#F78938] text-white scale-105'
+                    : 'bg-white text-[#000000]'
                 }
                 hover:bg-[#F78938] hover:text-white
               `}
