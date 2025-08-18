@@ -11,6 +11,11 @@ import NoNormal from '../../assets/noNORMAL.svg?react';
 import NoHard from '../../assets/noHARD.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import ImageIcon from '../../assets/imageIcon.svg?react';
+import Calendar from '../../components/Plus/CalendarPannel';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
+import { useReceiptModal } from '../../hooks/useReceiptModal';
+dayjs.locale('ko');
 
 const MOCK_MOMENTS = [
   '1인 좌석이 잘 되어있어요',
@@ -22,11 +27,18 @@ const MOCK_MOMENTS = [
 
 const WriteReviewPage = () => {
   const navigate = useNavigate();
-  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedMoments, setSelectedMoments] = useState<string[]>([]);
   const [moments, setMoments] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard' | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const { startReceiptFlow, ModalComponent } = useReceiptModal({
+    onFinalize: () => {
+      console.log('리뷰 최종 등록 및 페이지 이동');
+      navigate(-1);
+    },
+  });
 
   useEffect(() => {
     setMoments(MOCK_MOMENTS);
@@ -46,62 +58,49 @@ const WriteReviewPage = () => {
         const files = Array.from(e.target.files);
         setSelectedImages(prev => [...prev, ...files]);
     }};
+    const handleDateSelect = (start: string) => {
+    setSelectedDate(start);
+    setIsCalendarOpen(false);
+  };
 
+  const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY. MM. DD (ddd)') : '';
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
-      <div className="w-full max-w-[480px] pb-10">
+      <div className="w-full max-w-[480px] pb-24"> 
         <Header title="리뷰 작성"/>
         
-        <div className="flex flex-col gap-6 pt-3 font-['Pretendard']">
+        <div className="flex flex-col gap-6 pt-3 font-['Pretendard'] px-4"> 
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>
             <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" onClick={() => navigate('/search')}>
-              <input
-                type="text"
-                placeholder="장소를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
-                readOnly/>
+              <input type="text" placeholder="장소를 선택해주세요" className="w-full focus:outline-none font-medium" readOnly/>
               <MapIcon/>
             </div>
           </div>
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2">
-              <input
-                type="text"
-                placeholder="방문 날짜를 선택해주세요"
-                className="w-full focus:outline-none font-medium"
-                readOnly/>
+            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer" onClick={() => setIsCalendarOpen(true)}>
+              <input type="text" placeholder="방문 날짜를 선택해주세요" className="w-full focus:outline-none font-medium bg-transparent cursor-pointer" value={formattedDate} readOnly/>
               <CalendarIcon/>
             </div>
           </div>
-            <div>
-                <label className="text-black text-base font-medium leading-none">혼놀 난이도는 어땠나요?</label>
-                <div className="flex flex-row justify-between items-center px-8 mt-4 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setDifficulty('easy')}
-                      className="flex flex-col items-center">
-                      {difficulty === 'easy' ? <Easy /> : <NoEasy />}
-                      <span className={`text-s mt-1 font-medium ${difficulty === 'easy' ? 'text-[#006259]' : 'text-[#B4B4B4]'}`}>쉬워요 </span> </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDifficulty('normal')}
-                      className="flex flex-col items-center">
-                      {difficulty === 'normal' ? <Normal /> : <NoNormal />}
-                      <span className={`text-s mt-1 font-medium ${difficulty === 'normal' ? 'text-[#F78938]' : 'text-[#B4B4B4]'}`}>보통이에요</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDifficulty('hard')}
-                      className="flex flex-col items-center">
-                      {difficulty === 'hard' ? <Hard /> : <NoHard />}
-                      <span className={`text-s mt-1 font-medium ${difficulty === 'hard' ? 'text-[#FF3E3E]' : 'text-[#B4B4B4]'}`}>어려웠어요</span>
-                    </button>
-                </div>
+          <div>
+            <label className="text-black text-base font-medium leading-none">혼놀 난이도는 어땠나요?</label>
+            <div className="flex flex-row justify-between items-center px-8 mt-4 gap-4">
+              <button type="button" onClick={() => setDifficulty('easy')} className="flex flex-col items-center">
+                {difficulty === 'easy' ? <Easy /> : <NoEasy />}
+                <span className={`text-s mt-1 font-medium ${difficulty === 'easy' ? 'text-[#006259]' : 'text-[#B4B4B4]'}`}>쉬워요 </span>
+              </button>
+              <button type="button" onClick={() => setDifficulty('normal')} className="flex flex-col items-center">
+                {difficulty === 'normal' ? <Normal /> : <NoNormal />}
+                <span className={`text-s mt-1 font-medium ${difficulty === 'normal' ? 'text-[#F78938]' : 'text-[#B4B4B4]'}`}>보통이에요</span>
+              </button>
+              <button type="button" onClick={() => setDifficulty('hard')} className="flex flex-col items-center">
+                {difficulty === 'hard' ? <Hard /> : <NoHard />}
+                <span className={`text-s mt-1 font-medium ${difficulty === 'hard' ? 'text-[#FF3E3E]' : 'text-[#B4B4B4]'}`}>어려웠어요</span>
+              </button>
             </div>
+          </div>
           <div>
            <div className="flex flex-row items-center justify-between pb-1">
               <label className="text-black text-base font-medium leading-none">기억에 남는 순간을 골라주세요</label>
@@ -127,51 +126,47 @@ const WriteReviewPage = () => {
               <label className="text-black text-base font-medium leading-none">리뷰 작성</label>
             </div>
             <div className="relative">
-                <textarea
-                    placeholder="리뷰를 작성해주세요!"
-                    rows={5}
-                    className="w-full mt-2 border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none font-medium"/>
-
-                <label className="absolute bottom-4 left-4 cursor-pointer">
-                    <ImageIcon className="w-6 h-6 text-[#B4B4B4]" />
-                    <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}/>
-                </label>
+              <textarea placeholder="리뷰를 작성해주세요!" rows={5} className="w-full mt-2 border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none font-medium"/>
+              <label className="absolute bottom-4 left-4 cursor-pointer">
+                <ImageIcon className="w-6 h-6 text-[#B4B4B4]" />
+                <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange}/>
+              </label>
             </div>
           </div>
-          <div className="fixed bottom-0 left-0 right-0 z-50">
+          {selectedImages.length > 0 && (
+            <div className="mt-4 overflow-x-auto">
+              <div className="flex gap-2 w-max">
+                {selectedImages.map((image, idx) => (
+                  <div key={idx} className="relative w-24 h-24 flex-shrink-0">
+                    <img src={URL.createObjectURL(image)} alt={`미리보기 ${idx + 1}`} className="w-full h-full object-cover rounded-lg"/>
+                    <button type="button" onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== idx))} className="absolute top-[-8px] right-[-8px] bg-white rounded-full p-1 shadow-md">
+                      <CloseIcon className="w-4 h-4 text-gray-500" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-white">
             <div className="max-w-[480px] mx-auto px-4 py-3">
-              <button className="w-full bg-[#F78938] text-white py-4 rounded-[10px] text-base font-semibold leading-snug">
+              <button
+                onClick={startReceiptFlow}
+                className="w-full bg-[#F78938] text-white py-4 rounded-[10px] text-base font-semibold leading-snug">
                 작성 완료
               </button>
             </div>
           </div>
         </div>
-        {selectedImages.length > 0 && (
-  <div className="mt-4 overflow-x-auto">
-    <div className="flex gap-2 w-max">
-      {selectedImages.map((image, idx) => (
-            <div key={idx} className="relative w-24 h-24 flex-shrink-0">
-            <img
-                src={URL.createObjectURL(image)}
-                alt={`미리보기 ${idx + 1}`}
-                className="w-full h-full object-cover rounded-lg"/>
-            <button
-                type="button"
-                onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== idx))}
-                className="absolute top-[-8px] right-[-8px] bg-white rounded-full p-1 shadow-md">
-                <CloseIcon className="w-4 h-4 text-gray-500" />
-            </button>
+
+        {isCalendarOpen && (
+          <div className="fixed inset-0 z-50 flex justify-center items-end bg-black/20" onClick={() => setIsCalendarOpen(false)}>
+            <div className="w-full max-w-[480px] bg-white rounded-t-2xl animate-slide-up" onClick={(e) => e.stopPropagation()}>
+              <Calendar onSelect={handleDateSelect} mode="single"/>
             </div>
-        ))}
-        </div>
-    </div>
-    )}
-
-
+          </div>
+        )}
+        {ModalComponent}
       </div>
     </div>
   );

@@ -6,10 +6,13 @@ interface BackHeaderProps {
   title?: string;
   isChatRoom?: boolean;
   onClick?: () => void;
+  //rightContent?: React.ReactNode; 
+
 }
 
 const BackHeader = ({
   title,
+  // rightContent,
   isChatRoom = false,
   onClick,
 }: BackHeaderProps) => {
@@ -20,7 +23,7 @@ const BackHeader = ({
   };
 
   return (
-    <header className="w-full py-3 flex items-center justify-between">
+    <header className="w-full py-3 flex items-center justify-between relative">
       <button
         type="button"
         className="cursor-pointer w-6 h-6"
@@ -28,7 +31,7 @@ const BackHeader = ({
       >
         <img src={Back} alt="뒤로가기" />
       </button>
-      <div className="justify-start text-black-2 text-lg font-semibold font-['Pretendard'] leading-relaxed">
+      <div className="absolute left-1/2 -translate-x-1/2 justify-start text-black-2 text-lg font-semibold font-['Pretendard'] leading-relaxed">
         {title}
       </div>
       {isChatRoom ? (
@@ -42,6 +45,7 @@ const BackHeader = ({
       ) : (
         <div className="w-6 h-6"></div>
       )}
+      {/* {rightContent || <div className="w-6 h-6"></div>} */}
     </header>
   );
 };

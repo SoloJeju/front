@@ -9,6 +9,7 @@ import PostDetailPage from './pages/community-page/post-detail-page';
 import WriteReviewPage from './pages/plus-page/write-review-page';
 import CreateRoomPage from './pages/plus-page/create-room-page';
 import PlanPage from './pages/plus-page/plan-page';
+import PlanDetailPage from './pages/plus-page/plan-detail-page';
 import PostWritePage from './pages/community-page/post-write-page';
 import RoomPage from './pages/room-page';
 import ChatRoomPage from './pages/room-page/chat-room-page';
@@ -27,6 +28,7 @@ export default function App() {
       <Route element={<ProtectedLayout />}>
         <Route path="/write-review" element={<WriteReviewPage />} />
         <Route path="/plan" element={<PlanPage />} />
+         <Route path="/plan/:planId" element={<PlanDetailPage />} /> 
         <Route path="/create-room" element={<CreateRoomPage />} />
         <Route path="community/new-post" element={<PostWritePage />} />
         <Route path="/room/:roomId" element={<RoomPage />} />
