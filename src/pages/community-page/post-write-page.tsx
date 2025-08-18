@@ -2,9 +2,13 @@ import { useCallback, useRef, useState } from 'react';
 import CategoryGroup from '../../components/common/Category/Category';
 import ImageIcon from '/src/assets/imageIcon.svg';
 import CloseIcon from '../../assets/closeIcon.svg';
+import InputTitle from '../../components/CommunityPage/InputTitle';
+import InputContent from '../../components/CommunityPage/InputContent';
 
 export default function PostWritePage() {
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState('전체');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [images, setImages] = useState<File[]>([]);
 
@@ -32,30 +36,8 @@ export default function PostWritePage() {
       <CategoryGroup selected={selected} setSelected={setSelected} />
 
       <div className="pt-17 w-full max-w-[480px]">
-        <div className="w-full h-12">
-          <label htmlFor="title" className="sr-only">
-            제목
-          </label>
-          <input
-            type="text"
-            name="title"
-            id="title"
-            placeholder="제목"
-            className="w-full font-[pretendard] font-medium text-base placeholder:text-[#B4B4B4] border-b-2 border-[#FFCEAA] focus:border-[#FFCEAA] focus:outline focus:border-2 focus:rounded-lg"
-          />
-        </div>
-
-        <div className="w-full max-w-[480px] mx-auto">
-          <label htmlFor="content" className="sr-only">
-            내용
-          </label>
-          <textarea
-            name="content"
-            id="content"
-            placeholder="내용을 입력하세요"
-            className="w-full h-[calc(100dvh-300px)] placeholder:text-[#B4B4B4] text-base resize-none focus:border-[#FFCEAA] focus:outline focus:border-2 focus:rounded-lg"
-          />
-        </div>
+        <InputTitle title={title} onChange={setTitle} />
+        <InputContent content={content} onChange={setContent} />
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
@@ -102,7 +84,8 @@ export default function PostWritePage() {
 
         <button
           type="button"
-          className="fixed bottom-1 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[480px] h-[54px] py-4 bg-[#F78938] font-[pretendard] font-semibold text-white text-base rounded-[10px]"
+          className="fixed bottom-1 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[480px] h-[54px] py-4 bg-[#F78938] font-[pretendard] font-semibold text-white text-base rounded-[10px] cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled={!title.trim() || !content.trim()}
         >
           작성 완료
         </button>

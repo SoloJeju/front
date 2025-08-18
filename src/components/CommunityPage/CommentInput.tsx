@@ -9,7 +9,7 @@ interface CommentInputProps {
 const CommentInput = ({ value, onChange, onSubmit }: CommentInputProps) => {
   return (
     <form
-      className="pb-25 fixed bottom-0 left-0 right-0 mx-auto w-full max-w-[480px] flex justify-between items-center gap-3 py-3 bg-[#FFFFFD]"
+      className="pb-25 fixed bottom-0 left-0 right-0 mx-auto w-full max-w-[480px] flex justify-between items-center gap-3 px-3 py-3 bg-[#FFFFFD]"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit?.();
