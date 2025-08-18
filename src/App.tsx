@@ -9,6 +9,7 @@ import PostDetailPage from './pages/community-page/post-detail-page';
 import WriteReviewPage from './pages/plus-page/write-review-page';
 import CreateRoomPage from './pages/plus-page/create-room-page';
 import PlanPage from './pages/plus-page/plan-page';
+import PlanDetailPage from './pages/plus-page/plan-detail-page';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
       <Route element={<ProtectedLayout />}>
         <Route path="/write-review" element={<WriteReviewPage />} />
         <Route path="/plan" element={<PlanPage />} />
+         <Route path="/plan/:planId" element={<PlanDetailPage />} /> 
         <Route path="/create-room" element={<CreateRoomPage />} />
       </Route>
     </Routes>

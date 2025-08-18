@@ -7,9 +7,16 @@ import Header from '../../components/common/Headers/BackHeader';
 import Calendar from '../../components/Plus/CalendarPannel';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import MapIcon from '../../assets/map.svg?react';
+import CloseIcon from '../../assets/closeIcon.svg?react';
+
+const mockSelectedPlaces = [
+  { id: 1, name: '제주국제공항', address: '제주특별자치도 제주시 특별자치도, 공항로 2' },
+  { id: 2, name: '제주동문시장', address: '제주특별자치도 제주시 특별자치도 관덕로14길 20' },
+];
 
 const PlanPage = () => {
   const navigate = useNavigate();
+   const [selectedPlaces, setSelectedPlaces] = useState(mockSelectedPlaces);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
     start: null,
@@ -22,11 +29,22 @@ const PlanPage = () => {
 
   const transports = ['🚶‍♂️ 도보', '🚗 자차', '🚌 버스', '🚕 택시','🚆 기차', '🚲 자전거'];
 
+   const handleRemovePlace = (placeIdToRemove: number) => {
+    const updatedPlaces = selectedPlaces.filter(place => place.id !== placeIdToRemove);
+    setSelectedPlaces(updatedPlaces);
+  };
+
   const handleDateSelect = (start: string, end: string | null) => {
     if (end) {
       setDateRange({ start, end });
     }
     setIsCalendarOpen(false); 
+  };
+  const handleCreatePlan = () => {
+    const planId = '1';
+    console.log('선택된 정보:', { dateRange, selectedTransport, planType });
+    console.log(`${planId} 계획 상세 페이지로 이동합니다.`);
+    navigate(`/plan/${planId}`);
   };
   
   const formattedDateRange = dateRange.start && dateRange.end
@@ -78,6 +96,21 @@ const PlanPage = () => {
                   readOnly/>
                 <MapIcon />
               </div>
+               <div className="flex flex-row gap-2 mb-2">
+                {selectedPlaces.map((place) => (
+                  <div key={place.id} className="flex items-center justify-between border border-[#F78937] rounded-lg p-3 animate-fade-in">
+                    <div className="mr-1">
+                      <p className="font-medium text-[14px] text-gray-800">{place.name}</p>
+                      {/* <p className="text-xs text-gray-500 mt-1">{place.address}</p> */}
+                    </div>
+                    <button 
+                       onClick={() => handleRemovePlace(place.id)}
+                    >
+                      <CloseIcon/>
+                    </button>
+                  </div>
+                ))}
+              </div>
               <button
                 type="button"
                 className={`text-left h-12.5 px-4 py-2 rounded-xl text-sm border 
@@ -104,7 +137,7 @@ const PlanPage = () => {
           </div>
           <div className="fixed bottom-0 left-0 right-0 z-50">
             <div className="max-w-[480px] mx-auto px-4 py-3">
-              <button className="w-full bg-[#F78938] text-white py-4 rounded-[10px] text-base font-semibold leading-snug">
+              <button className="w-full bg-[#F78938] text-white py-4 rounded-[10px] text-base font-semibold leading-snug" onClick={handleCreatePlan}>
                 다음
               </button>
             </div>
