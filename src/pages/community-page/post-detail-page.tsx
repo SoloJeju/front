@@ -83,7 +83,7 @@ export default function PostDetailPage() {
 
   return (
     <>
-      <div className="min-h-screen px-4 pb-20">
+      <div className="min-h-screen pb-20">
         <div className="pb-4">
           {postDetailData.map((data) => (
             <PostDetailCard

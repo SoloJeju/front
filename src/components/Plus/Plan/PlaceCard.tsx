@@ -38,11 +38,11 @@ const PlaceCard = ({
           {index + 1}
         </div>
       </div>
-      <div className="w-full mt-1 border border-gray-200 rounded-xl p-4">
+      <div className="w-full mt-1 border border-[#F78937] rounded-xl p-4">
         <div className="flex justify-between items-start">
           <div>
             <p className="font-semibold text-base mb-1">{place.name}</p>
-            <p className="text-sm text-gray-500 mb-3">{place.memo}</p>
+            <p className="text-sm text-[#F78937] mb-3">{place.memo}</p>
           </div>
           <div className="relative">
             <button type="button" onClick={onMoreClick}>

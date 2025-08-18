@@ -67,10 +67,10 @@ const PlanViewPage = () => {
     <div className="flex justify-center bg-gray-50 min-h-screen font-['Pretendard']">
       <div className="w-full max-w-[480px] bg-white pb-24">
         <BackHeader title="일정 보기"
-          rightContent={
-            <button className="bg-[#FEF5EA] text-[#F78937] text-sm font-medium px-4 py-2 rounded-lg">
-              장소 추가
-            </button>}
+          // rightContent={
+          //   <button className="bg-[#FEF5EA] text-[#F78937] text-sm font-medium px-4 py-2 rounded-lg">
+          //     장소 추가
+          //   </button>}
         />
         <main className="px-4">
           <div className="mt-4 mb-4">

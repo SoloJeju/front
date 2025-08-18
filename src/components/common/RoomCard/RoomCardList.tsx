@@ -3,15 +3,17 @@ import ExampleImage from '../../../assets/exampleImage.png';
 
 const mockRooms = [
   {
+    id: 1,
     isEnd: true,
     title: '같이 가람돌솥밥 드실 분',
     location: '가람돌솥밥',
     date: '2025.07.01 16:30',
     pre: 2,
     all: 4,
-    imageUrl:ExampleImage,
+    imageUrl: ExampleImage,
   },
   {
+    id: 2,
     isEnd: false,
     title: '같이 가람돌솥밥 드실 분',
     location: '가람돌솥밥',
@@ -20,6 +22,7 @@ const mockRooms = [
     all: 4,
   },
   {
+    id: 3,
     isEnd: true,
     title: '같이 가람돌솥밥 드실 분',
     location: '가람돌솥밥',
