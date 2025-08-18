@@ -28,12 +28,16 @@ const mockData = {
   ]
 };
 
-const PlanViewPage = () => {
+const PlanDetailPage = () => {
   const { planId } = useParams();
   const [activeTab, setActiveTab] = useState('전체');
   const [title, setTitle] = useState(mockData.title);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    console.log("현재 보고 있는 플랜 ID:", planId);
+  }, [planId]);
 
   const tabs = ['전체', ...mockData.days.map(day => `${day.dayNumber}일차`)];
   const filteredDays = mockData.days.filter(day => {
@@ -128,4 +132,4 @@ const PlanViewPage = () => {
   );
 };
 
-export default PlanViewPage;
+export default PlanDetailPage;

@@ -10,22 +10,28 @@ import PlusIcon from '../../assets/plusIcon.svg?react';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import MapIcon from '../../assets/map.svg?react';
 import ClockIcon from '../../assets/clockStroke.svg?react';
+import TimePicker from "../../components/Plus/TimePannel";
 
 const CreateRoomPage = () => {
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const increaseCount = () => setCount(prev => prev + 1);
   const decreaseCount = () => setCount(prev => (prev > 1 ? prev - 1 : 1));
-  const handleDateSelect = (start: string, end: string | null) => {
+  const handleDateSelect = (start: string) => {
     setSelectedDate(start); 
     setIsCalendarOpen(false); 
   };
 
   const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY. MM. DD (ddd)') : '';
-
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
+    setIsTimeOpen(false);
+  };
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-10">
@@ -66,11 +72,15 @@ const CreateRoomPage = () => {
 
           <div>
             <label className="text-black text-base font-medium leading-none">시간</label>
-            <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2" >
+             <div
+              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
+              onClick={() => setIsTimeOpen(true)}
+            >
               <input
                 type="text"
                 placeholder="동행 시간을 선택해주세요"
-                className="w-full focus:outline-none font-medium"
+                className="w-full focus:outline-none font-medium bg-transparent cursor-pointer"
+                value={selectedTime || ""}
                 readOnly
               />
               <ClockIcon/>
@@ -111,7 +121,7 @@ const CreateRoomPage = () => {
       </div>
       {isCalendarOpen && (
         <div 
-          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out"
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out bg-black/20"
           onClick={() => setIsCalendarOpen(false)}>
           <div
             className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
@@ -122,7 +132,17 @@ const CreateRoomPage = () => {
           </div>
         </div>
       )}
-      
+      {isTimeOpen && (
+        <div
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out bg-black/20"
+          onClick={() => setIsTimeOpen(false)}>
+          <div
+            className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}>
+            <TimePicker onSelect={handleTimeSelect} onClose={() => setIsTimeOpen(false)}/>
+          </div>
+        </div>
+      )}
 
     </div>
   );

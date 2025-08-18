@@ -146,7 +146,7 @@ const PlanPage = () => {
       </div>
       {isCalendarOpen && (
         <div 
-          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out"
+          className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out bg-black/20"
           onClick={() => setIsCalendarOpen(false)}>
           <div
             className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"

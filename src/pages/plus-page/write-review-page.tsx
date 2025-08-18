@@ -58,7 +58,7 @@ const WriteReviewPage = () => {
         const files = Array.from(e.target.files);
         setSelectedImages(prev => [...prev, ...files]);
     }};
-    const handleDateSelect = (start: string, end: string | null) => {
+    const handleDateSelect = (start: string) => {
     setSelectedDate(start);
     setIsCalendarOpen(false);
   };
@@ -160,7 +160,7 @@ const WriteReviewPage = () => {
         </div>
 
         {isCalendarOpen && (
-          <div className="fixed inset-0 z-50 flex justify-center items-end" onClick={() => setIsCalendarOpen(false)}>
+          <div className="fixed inset-0 z-50 flex justify-center items-end bg-black/20" onClick={() => setIsCalendarOpen(false)}>
             <div className="w-full max-w-[480px] bg-white rounded-t-2xl animate-slide-up" onClick={(e) => e.stopPropagation()}>
               <Calendar onSelect={handleDateSelect} mode="single"/>
             </div>
