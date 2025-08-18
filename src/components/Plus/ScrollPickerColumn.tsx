@@ -1,11 +1,11 @@
 import { useRef, useEffect, useMemo } from "react";
 
-const debounce = <T extends any[]>(func: (...args: T) => void, delay: number) => {
+const debounce = <F extends (...args: any[]) => void>(func: F, delay: number) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: T) => {
+  return (...args: Parameters<F>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
-      func.apply(this, args);
+      func(...args);
     }, delay);
   };
 };
