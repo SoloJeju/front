@@ -1,7 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import PublicLayout from './layouts/public-layout';
 import ProtectedLayout from './layouts/protected-layout';
-import SearchPage from './pages/SearchPage';
+import SearchPage from './pages/search-page/index';
+import SearchMapPage from './pages/search-page/search-map-page'
+import SearchBoxPage from './pages/search-page/search-box-page';
+import SearchDetailPage from './pages/search-page/search-detail-page';
 import MyPage from './pages/MyPage';
 import HomePage from './pages/home-page';
 import CommunityPage from './pages/community-page';
@@ -16,6 +19,9 @@ export default function App() {
       <Route path="/" element={<PublicLayout />}>
         <Route index element={<HomePage />} />
         <Route path="search" element={<SearchPage />} />
+        <Route path="search-map" element={<SearchMapPage/>}/>
+        <Route path="search-box" element={<SearchBoxPage />}/>
+        <Route path="search-detail" element={<SearchDetailPage/>}/>
         <Route path="community" element={<CommunityPage />} />
         <Route path="my" element={<MyPage />} />
       </Route>
