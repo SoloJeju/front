@@ -8,6 +8,7 @@ import BasicProfile from '/src/assets/basicProfile.png';
 import Comment from '/src/assets/comment.svg';
 import Script from '/src/assets/script.svg';
 import MoreButton from './MoreButton';
+import { useNavigate } from 'react-router-dom';
 
 interface PostDetailCardProps {
   id: number;
@@ -58,6 +59,14 @@ const PostDetailCard = ({
     }
   };
 
+  const navigate = useNavigate();
+  // ex authorId
+  const authorId = 1;
+
+  const handleProfileDetail = (id: number) => {
+    navigate(`/profile/${id}`);
+  };
+
   return (
     <div className="flex flex-col gap-3 p-5 border border-[#FFCEAA] rounded-xl relative">
       <div className="flex justify-between">
@@ -88,7 +97,10 @@ const PostDetailCard = ({
       </h3>
 
       <div className="flex justify-between items-center">
-        <div className="flex gap-2 items-center">
+        <div
+          className="flex gap-2 items-center cursor-pointer"
+          onClick={() => handleProfileDetail(authorId)}
+        >
           <img
             src={BasicProfile}
             alt={writer ? writer : '익명'}

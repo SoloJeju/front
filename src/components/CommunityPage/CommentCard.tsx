@@ -2,6 +2,7 @@ import React from 'react';
 import BasicProfile from '/src/assets/basicProfile.png';
 import MoreButton from './MoreButton';
 import More from '/src/assets/more.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface CommentCardProps {
   id: number;
@@ -32,17 +33,28 @@ const CommentCard = ({
   onModify,
   onReport,
 }: CommentCardProps) => {
+  // ex authorId
+  const authorId = 1;
+  const navigate = useNavigate();
+
+  const handleProfileDetail = (id: number) => {
+    navigate(`/profile/${id}`);
+  };
   return (
     <div className="relative">
       <img
         src={image ? image : BasicProfile}
         alt={`${writer}의 프로필`}
-        className="w-8 h-8 absolute top-5 -left-5"
+        className="w-8 h-8 absolute top-5 -left-5 cursor-pointer"
+        onClick={() => handleProfileDetail(authorId)}
       />
       <div className="p-4 border border-[#FFCEAA] rounded-xl">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 mb-2">
-            <span className="font-[pretendard] font-medium text-sm text-black">
+            <span
+              className="font-[pretendard] font-medium text-sm text-black cursor-pointer"
+              onClick={() => handleProfileDetail(authorId)}
+            >
               {writer}
             </span>
             <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
