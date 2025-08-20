@@ -47,7 +47,7 @@ const PostCard = ({
 
   return (
     <div
-      className="flex items-center px-5 py-4 border border-[#FFCEAA] rounded-xl"
+      className="flex items-center px-5 py-4 border border-[#FFCEAA] rounded-xl select-none"
       onClick={handleNavigate}
     >
       <div className="flex flex-col gap-2">
