@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import SearchIcon from '../../assets/search-magnifying-glass.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
+import PlaceList from '../../components/SearchPage/PlaceList';
 
 const SearchBoxPage = () => {
+
+  //최근 검색어
   const [searchHistory, setSearchHistory] = useState<string[]>([
     '돌솥밥',
     '고등어 덮밥',
@@ -14,26 +17,48 @@ const SearchBoxPage = () => {
     '돌돌돌돌돌돌돌솥밥'
   ]);
 
+  const [searchInput, setSearchInput] = useState('');
+
+  const [isSearching, setIsSearching] = useState(false);
+
+  //최근 검색어 제거
   const removeHistoryItem = (item: string) => {
     setSearchHistory(prev => prev.filter(history => history !== item));
   };
 
+  const handleSearch = () => {
+    if (!searchInput) return;
+
+    //최근 검색어에 추가, 중복 불가
+    setSearchHistory(prev => [searchInput, ...prev.filter(h => h !== searchInput)]);
+
+    //검색한 장소 리스트 호출
+    setIsSearching(true);
+  };
+
   return (
-<div className="flex justify-center bg-[#FFFFFD] min-h-screen">
+    <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-10 px-4">
         <div className="flex items-center w-full gap-[12px] mt-5">
           <div className="flex-1 h-[40px] flex items-center border border-[#F78938] rounded-[20px] bg-[#FFFFFD] px-4">
             <input
               type="text"
               placeholder="검색어를 입력해주세요"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="flex-1 text-sm focus:outline-none font-medium placeholder:text-[#B4B4B4]"
             />
           </div>
-          <SearchIcon className="w-[30px] h-[30px] text-[#F78938] cursor-pointer" />
+          <SearchIcon
+            className="w-[30px] h-[30px] text-[#F78938] cursor-pointer" 
+            onClick={handleSearch}
+          />
         </div>
-        <div className="mt-5">
-          <p className="text-black text-base font-semibold mb-3">최근 검색어</p>
-          <ul className="flex flex-col gap-3">
+
+        {!isSearching &&(
+          <div className="mt-5">
+            <p className="text-black text-base font-semibold mb-3">최근 검색어</p>
+            <ul className="flex flex-col gap-3">
             {searchHistory.map((item, index) => (
               <li
                 key={index}
@@ -45,8 +70,12 @@ const SearchBoxPage = () => {
                 </button>
               </li>
             ))}
-          </ul>
-        </div>
+            </ul>
+          </div>)}
+
+      {isSearching && (<div className="mt-5">
+        <PlaceList/>
+        </div>)}
       </div>
     </div>
   );
