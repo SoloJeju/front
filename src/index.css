@@ -1,1 +1,26 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+.custom-pagination .swiper-pagination-bullet {
+  @apply w-2 h-2 bg-gray-400 rounded-full opacity-70 transition-all;
+}
+
+.custom-pagination .swiper-pagination-bullet-active {
+  @apply bg-[#F78938] opacity-100 w-2.5 h-2.5;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
