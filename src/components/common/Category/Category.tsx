@@ -3,7 +3,6 @@ import Menu from '../../../assets/menu.svg?react';
 import Help from '../../../assets/question.svg?react';
 import Users from '../../../assets/with.svg?react';
 import Tip from '../../../assets/tip.svg?react';
-import Challenge from '../../../assets/challenge.svg?react';
 
 interface CategoryGroupProps {
   selected: string;
@@ -15,7 +14,6 @@ const categories = [
   { type: '궁금해요', icon: <Help /> },
   { type: '동행제안', icon: <Users /> },
   { type: '혼행꿀팁', icon: <Tip /> },
-  { type: '챌린지', icon: <Challenge /> },
 ] as const;
 
 export default function CategoryGroup({
