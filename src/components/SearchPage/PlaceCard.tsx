@@ -1,9 +1,9 @@
 
 // import Food from '../../../assets/foodtype.svg?react';
-import NONE from '../../assets/TagNONE.svg?react'
-import EASY from '../../assets/TagEASY.svg';
-import NORMAL from '../../assets/TagNORMAL.svg?react';
-import HARD from '../../assets/TagHARD.svg?react';
+//import NONE from '../../assets/TagNONE.svg?react'
+//import EASY from '../../assets/TagEASY.svg';
+//import NORMAL from '../../assets/TagNORMAL.svg?react';
+//import HARD from '../../assets/TagHARD.svg?react';
 import WithIcon from '../../assets/with.svg?react';
 
 type PlaceCardProps = {
