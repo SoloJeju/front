@@ -21,8 +21,6 @@ const SearchBoxPage = () => {
 
   const [isSearching, setIsSearching] = useState(false);
 
-  const [searchResults, setSearchResults] = useState<string[]>([]);
-
   //최근 검색어 제거
   const removeHistoryItem = (item: string) => {
     setSearchHistory(prev => prev.filter(history => history !== item));
