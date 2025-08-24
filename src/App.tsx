@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import PublicLayout from './layouts/public-layout';
 import ProtectedLayout from './layouts/protected-layout';
 import HomePage from './pages/home-page';
-import MyPage from './pages/MyPage';
 import SearchPage from './pages/search-page/index';
 import SearchMapPage from './pages/search-page/search-map-page';
 import SearchBoxPage from './pages/search-page/search-box-page';
@@ -19,13 +18,24 @@ import PostWritePage from './pages/community-page/post-write-page';
 import RoomPage from './pages/room-page';
 import ChatRoomPage from './pages/room-page/chat-room-page';
 import UserProfilePage from './pages/profile-page/user-profile-page';
-
 import SplashPage from './pages/SplashPage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ProfileCreationPage from './pages/profile/ProfileCreationPage';
 import AlarmPage from './pages/alarm-page';
+import MyPage from './pages/my-page/Index';
+import MyPosts from './pages/my-page/MyPosts';
+import MyPlans from './pages/my-page/MyPlans';
+import MyRooms from './pages/my-page/MyRooms';
+import MyReviews from './pages/my-page/MyReviews';
+import MyBookmarks from './pages/my-page/MyBookmarks';
+import MyComments from './pages/my-page/MyComments';
+import LanguageSettings from './pages/my-page/LanguageSetting';
+import ContactUs from './pages/my-page/ContactUs';
+import AccountDelete from './pages/my-page/AccountDelete';
+import TermsOfService from './pages/my-page/TermsOfService';
+import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
 
 function App() {
   return (
@@ -60,6 +70,18 @@ function App() {
           <Route path="search-detail/:placeId" element={<SearchDetailPage />} />
           <Route path="community" element={<CommunityPage />} />
           <Route path="community/:postId" element={<PostDetailPage />} />
+          <Route path="my" element={<MyPage />} />
+          <Route path="mypage/posts" element={<MyPosts />} />
+          <Route path="mypage/plans" element={<MyPlans />} />
+          <Route path="mypage/rooms" element={<MyRooms />} />
+          <Route path="mypage/reviews" element={<MyReviews />} />
+          <Route path="mypage/bookmarks" element={<MyBookmarks />} />
+          <Route path="mypage/comments" element={<MyComments />} />
+          <Route path="mypage/language" element={<LanguageSettings />} />
+          <Route path="mypage/contact" element={<ContactUs />} />
+          <Route path="mypage/delete" element={<AccountDelete />} />
+          <Route path="mypage/terms" element={<TermsOfService />} />
+          <Route path="mypage/privacy" element={<PrivacyPolicy />} />
         </Route>
       </Routes>
     </BrowserRouter>

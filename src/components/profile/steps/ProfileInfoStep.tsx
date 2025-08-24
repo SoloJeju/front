@@ -46,7 +46,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   };
 
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pt-15 pb-6 font-Pretendard">
+    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-Pretendard">
       {/* 눈에 보이지 않는 파일 input을 추가 */}
       <input
         type="file"
