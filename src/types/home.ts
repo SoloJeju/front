@@ -30,6 +30,7 @@ export type RecommendedChatRooms = {
   description: string;
   spotContentId: number;
   spotName: string;
+  spotImage: string;
   currentParticipants: number;
   maxParticipants: number;
   scheduledDate: Date;
