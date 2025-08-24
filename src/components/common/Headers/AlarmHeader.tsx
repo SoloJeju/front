@@ -20,7 +20,7 @@ const AlarmHeader = ({
   };
 
   return (
-    <header className="fixed top-0 max-w-[480px] w-full py-3 flex items-center justify-between bg-white z-50">
+    <header className="fixed top-0 max-w-[480px] w-full p-3 flex items-center justify-between bg-white z-50">
       <div className="flex justify-start">
         {showLogo && <img src={Logo} alt="로고" />}
       </div>
