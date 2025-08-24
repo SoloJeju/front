@@ -8,11 +8,11 @@ type RoomCardProps = {
   isEnd: boolean; // true: 모집완료, false: 모집중
   title: string;
   location: string;
-  date: Date;
+  date: Date | string;
   pre: number;
   all: number;
   imageUrl?: string;
-  gender: string | null;
+  gender?: string | null;
 };
 
 const RoomCard = ({
