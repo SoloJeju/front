@@ -6,7 +6,7 @@ import ProtectedLayout from './layouts/protected-layout';
 import HomePage from './pages/home-page';
 import MyPage from './pages/MyPage';
 import SearchPage from './pages/search-page/index';
-import SearchMapPage from './pages/search-page/search-map-page'
+import SearchMapPage from './pages/search-page/search-map-page';
 import SearchBoxPage from './pages/search-page/search-box-page';
 import SearchDetailPage from './pages/search-page/search-detail-page';
 import CommunityPage from './pages/community-page';
@@ -25,6 +25,7 @@ import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ProfileCreationPage from './pages/profile/ProfileCreationPage';
+import AlarmPage from './pages/alarm-page';
 
 function App() {
   return (
@@ -34,12 +35,7 @@ function App() {
         {/* 스플래시 페이지 */}
         <Route path="/splash" element={<SplashPage />} />
 
-        {/* Navbar가 없는 레이아웃 (로그인, 회원가입 등) */}
         <Route element={<ProtectedLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/find-password" element={<FindPasswordPage />} />
-          <Route path="/profile/create" element={<ProfileCreationPage />} />
           <Route path="/write-review" element={<WriteReviewPage />} />
           <Route path="/plan" element={<PlanPage />} />
           <Route path="/plan/:planId" element={<PlanDetailPage />} />
@@ -48,17 +44,21 @@ function App() {
           <Route path="/room/:roomId" element={<RoomPage />} />
           <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
           <Route path="/profile/:userId" element={<UserProfilePage />} />
+          <Route path="/alarm" element={<AlarmPage />} />
+          <Route path="mypage" element={<MyPage />} />
         </Route>
 
-        {/* Navbar가 있는 레이아웃 (메인 페이지들) */}
         <Route path="/" element={<PublicLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/find-password" element={<FindPasswordPage />} />
+          <Route path="/profile/create" element={<ProfileCreationPage />} />
           <Route index element={<HomePage />} />
-          <Route path="mypage" element={<MyPage />} />
           <Route path="search" element={<SearchPage />} />
-          <Route path="search-map" element={<SearchMapPage/>}/>
-        <Route path="search-box" element={<SearchBoxPage />}/>
-        <Route path="search-detail" element={<SearchDetailPage/>}/>
-        <Route path="community" element={<CommunityPage />} />
+          <Route path="search-map" element={<SearchMapPage />} />
+          <Route path="search-box" element={<SearchBoxPage />} />
+          <Route path="search-detail/:placeId" element={<SearchDetailPage />} />
+          <Route path="community" element={<CommunityPage />} />
           <Route path="community/:postId" element={<PostDetailPage />} />
         </Route>
       </Routes>
