@@ -3,7 +3,7 @@ import CategoryGroup from '../../components/common/Category/Category';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 import Write from '/src/assets/write.svg';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const mockData = [
   {
@@ -43,7 +43,9 @@ const mockData = [
 
 export default function CommunityPage() {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState('전체');
+  const location = useLocation();
+  const category = location.state?.category;
+  const [selected, setSelected] = useState(category ? category : '전체');
 
   const filteredData =
     selected === '전체'
