@@ -8,40 +8,57 @@ import ExamplePlace from '/src/assets/ex-place.png';
 import MoreArrow from '/src/assets/arrow-more.svg';
 import RecommendPlace from '../../components/HomePage/RecommendPlace';
 import RecentReviewCard from '../../components/HomePage/RecentReviewCard';
-import RoomCardList from '../../components/common/RoomCard/RoomCardList';
-
-const exPlaceData = [
-  {
-    id: 1,
-    name: '섭지코지',
-    level: 'EASY',
-  },
-  {
-    id: 2,
-    name: '섭지코지',
-    level: 'NORMAL',
-  },
-  {
-    id: 3,
-    name: '섭지코지',
-    level: 'HARD',
-  },
-];
-
-const exRecentReview = [
-  {
-    id: 1,
-    name: '카페 더 조용한',
-    comment: '혼자라서 더 잘 즐길 수 있었어요',
-  },
-  {
-    id: 2,
-    name: '카페 더 조용한',
-    comment: '혼자라서 더 잘 즐길 수 있었어요',
-  },
-];
+import useGetTodayRecommendedSpots from '../../hooks/home/useGetTodayRecommendedSpots';
+import useGetLatestReviews from '../../hooks/home/useGetLatestReviews';
+import RoomCard from '../../components/common/RoomCard/RoomCard';
+import useGetRecommendedChatRooms from '../../hooks/home/useGetRecommendedChatRooms';
+import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {
+  const accessToken = localStorage.getItem('accessToken');
+  const navigate = useNavigate();
+
+  const {
+    data: todayRecommendedSpots,
+    isPending: isPendingTodayRecommendedSpots,
+    isError: isErrorTodayRecommendedSpots,
+  } = useGetTodayRecommendedSpots();
+  const {
+    data: lastestReviews,
+    isPending: isPendinLastestReviews,
+    isError: isErrorLastestReviews,
+  } = useGetLatestReviews();
+  const {
+    data: recommendedChatRooms,
+    isPending: isPendingRecommendedChatRooms,
+    isError: isErrorRecommendedChatRooms,
+  } = useGetRecommendedChatRooms();
+
+  const handleMoreChatRooms = () => {
+    navigate(`/community`, {
+      state: {
+        category: '동행제안',
+      },
+    });
+  };
+
+  if (
+    isPendingTodayRecommendedSpots ||
+    isPendinLastestReviews ||
+    isPendingRecommendedChatRooms
+  ) {
+    // loading ui
+    return <div>Loading...</div>;
+  }
+
+  if (
+    isErrorTodayRecommendedSpots ||
+    isErrorLastestReviews ||
+    isErrorRecommendedChatRooms
+  ) {
+    return <div>Error!!</div>;
+  }
+
   return (
     <div className="flex flex-col flex-1 px-4">
       <div className="w-full h-60 relative">
@@ -92,12 +109,24 @@ export default function HomePage() {
 
       <main className="pt-10">
         <h2 className="mb-4 font-[pretendard] font-semibold text-2xl text-black break-keep">
-          <span className="block">홍길동님은</span> 감성 여유형 여행자예요 🍃
+          {accessToken ? (
+            <>
+              <span className="block">홍길동님은</span> 감성 여유형 여행자예요
+              🍃
+            </>
+          ) : (
+            <>
+              혼놀 관광지 추천부터 AI 일정 계획까지, "혼자옵서예"에서
+              확인해보세요!
+            </>
+          )}
         </h2>
 
         <section className="mb-8">
           <p className="mb-2 font-[pretendard] font-medium text-[#5D5D5D] break-keep">
-            이번 주말엔 어떤 혼행이 어울릴까요?
+            {accessToken
+              ? '이번 주말엔 어떤 혼행이 어울릴까요?'
+              : '로그인하면 더 많은 기능을 사용할 수 있어요!'}
           </p>
           <div className="flex gap-1.5">
             <button
@@ -105,14 +134,16 @@ export default function HomePage() {
               className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
             >
               <img src={Pin} />
-              조용한 감성 스팟 둘러보기
+              {accessToken ? '조용한 감성 스팟 둘러보기' : '로그인 하러가기'}
             </button>
             <button
               type="button"
               className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
             >
               <img src={Pin} />
-              AI로 감성 위주 계획짜기
+              {accessToken
+                ? 'AI로 감성 위주 계획짜기'
+                : '내 여행자 타입 확인하기'}
             </button>
           </div>
         </section>
@@ -122,13 +153,14 @@ export default function HomePage() {
             오늘의 추천 장소 TOP 3 🔥
           </h3>
 
-          <div className="flex justify-center gap-2">
-            {exPlaceData.map((data) => (
+          <div className="grid grid-cols-3 gap-2">
+            {todayRecommendedSpots?.map((spot) => (
               <RecommendPlace
-                key={data.id}
-                id={data.id}
-                name={data.name}
-                level={data.level}
+                key={spot.contentId}
+                id={spot.contentId}
+                title={spot.title}
+                image={spot.firstImage}
+                level={spot.difficulty}
               />
             ))}
           </div>
@@ -141,18 +173,19 @@ export default function HomePage() {
             </h3>
             <button
               type="button"
-              className="flex gap-2 items-center font-[pretendard] font-medium text-[12px] text-[#F78938]"
+              className="flex gap-2 items-center font-[pretendard] font-medium text-[12px] text-[#F78938] cursor-pointer"
             >
               더보기 <img src={MoreArrow} />
             </button>
           </div>
-          <div className="flex gap-2">
-            {exRecentReview.map((data) => (
+          <div className="grid grid-cols-2 gap-2">
+            {lastestReviews?.map((review) => (
               <RecentReviewCard
-                key={data.id}
-                id={data.id}
-                name={data.name}
-                comment={data.comment}
+                key={review.contentId}
+                id={review.contentId}
+                name={review.spotName}
+                image={review.spotImage}
+                comment={review.content}
               />
             ))}
           </div>
@@ -165,12 +198,28 @@ export default function HomePage() {
             </h3>
             <button
               type="button"
-              className="flex gap-2 items-center font-[pretendard] font-medium text-[12px] text-[#F78938]"
+              className="flex gap-2 items-center font-[pretendard] font-medium text-[12px] text-[#F78938] cursor-pointer"
+              onClick={handleMoreChatRooms}
             >
               더보기 <img src={MoreArrow} />
             </button>
           </div>
-          <RoomCardList />
+          <div className="flex flex-col gap-2">
+            {recommendedChatRooms?.map((room) => (
+              <RoomCard
+                key={room.roomId}
+                id={room.roomId}
+                isEnd={room.currentParticipants === room.maxParticipants}
+                title={room.title}
+                location={room.spotName}
+                date={room.scheduledDate}
+                pre={room.currentParticipants}
+                all={room.maxParticipants}
+                imageUrl={room.spotImage}
+                gender={room.genderRestriction}
+              />
+            ))}
+          </div>
         </section>
       </main>
     </div>
