@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import BackHeader from '../../components/common/Headers/BackHeader';
 

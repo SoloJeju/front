@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IoIosCheckmark } from 'react-icons/io';
 import BackHeader from '../../components/common/Headers/BackHeader';
 

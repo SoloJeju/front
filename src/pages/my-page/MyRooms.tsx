@@ -1,4 +1,3 @@
-import React from 'react';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import RoomCard from '../../components/common/RoomCard/RoomCard';
 import ExampleImage from '../../assets/exampleImage.png';

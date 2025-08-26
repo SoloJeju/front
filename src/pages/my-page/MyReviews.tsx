@@ -1,22 +1,6 @@
-import React from 'react';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import PostNone from '/src/assets/post-none.svg';
 
-//이거 탐색에서 가져오면 되어요...
-const mockReviews = [
-  {
-    id: 1,
-    place: '마라도 잠수함',
-    rating: 5,
-    content: '정말 환상적인 경험이었어요! 바닷속이 이렇게 아름다울 줄이야...',
-  },
-  {
-    id: 2,
-    place: '제주 민속촌',
-    rating: 4,
-    content: '아이들과 함께 가기 좋은 곳. 볼거리가 많네요.',
-  },
-];
 
 export default function MyReviews() {
   return (

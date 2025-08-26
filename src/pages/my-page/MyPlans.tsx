@@ -1,12 +1,5 @@
-import React from 'react';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import PostNone from '/src/assets/post-none.svg';
-
-// 가짜 데이터
-const mockPlans = [
-  { id: 1, title: '우도 당일치기 힐링 여행', date: '2023. 10. 26', dDay: 7 },
-  { id: 2, title: '서귀포 맛집 탐방', date: '2023. 11. 05', dDay: 17 },
-];
 
 export default function MyPlans() {
   return (
