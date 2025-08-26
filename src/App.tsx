@@ -18,6 +18,8 @@ import PostWritePage from './pages/community-page/post-write-page';
 import RoomPage from './pages/room-page';
 import ChatRoomPage from './pages/room-page/chat-room-page';
 import UserProfilePage from './pages/profile-page/user-profile-page';
+import CartPage from './pages/search-page/cart-page';
+
 import SplashPage from './pages/SplashPage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
@@ -58,6 +60,7 @@ function App() {
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="mypage/profile-edit" element={<ProfileEdit />} />
+          <Route path="/cart" element={<CartPage/>}/>
         </Route>
 
         <Route path="/" element={<PublicLayout />}>
