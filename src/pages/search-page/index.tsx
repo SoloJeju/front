@@ -1,10 +1,15 @@
 import FilterBar from '../../components/SearchPage/FliterBar';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import Menu from '../../assets/menu.svg?react';
+import Cart from '../../assets/cartIcon.svg';
 import { useNavigate } from 'react-router-dom';
 
 const SearchPage = () => {
   const navigate = useNavigate();
+
+  const handleAddCart = () => {
+    navigate('/cart');
+  };
   return (
     <div>
       <FilterBar />
@@ -17,6 +22,15 @@ const SearchPage = () => {
         </div>
 
         <PlaceList />
+      </div>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+          onClick={handleAddCart}
+        >
+          <img src={Cart} alt="장소 담기" />
+        </button>
       </div>
     </div>
   );
