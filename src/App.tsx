@@ -25,6 +25,7 @@ import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ProfileCreationPage from './pages/profile/ProfileCreationPage';
 import AlarmPage from './pages/alarm-page';
 import MyPage from './pages/my-page/Index';
+import ProfileEdit from './pages/my-page/ProfileEdit';
 import MyPosts from './pages/my-page/MyPosts';
 import MyPlans from './pages/my-page/MyPlans';
 import MyRooms from './pages/my-page/MyRooms';
@@ -56,6 +57,7 @@ function App() {
           <Route path="/profile/:userId" element={<UserProfilePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="mypage" element={<MyPage />} />
+          <Route path="mypage/profile-edit" element={<ProfileEdit />} />
         </Route>
 
         <Route path="/" element={<PublicLayout />}>

@@ -1,11 +1,9 @@
-// 기본 정보 입력 화면
 import { useState, useRef } from 'react';
-import Input from '../../common/Input';
-import Button from '../../common/Button';
-import { useProfileStore } from '../../../stores/profile-store';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
+import { useProfileStore } from '../../stores/profile-store';
 
-export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
-  // Zustand 스토어에서 프로필 관련 상태와 setter 가져오기
+export default function ProfileEdit() {
   const {
     name,
     setName,
@@ -21,22 +19,14 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
     setBio,
   } = useProfileStore();
 
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(true); // 수정 시 기존 닉네임 사용 가능
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // 모든 필드와 닉네임 중복확인이 완료되었을 때만 버튼 활성화
-  const isFormValid =
-    name && nickname && gender && birthdate && isNicknameChecked;
-
-  // 닉네임 중복확인 (임시로직)
   const handleCheckNickname = () => {
-    if (!nickname) {
-      return;
-    }
+    if (!nickname) return;
     setIsNicknameChecked(true);
   };
 
-  // 프로필 이미지 업로드 시 FileReader로 Base64 변환 후 상태 업데이트
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -46,6 +36,14 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
       setProfileImage(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleSave = () => {
+    if (!isNicknameChecked) {
+      alert('닉네임 중복 확인을 해주세요.');
+      return;
+    }
+    alert('프로필이 수정되었습니다.');
   };
 
   return (
@@ -58,11 +56,8 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         accept="image/*"
       />
 
-      <h1 className="text-[24px] font-bold mb-8 text-center">
-        프로필 생성하기
-      </h1>
+      <h1 className="text-[24px] font-bold mb-8 text-center">프로필 수정하기</h1>
 
-      {/* 프로필 이미지 미리보기 및 수정 버튼 */}
       <div className="relative mb-10">
         <img
           src={profileImage}
@@ -77,7 +72,6 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         />
       </div>
 
-      {/* 입력 폼 */}
       <div className="w-full flex flex-col gap-4">
         {/* 이름 */}
         <div className="flex flex-col gap-2">
@@ -85,7 +79,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           <div className="border-b border-gray-300 pb-2">
             <Input
               type="text"
-              placeholder="이름을 입력해주세요"
+              placeholder="이름"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
@@ -100,7 +94,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
             <div className="flex-grow">
               <Input
                 type="text"
-                placeholder="닉네임을 입력해주세요"
+                placeholder="닉네임"
                 value={nickname}
                 onChange={(e) => {
                   setNickname(e.target.value);
@@ -124,7 +118,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           )}
         </div>
 
-        {/* 성별 버튼 */}
+        {/* 성별 */}
         <div className="flex flex-col gap-2">
           <label className="text-[16px] font-medium">성별</label>
           <div className="flex gap-4">
@@ -159,7 +153,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           <div className="border-b border-gray-300 pb-2">
             <Input
               type="text"
-              placeholder="생년월일을 입력해주세요"
+              placeholder="생년월일"
               value={birthdate}
               onChange={(e) => setBirthdate(e.target.value)}
               className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
@@ -169,9 +163,8 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
 
         {/* 한 줄 소개 */}
         <div className="flex flex-col gap-2 mb-8">
-          <label className="text-[16px] font-medium">
-            한 줄 소개
-            <span className="text-sm text-[#666666] ml-2">*선택</span>
+          <label className="text-[16px] font-medium">한 줄 소개
+             <span className="text-sm text-[#666666] ml-2">*선택</span>
           </label>
           <div className="border-b border-gray-300 pb-2">
             <Input
@@ -187,10 +180,10 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         <Button
           size="large"
           variant="primary"
-          disabled={!isFormValid}
-          onClick={onNext}
+          onClick={handleSave}
+          disabled={!name || !nickname || !gender || !birthdate}
         >
-          회원가입 완료
+          프로필 수정 완료
         </Button>
       </div>
     </div>
