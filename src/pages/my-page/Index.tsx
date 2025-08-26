@@ -19,8 +19,7 @@ const MenuItem = ({ to, children, className = '' }: MenuItemProps) => (
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { nickname, type, profileImage, soloTripCount, companionRoomCount } =
-    useProfileStore();
+  const { nickname, type, profileImage } = useProfileStore();
 
   const handleLogout = () => {
     if (window.confirm('정말 로그아웃 하시겠어요?')) {
