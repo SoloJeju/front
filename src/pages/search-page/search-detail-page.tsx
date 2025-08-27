@@ -9,10 +9,12 @@ import TelIcon from '../../assets/tel.svg?react';
 import InfoIcon from '../../assets/info.svg?react';
 import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Cart from '../../assets/cartIcon.svg';
 
 export default function PlacePhotoScreen() {
   const location = useLocation();
+  const navigate = useNavigate();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
 
@@ -22,6 +24,10 @@ export default function PlacePhotoScreen() {
     { label: '리뷰' },
     { label: '동행방' },
   ];
+  const handleAddCart = () => {
+    //장소 담기 api 연결
+    navigate('/cart');
+  };
 
   return (
     <div>
@@ -183,6 +189,15 @@ export default function PlacePhotoScreen() {
             <RoomCardList />
           </div>
         )}
+      </div>
+      <div className="flex justify-end">
+              <button
+                type="button"
+                className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+                onClick={handleAddCart}
+              >
+                <img src={Cart} alt="장소 담기" />
+              </button>
       </div>
     </div>
   );
