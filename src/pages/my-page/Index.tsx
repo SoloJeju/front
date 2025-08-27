@@ -52,6 +52,7 @@ const MyPage = () => {
   }) => {
     // TODO: 탈퇴 API 호출 (payload.reason / payload.detail 전달)
     // 성공 시: 세션 정리 후 리다이렉트
+    void payload; //임시로 사용 처리
     closeDelete();
     navigate('/goodbye'); // 혹은 /login
   };

@@ -20,7 +20,7 @@ export default function DeleteAccountModal({
   onClose,
   onConfirm,
 }: Props) {
-  if (!open) return null;
+  if (!open) <></>;
 
   const [step, setStep] = useState<1 | 2>(1);
   const [reason, setReason] = useState<string>('');
