@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';

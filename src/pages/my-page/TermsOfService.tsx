@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 
 const TermsOfService = () => {
