@@ -63,7 +63,7 @@ export default function SignupPage() {
 
   if (step === 1)
     return (
-      <div className="px-6 pt-15 pb-6 bg-white min-h-screen">
+      <div className="px-6 pt-10 pb-6 bg-white min-h-screen">
         <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
         <div className="flex flex-col space-y-4">
           <Input
