@@ -15,7 +15,9 @@ const LoginPage = () => {
   // API 호출 대신 alert 띄우는 상태
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid) {
+      return;
+    }
     alert(`UI 테스트\n아이디: ${email}\n비밀번호: ${password}`);
   };
 
@@ -57,7 +59,7 @@ const LoginPage = () => {
           {/* 로그인 버튼 */}
           <div className="pt-8">
             <Button type="submit" disabled={!isFormValid}>
-              로그인
+              <span className="font-semibold">로그인</span>
             </Button>
           </div>
         </form>
@@ -76,19 +78,18 @@ const LoginPage = () => {
           className="flex items-center justify-center w-full py-3 bg-[#FEE500] rounded-[10px] hover:opacity-75"
         >
           <img src="/kakao.svg" alt="카카오 로고" className="w-5 h-5" />
-          <span className="ml-2 text-[16px] font-SemiBold text-black text-opacity-85">
+          <span className="ml-2 text-[16px] font-semibold text-black text-opacity-85">
             카카오 로그인
           </span>
         </button>
 
         {/* 하단 링크 */}
         <div className="flex items-center justify-center mt-12 space-x-4 text-sm text-[#000000CC]">
-          <Link to="/find-password">비밀번호 찾기</Link>
+          <Link to="/find-password" className="font-semibold">
+            비밀번호 찾기
+          </Link>
           <span className="text-gray-300">|</span>
-          <Link
-            to="/signup"
-            className="font-SemiBold text-primary text-[#F78938]"
-          >
+          <Link to="/signup" className="font-semibold text-[#F78938]">
             가입하기
           </Link>
         </div>

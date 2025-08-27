@@ -11,7 +11,7 @@ export default function ResultStep() {
   };
 
   return (
-    <div className="p-6 flex flex-col min-h-screen items-center justify-center text-center">
+    <div className="px-6 pb-6 flex flex-col min-h-screen items-center justify-center text-center">
       <div className="flex-grow flex flex-col items-center justify-center">
         <h2 className="text-xl text-center mb-4 leading-snug">
           <span className="font-bold text-3xl">{storeData.nickname}</span> 님의
@@ -21,7 +21,7 @@ export default function ResultStep() {
       </div>
       <Button
         onClick={handleSubmit}
-        className="w-full py-3 rounded-md text-white bg-[#F78938]"
+        className="w-full py-3 rounded-[10px] text-white bg-[#F78938]"
         variant="primary"
       >
         완료
