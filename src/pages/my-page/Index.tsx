@@ -157,16 +157,20 @@ const MyPage = () => {
           </MenuItem>
         </section>
       </main>
-      <LogoutModal
-        open={logoutOpen}
-        onClose={closeLogout}
-        onConfirm={handleLogoutConfirm}
-      />
-      <DeleteAccountModal
-        open={deleteOpen}
-        onClose={closeDelete}
-        onConfirm={handleDeleteConfirm}
-      />
+      {logoutOpen && (
+        <LogoutModal
+          open={logoutOpen}
+          onClose={closeLogout}
+          onConfirm={handleLogoutConfirm}
+        />
+      )}
+      {deleteOpen && (
+        <DeleteAccountModal
+          open={deleteOpen}
+          onClose={closeDelete}
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
     </div>
   );
 };
