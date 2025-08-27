@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { IoIosArrowBack } from 'react-icons/io';
+import BackHeader from '../../components/common/Headers/BackHeader';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 
@@ -41,10 +41,7 @@ const MyBookmarks = () => {
     <div className="font-Pretendard">
       {/* 1. 상단 바 */}
       <header className="relative flex items-center justify-center p-4">
-        <Link to="/my" className="absolute left-4">
-          <IoIosArrowBack size={24} />
-        </Link>
-        <h1 className="text-lg font-bold">내가 스크랩한 글</h1>
+        <BackHeader title="내가 스크랩한 글" />
       </header>
 
       {/* 2. 게시글 목록 */}
