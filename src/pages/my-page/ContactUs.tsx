@@ -1,11 +1,22 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiInfo } from 'react-icons/fi';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import ImageIcon from '/src/assets/imageIcon.svg?react';
 
+interface ImagePreview {
+  file: File;
+  preview: string;
+}
+
 const ContactUs = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<ImagePreview[]>([]);
+
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
+    };
+  }, [selectedFiles]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,11 +31,18 @@ const ContactUs = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      setSelectedFiles((prev) => [...prev, ...Array.from(files)]);
+      const newFiles: ImagePreview[] = Array.from(files)
+        .filter((file) => file.type.startsWith('image/')) // 이미지 파일만 필터링
+        .map((file) => ({
+          file,
+          preview: URL.createObjectURL(file), // 미리보기 URL 생성
+        }));
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
   const handleRemoveFile = (index: number) => {
+    URL.revokeObjectURL(selectedFiles[index].preview);
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -113,7 +131,7 @@ const ContactUs = () => {
                     <button
                       type="button"
                       onClick={handleIconClick}
-                      className="absolute bottom-3 left-3 p-1 rounded-md hover:bg-gray-100"
+                      className="absolute bottom-3 left-3 p-1 rounded-md cursor-pointer"
                     >
                       <ImageIcon />
                     </button>
@@ -125,25 +143,29 @@ const ContactUs = () => {
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     multiple
-                    accept="image/*, video/*"
+                    accept="image/*"
                     className="hidden"
                   />
 
                   {/* 첨부 파일 목록 */}
                   {selectedFiles.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {selectedFiles.map((file, index) => (
+                    <div className="mt-4 flex items-center gap-3 overflow-x-auto pb-2">
+                      {selectedFiles.map((item, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between bg-gray-100 p-2 rounded-md text-xs text-gray-700"
+                          className="relative flex-shrink-0 w-20 h-20"
                         >
-                          <span>{file.name}</span>
+                          <img
+                            src={item.preview}
+                            alt={`미리보기 ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
                           <button
                             type="button"
                             onClick={() => handleRemoveFile(index)}
-                            className="ml-2 text-gray-500 hover:text-red-500 font-bold"
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md text-[#F78938] text-xl leading-none cursor-pointer"
                           >
-                            ×
+                            &times;
                           </button>
                         </div>
                       ))}
@@ -155,7 +177,7 @@ const ContactUs = () => {
                 <div className="border-t border-[#FFCEAA] pt-4">
                   <button
                     type="submit"
-                    className="w-full text-base font-SemiBold text-center text-[#F78938] cursor-pointer"
+                    className="w-full text-base font-semibold text-center text-[#F78938] cursor-pointer"
                   >
                     문의 작성하기
                   </button>

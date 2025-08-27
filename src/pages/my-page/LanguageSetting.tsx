@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { IoIosCheckmark } from 'react-icons/io';
 import BackHeader from '../../components/common/Headers/BackHeader';
 
-// UI 확인을 위한 언어 목록
+// UI 확인을 위한 언어 목록 그냥 임의로 넣어놓은 것
 const languages = [
   { code: 'ko', name: '한국어' },
   { code: 'en', name: 'English' },

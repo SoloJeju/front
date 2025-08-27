@@ -1,119 +1,171 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProfileStore } from '../../stores/profile-store';
+import LogoutModal from './modal/LogoutModal';
+import DeleteAccountModal from './modal/DeleteAccountModal';
 
 type MenuItemProps = {
-  to: string;
+  to?: string;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 };
 
-const MenuItem = ({ to, children, className = '' }: MenuItemProps) => (
-  <Link
-    to={to}
-    className={`block py-3 text-[#262626] text-base tracking-[-0.02em] font-medium ${className}`}
-  >
-    {children}
-  </Link>
-);
+const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
+  to ? (
+    <Link
+      to={to}
+      className={`block py-3 text-[#262626] text-base tracking-[-0.02em] font-medium cursor-pointer ${className}`}
+    >
+      {children}
+    </Link>
+  ) : (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`block w-full text-left py-3 text-[#262626] text-base tracking-[-0.02em] font-medium cursor-pointer ${className}`}
+    >
+      {children}
+    </button>
+  );
 
 const MyPage = () => {
   const navigate = useNavigate();
   const { nickname, type, profileImage } = useProfileStore();
 
-  const handleLogout = () => {
-    if (window.confirm('정말 로그아웃 하시겠어요?')) {
-      alert('로그아웃 되었습니다.');
-      navigate('/login');
-    }
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const openLogout = () => setLogoutOpen(true);
+  const closeLogout = () => setLogoutOpen(false);
+  const handleLogoutConfirm = () => {
+    // TODO: 실제 로그아웃 로직 (토큰/세션 정리)
+    // e.g., localStorage.removeItem('accessToken')
+    closeLogout();
+    navigate('/login');
+  };
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const openDelete = () => setDeleteOpen(true);
+  const closeDelete = () => setDeleteOpen(false);
+
+  const handleDeleteConfirm = (payload: {
+    reason: string;
+    detail?: string;
+  }) => {
+    // TODO: 탈퇴 API 호출 (payload.reason / payload.detail 전달)
+    // 성공 시: 세션 정리 후 리다이렉트
+    closeDelete();
+    navigate('/goodbye'); // 혹은 /login
   };
 
   return (
     <div className="relative min-h-screen bg-white font-Pretendard">
-      <header className="bg-[#F78938] h-59" />
-
-      <main className="relative -mt-45 mx-4">
-        <section className="flex flex-col items-center text-center mb-6">
-          {/* 프로필 사진 */}
-          <div className="relative w-24 h-24 mb-4">
-            <img
-              src={profileImage}
-              alt="프로필 이미지"
-              className="w-full h-full rounded-full shadow-md object-cover"
-            />
-          </div>
-
-          {/* 프로필 수정 버튼 */}
+      <header className="relative bg-[#F78938]">
+        <div className="px-4 pt-4 pb-2">
           <Link
             to="/mypage/profile-edit"
-            className="absolute top-0 right-0 -translate-y-10 bg-[#F78938] text-white text-xs px-2 py-1 rounded-[20px] border border-white hover:bg-[#F78938]/90 transition-colors"
+            className="float-right bg-[#F78938] text-white text-[12px] px-3 py-[6px] rounded-full border border-white/70 hover:bg-[#F78938]/90 transition-colors"
           >
             프로필 수정
           </Link>
+          <div className="clear-both" />
+        </div>
 
-          {/* 여행자 타입 */}
-          <span className="text-sm text-white tracking-[-0.02em] cursor-default">
-            {type || '여행 성향이 떠야 하는 부분'}
+        {/* 프로필 정보 */}
+        <div className="px-4 pb-4 flex flex-col items-center text-center">
+          <div className="w-[88px] h-[88px] mb-2">
+            <img
+              src={profileImage}
+              alt="프로필 이미지"
+              className="w-full h-full rounded-full object-cover"
+            />
+          </div>
+          <span className="text-[13px] text-white/90 tracking-[-0.02em]">
+            {type || '감성 여유형 여행자'}
           </span>
-
-          {/* 닉네임 */}
-          <h2 className="text-xl font-SemiBold text-white cursor-default">
-            {nickname}
+          <h2 className="mt-0.5 text-[20px] font-semibold text-white">
+            {nickname || '홍길동'}
           </h2>
+        </div>
+
+        {/* 혼행/동행방 횟수 */}
+        <nav className="grid grid-cols-2 text-white/95 border-[0.5px] border-[#AF5A1C]">
+          <div className="py-[10px] text-center border-r-[0.5px] border-[#AF5A1C]">
+            <span className="text-[14px] text-[#FFCEAA] align-middle">
+              혼행
+            </span>
+            <span className="ml-2 text-[14px] font-medium align-middle">
+              16회
+            </span>
+          </div>
+          <div className="py-[10px] text-center">
+            <span className="text-[14px] text-[#FFCEAA] align-middle">
+              동행방
+            </span>
+            <span className="ml-2 text-[14px] font-medium align-middle">
+              4회
+            </span>
+          </div>
+        </nav>
+      </header>
+
+      {/* 본문 */}
+      <main className="mx-4 pb-12">
+        {/* 내 활동 */}
+        <section className="mt-6 border-b border-[#EDEDED]">
+          <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
+            내 활동
+          </h3>
+          <MenuItem to="/mypage/plans">여행 계획</MenuItem>
+          <MenuItem to="/mypage/rooms">동행방 리스트 보기</MenuItem>
+          <MenuItem to="/mypage/reviews" className="mb-3">
+            내가 작성한 리뷰 보기
+          </MenuItem>
         </section>
 
-        <div className="p-4">
-          <section className="mb-6 border-b-[0.5px] border-[#D9D9D9]">
-            <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
-              내 활동
-            </h3>
-            <MenuItem to="/mypage/plans">여행 계획</MenuItem>
-            <MenuItem to="/mypage/rooms">동행방 리스트 보기</MenuItem>
-            <MenuItem to="/mypage/reviews" className="border-b-0">
-              내가 작성한 리뷰 보기
-            </MenuItem>
-          </section>
+        {/* 커뮤니티 활동 */}
+        <section className="mt-6 border-b border-[#EDEDED]">
+          <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
+            커뮤니티 활동
+          </h3>
+          <MenuItem to="/mypage/posts">내가 작성한 글</MenuItem>
+          <MenuItem to="/mypage/bookmarks">내가 스크랩한 글</MenuItem>
+          <MenuItem to="/mypage/comments" className="mb-3">
+            내가 댓글 단 글
+          </MenuItem>
+        </section>
 
-          <section className="mb-6 border-b-[0.5px] border-[#D9D9D9]">
-            <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
-              커뮤니티 활동
-            </h3>
-            <MenuItem to="/mypage/posts">내가 작성한 글</MenuItem>
-            <MenuItem to="/mypage/bookmarks">내가 스크랩한 글</MenuItem>
-            <MenuItem to="/mypage/comments" className="border-b-0">
-              내가 댓글 단 글
-            </MenuItem>
-          </section>
+        {/* 기타 */}
+        <section className="mt-6">
+          <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
+            기타
+          </h3>
 
-          <section>
-            <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
-              기타
-            </h3>
-            <Link
-              to="/mypage/language"
-              className="flex justify-between items-center py-3 text-gray-800 text-base"
-            >
-              <span>언어</span>
-              <span className="text-[14px] text-[#737373]">한국어</span>
-            </Link>
-            <MenuItem to="/mypage/contact">1:1 문의하기</MenuItem>
-            <MenuItem to="/mypage/terms">서비스 이용약관</MenuItem>
-            <MenuItem to="/mypage/privacy">개인정보 처리방침</MenuItem>
-            <button
-              onClick={handleLogout}
-              className="w-full text-left py-3 text-gray-800 text-base"
-            >
-              로그아웃
-            </button>
-            <Link
-              to="/mypage/delete"
-              className="block w-full text-left py-3 text-[#262626] text-base"
-            >
-              탈퇴하기
-            </Link>
-          </section>
-        </div>
+          <Link
+            to="/mypage/language"
+            className="flex justify-between items-center py-3 text-gray-800 text-base"
+          >
+            <span>언어</span>
+            <span className="text-[14px] text-[#737373]">한국어</span>
+          </Link>
+
+          <MenuItem to="/mypage/contact">1:1 문의하기</MenuItem>
+          <MenuItem to="/mypage/terms">서비스 이용약관</MenuItem>
+          <MenuItem to="/mypage/privacy">개인정보 처리방침</MenuItem>
+          <MenuItem onClick={openLogout}>로그아웃</MenuItem>
+          <MenuItem to={undefined} onClick={openDelete}>
+            탈퇴하기
+          </MenuItem>
+        </section>
       </main>
+      <LogoutModal
+        open={logoutOpen}
+        onClose={closeLogout}
+        onConfirm={handleLogoutConfirm}
+      />
+      <DeleteAccountModal
+        open={deleteOpen}
+        onClose={closeDelete}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

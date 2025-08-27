@@ -36,7 +36,6 @@ import MyBookmarks from './pages/my-page/MyBookmarks';
 import MyComments from './pages/my-page/MyComments';
 import LanguageSettings from './pages/my-page/LanguageSetting';
 import ContactUs from './pages/my-page/ContactUs';
-import AccountDelete from './pages/my-page/AccountDelete';
 import TermsOfService from './pages/my-page/TermsOfService';
 import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
 
@@ -60,7 +59,7 @@ function App() {
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="mypage/profile-edit" element={<ProfileEdit />} />
-          <Route path="/cart" element={<CartPage/>}/>
+          <Route path="/cart" element={<CartPage />} />
         </Route>
 
         <Route path="/" element={<PublicLayout />}>
@@ -84,7 +83,6 @@ function App() {
           <Route path="mypage/comments" element={<MyComments />} />
           <Route path="mypage/language" element={<LanguageSettings />} />
           <Route path="mypage/contact" element={<ContactUs />} />
-          <Route path="mypage/delete" element={<AccountDelete />} />
           <Route path="mypage/terms" element={<TermsOfService />} />
           <Route path="mypage/privacy" element={<PrivacyPolicy />} />
         </Route>
