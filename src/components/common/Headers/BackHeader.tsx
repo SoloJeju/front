@@ -6,8 +6,7 @@ interface BackHeaderProps {
   title?: string;
   isChatRoom?: boolean;
   onClick?: () => void;
-  //rightContent?: React.ReactNode; 
-
+  //rightContent?: React.ReactNode;
 }
 
 const BackHeader = ({
@@ -23,7 +22,7 @@ const BackHeader = ({
   };
 
   return (
-    <header className="w-full py-3 flex items-center justify-between relative">
+    <header className="w-full p-3 flex items-center justify-between relative">
       <button
         type="button"
         className="cursor-pointer w-6 h-6"
