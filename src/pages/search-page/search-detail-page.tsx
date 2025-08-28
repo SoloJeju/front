@@ -11,6 +11,7 @@ import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Cart from '../../assets/cartIcon.svg';
+import { addToCart } from '../../apis/cart';
 
 export default function PlacePhotoScreen() {
   const location = useLocation();
@@ -24,9 +25,19 @@ export default function PlacePhotoScreen() {
     { label: '리뷰' },
     { label: '동행방' },
   ];
-  const handleAddCart = () => {
-    //장소 담기 api 연결
-    navigate('/cart');
+  const handleAddCart = async () => {
+    try {
+      //contentId로 바꿔서 넣어야함!!!
+      const response = await addToCart(123);  
+      if (response.isSuccess) {
+        navigate('/cart');
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('장소 담기에 실패했습니다.');
+    }
   };
 
   return (
