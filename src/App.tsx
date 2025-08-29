@@ -38,6 +38,10 @@ import LanguageSettings from './pages/my-page/LanguageSetting';
 import ContactUs from './pages/my-page/ContactUs';
 import TermsOfService from './pages/my-page/TermsOfService';
 import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
+import ReportPage from './pages/report-page';
+import MyReportsPage from './pages/report-page/my-reports';
+import InquiryPage from './pages/inquiry-page';
+import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
 
 function App() {
   return (
@@ -85,6 +89,10 @@ function App() {
           <Route path="mypage/contact" element={<ContactUs />} />
           <Route path="mypage/terms" element={<TermsOfService />} />
           <Route path="mypage/privacy" element={<PrivacyPolicy />} />
+          <Route path="/report" element={<ReportPage />} />
+          <Route path="/report/my" element={<MyReportsPage />} />
+          <Route path="/inquiry" element={<InquiryPage />} />
+          <Route path="/inquiry/my" element={<MyInquiriesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

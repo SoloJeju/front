@@ -20,7 +20,8 @@ export default function DeleteAccountModal({
   onClose,
   onConfirm,
 }: Props) {
-  if (!open) <></>;
+  // 안전장치: open이 false이거나 undefined이면 아무것도 렌더링하지 않음
+  if (!open || open === undefined) return null;
 
   const [step, setStep] = useState<1 | 2>(1);
   const [reason, setReason] = useState<string>('');
