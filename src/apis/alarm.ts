@@ -21,13 +21,22 @@ export const registerFcmToken = async (token: string) => {
 };
 
 // 내 알림 조회
-export const getMyNotiList = async (): Promise<ResponseMyNotiListDto> => {
+export const getMyNotiList = async ({
+  cursor,
+  page,
+  size = 10,
+}: {
+  cursor?: string;
+  page?: number;
+  size?: number;
+}): Promise<ResponseMyNotiListDto> => {
   const { data } = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/notifications`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      params: { cursor, page, size },
     }
   );
 
@@ -52,6 +61,7 @@ export const getUnreadNoti = async (): Promise<ResponseUnreadNotiDto> => {
 export const putReadNoti = async (notificationId: number) => {
   await axios.put(
     `${import.meta.env.VITE_API_URL}/api/notifications/${notificationId}/read`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
