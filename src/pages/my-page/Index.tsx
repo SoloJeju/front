@@ -154,7 +154,7 @@ const MyPage = () => {
             <span className="text-[14px] text-[#737373]">한국어</span>
           </Link>
 
-          <MenuItem to="/inquiry">1:1 문의하기</MenuItem>
+          <MenuItem to="/inquiry/my">내 문의 내역</MenuItem>
           <MenuItem to="/report/my">내 신고 내역</MenuItem>
           <MenuItem to="/mypage/terms">서비스 이용약관</MenuItem>
           <MenuItem to="/mypage/privacy">개인정보 처리방침</MenuItem>

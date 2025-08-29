@@ -109,6 +109,21 @@ const MyInquiriesPage: React.FC = () => {
 
       {/* 메인 컨텐츠 */}
       <main className="mx-4 pb-12">
+        {/* 새로운 문의 작성 버튼 */}
+        <section className="mt-6">
+          <button
+            onClick={() => navigate('/inquiry')}
+            className="w-full p-3 bg-white text-[#F78938] border-2 border-[#F78938] rounded-xl hover:bg-[#F78938] hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span>새로운 문의 작성하기</span>
+            </div>
+          </button>
+        </section>
+
         {/* 상태 필터 */}
         <section className="mt-6 p-4 bg-[#FFF8F0] border border-[#FFCEAA] rounded-xl">
           <h3 className="text-[#F78938] text-sm mb-3 font-medium">상태별 필터</h3>

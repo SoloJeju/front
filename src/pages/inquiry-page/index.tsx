@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getInquiryCategories, createInquiry } from '../../apis/inquiry';
+import { useImageUpload, validateImageFile } from '../../apis/s3';
 import type { InquiryCategoryInfo, CreateInquiryRequest } from '../../types/inquiry';
 import toast from 'react-hot-toast';
 
 const InquiryPage: React.FC = () => {
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [categories, setCategories] = useState<InquiryCategoryInfo[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [title, setTitle] = useState<string>('');
@@ -13,9 +16,27 @@ const InquiryPage: React.FC = () => {
   const [attachmentUrls, setAttachmentUrls] = useState<string[]>(['']);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // 공통 이미지 업로드 훅 사용
+  const { uploadedImage, isUploading, uploadImage, removeImage } = useImageUpload();
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const fetchCategories = async () => {
@@ -28,13 +49,132 @@ const InquiryPage: React.FC = () => {
           setSelectedCategory(response.result[0].code);
         }
       } else {
-        toast.error('문의 카테고리를 불러오는데 실패했습니다.');
+        // API 응답이 실패하거나 데이터가 없을 때 임시 데이터 사용
+        const fallbackCategories: InquiryCategoryInfo[] = [
+          {
+            code: 'GENERAL',
+            name: '일반 문의',
+            description: '기타 일반적인 문의사항'
+          },
+          {
+            code: 'TECHNICAL',
+            name: '기술 문의',
+            description: '앱 사용 중 발생하는 기술적 문제'
+          },
+          {
+            code: 'ACCOUNT',
+            name: '계정 문의',
+            description: '로그인, 회원가입, 계정 관련 문의'
+          },
+          {
+            code: 'PAYMENT',
+            name: '결제 문의',
+            description: '결제, 환불, 구독 관련 문의'
+          },
+          {
+            code: 'REPORT',
+            name: '신고 문의',
+            description: '부적절한 콘텐츠나 사용자 신고'
+          },
+          {
+            code: 'SUGGESTION',
+            name: '건의사항',
+            description: '서비스 개선을 위한 건의사항'
+          },
+          {
+            code: 'COMPLAINT',
+            name: '불만사항',
+            description: '서비스 이용 중 발생한 불만사항'
+          },
+          {
+            code: 'OTHER',
+            name: '기타',
+            description: '위 카테고리에 해당하지 않는 문의'
+          }
+        ];
+        setCategories(fallbackCategories);
+        setSelectedCategory(fallbackCategories[0].code);
       }
     } catch (error) {
       console.error('문의 카테고리 조회 오류:', error);
-      toast.error('문의 카테고리를 불러오는데 실패했습니다.');
+      
+      // 에러 발생 시에도 임시 데이터 사용
+      const fallbackCategories: InquiryCategoryInfo[] = [
+        {
+          code: 'GENERAL',
+          name: '일반 문의',
+          description: '기타 일반적인 문의사항'
+        },
+        {
+          code: 'TECHNICAL',
+          name: '기술 문의',
+          description: '앱 사용 중 발생하는 기술적 문제'
+        },
+        {
+          code: 'ACCOUNT',
+          name: '계정 문의',
+          description: '로그인, 회원가입, 계정 관련 문의'
+        },
+        {
+          code: 'PAYMENT',
+          name: '결제 문의',
+          description: '결제, 환불, 구독 관련 문의'
+        },
+        {
+          code: 'REPORT',
+          name: '신고 문의',
+          description: '부적절한 콘텐츠나 사용자 신고'
+        },
+        {
+          code: 'SUGGESTION',
+          name: '건의사항',
+          description: '서비스 개선을 위한 건의사항'
+        },
+        {
+          code: 'COMPLAINT',
+          name: '불만사항',
+          description: '서비스 이용 중 발생한 불만사항'
+        },
+        {
+          code: 'OTHER',
+          name: '기타',
+          description: '위 카테고리에 해당하지 않는 문의'
+        }
+      ];
+      setCategories(fallbackCategories);
+      setSelectedCategory(fallbackCategories[0].code);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // 공통 파일 검증 함수 사용
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast.error(validation.errorMessage || '파일 검증에 실패했습니다.');
+        return;
+      }
+      
+      // 공통 업로드 함수 사용
+      uploadImage(file).then((result) => {
+        if (result.success) {
+          toast.success('이미지가 업로드되었습니다.');
+        } else {
+          toast.error(result.error || '이미지 업로드에 실패했습니다.');
+        }
+      });
+    }
+  };
+
+  const handleRemoveImage = async () => {
+    const result = await removeImage();
+    if (result.success) {
+      toast.success('이미지가 삭제되었습니다.');
+    } else {
+      toast.error(result.error || '이미지 삭제에 실패했습니다.');
     }
   };
 
@@ -64,6 +204,10 @@ const InquiryPage: React.FC = () => {
         content: content.trim(),
         category: selectedCategory as any,
         attachmentUrls: attachmentUrls.filter(url => url.trim() !== ''),
+        ...(uploadedImage && { 
+          imageUrl: uploadedImage.url,
+          imageName: uploadedImage.name
+        }),
       };
 
       const response = await createInquiry(inquiryData);
@@ -97,9 +241,14 @@ const InquiryPage: React.FC = () => {
     setAttachmentUrls(newUrls);
   };
 
+  const getSelectedCategoryName = () => {
+    const selected = categories.find(category => category.code === selectedCategory);
+    return selected ? selected.name : '문의 카테고리를 선택해주세요';
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center font-Pretendard">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center font-Pretendard">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F78938] mx-auto"></div>
           <p className="mt-4 text-[#666666]">문의 카테고리를 불러오는 중...</p>
@@ -142,39 +291,46 @@ const InquiryPage: React.FC = () => {
           {/* 카테고리 선택 */}
           <section>
             <h3 className="text-[#737373] text-sm mb-3 font-medium">문의 카테고리 <span className="text-red-500">*</span></h3>
-            <div className="space-y-3">
-              {categories.map((category) => (
-                <label
-                  key={category.code}
-                  className={`relative flex items-center p-4 border rounded-xl cursor-pointer transition-colors ${
-                    selectedCategory === category.code
-                      ? 'border-[#F78938] bg-[#FFF8F0]'
-                      : 'border-[#FFCEAA] hover:border-[#F78938]'
-                  }`}
+            
+            {/* 드롭다운 */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full px-4 py-3 border-2 border-[#FFCEAA] rounded-xl bg-white text-left focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] transition-colors hover:border-[#F78938]"
+              >
+                <span className={selectedCategory ? 'text-[#262626]' : 'text-[#B4B4B4]'}>
+                  {getSelectedCategoryName()}
+                </span>
+                <svg 
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#666666] transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
                 >
-                  <input
-                    type="radio"
-                    name="category"
-                    value={category.code}
-                    checked={selectedCategory === category.code}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="sr-only"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-[#262626]">{category.name}</div>
-                    <div className="text-sm text-[#666666] mt-1">{category.description}</div>
-                  </div>
-                  {selectedCategory === category.code && (
-                    <div className="ml-3">
-                      <div className="w-5 h-5 bg-[#F78938] rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                </label>
-              ))}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* 드롭다운 메뉴 */}
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-[#FFCEAA] rounded-xl shadow-lg z-10 max-h-60 overflow-y-auto">
+                  {categories.map((category) => (
+                    <button
+                      key={category.code}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory(category.code);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-[#FFF8F0] transition-colors border-b border-[#FFCEAA] last:border-b-0"
+                    >
+                      <div className="font-medium text-[#262626]">{category.name}</div>
+                      <div className="text-xs text-[#666666] mt-1">{category.description}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 
@@ -220,6 +376,59 @@ const InquiryPage: React.FC = () => {
                 {content.length}/5000
               </span>
             </div>
+          </section>
+
+          {/* 이미지 첨부 */}
+          <section>
+            <h3 className="text-[#737373] text-sm mb-2 font-medium">이미지 첨부 (선택사항)</h3>
+            
+            {/* 이미지 업로드 버튼 */}
+            {!uploadedImage && (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="w-full p-6 border-2 border-dashed border-[#FFCEAA] rounded-xl bg-[#FFF8F0] hover:border-[#F78938] hover:bg-[#FFF8F0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="text-center">
+                  <svg className="w-8 h-8 text-[#F78938] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <span className="text-[#F78938] font-medium">
+                    {isUploading ? '업로드 중...' : '이미지 선택'}
+                  </span>
+                </div>
+                <p className="text-xs text-[#666666] mt-1">최대 5MB, JPG, PNG, GIF</p>
+              </button>
+            )}
+
+            {/* 업로드된 이미지 */}
+            {uploadedImage && (
+              <div className="relative">
+                <img
+                  src={uploadedImage.url}
+                  alt="첨부된 이미지"
+                  className="w-full h-32 object-cover rounded-xl border-2 border-[#FFCEAA]"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </section>
 
           {/* 첨부파일 */}
@@ -280,16 +489,6 @@ const InquiryPage: React.FC = () => {
           </section>
         </form>
 
-        {/* 문의 내역 보기 버튼 */}
-        <section className="mt-6 text-center">
-          <button
-            onClick={() => navigate('/inquiry/my')}
-            className="text-[#F78938] hover:text-[#F78938]/80 font-medium"
-          >
-            내 문의 내역 보기 →
-          </button>
-        </section>
-
         {/* 안내사항 */}
         <section className="mt-8 p-4 bg-[#FFF8F0] border border-[#FFCEAA] rounded-xl">
           <h3 className="text-[#F78938] text-sm mb-2 font-medium">📋 문의 안내사항</h3>
@@ -298,6 +497,7 @@ const InquiryPage: React.FC = () => {
             <li>• 긴급한 문의는 고객센터로 직접 연락해주세요.</li>
             <li>• 계정 관련 문의는 로그인 후 이용해주세요.</li>
             <li>• 첨부파일은 이미지, PDF 등 공개 가능한 파일만 첨부해주세요.</li>
+            <li>• 이미지 첨부 시 최대 5MB까지 가능합니다.</li>
           </ul>
         </section>
       </main>
