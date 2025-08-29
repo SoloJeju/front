@@ -1,8 +1,11 @@
-// 기본 정보(이름, 닉네임 등) 입력 화면
-import { useState, useRef } from 'react';
+// 기본 정보 입력 화면
+import { useState, useRef, useEffect } from 'react';
 import Input from '../../common/Input';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
+
+const MAX_BIO_LEN = 25;
+const DEFAULT_PROFILE = '/default-profile.svg';
 
 export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   const {
@@ -14,40 +17,84 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
     setGender,
     birthdate,
     setBirthdate,
+    profileImage,
+    setProfileImage,
+    bio,
+    setBio,
   } = useProfileStore();
 
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false); // 닉네임 확인 여부
-  const [profileImage, setProfileImage] = useState('/default-profile.svg'); // 프로필 이미지 미리보기
-  const fileInputRef = useRef<HTMLInputElement | null>(null); // 파일 input을 위한 ref
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [bioLen, setBioLen] = useState<number>(bio ? bio.length : 0);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  const isFormValid =
-    name && nickname && gender && birthdate && isNicknameChecked;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
-  // 닉네임 중복 확인 처리 함수
-  const handleCheckNickname = () => {
-    if (!nickname) {
-      return;
+  useEffect(() => {
+    setBioLen(bio ? Math.min(bio.length, MAX_BIO_LEN) : 0);
+  }, [bio]);
+
+  // 팝오버: ESC/바깥 클릭 닫기
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) =>
+      e.key === 'Escape' && setIsProfileMenuOpen(false);
+    const onClickOutside = (e: MouseEvent) => {
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target as Node))
+        setIsProfileMenuOpen(false);
+    };
+    if (isProfileMenuOpen) {
+      document.addEventListener('keydown', onKey);
+      document.addEventListener('mousedown', onClickOutside);
     }
-    // 실제로는 여기서 API 통신
-    // 테스트를 위해 무조건 성공으로 처리
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClickOutside);
+    };
+  }, [isProfileMenuOpen]);
+
+  const openProfileMenu = () => setIsProfileMenuOpen(true);
+  const closeProfileMenu = () => setIsProfileMenuOpen(false);
+
+  // 닉네임 중복확인 (임시)
+  const handleCheckNickname = () => {
+    if (!nickname) return;
     setIsNicknameChecked(true);
   };
 
-  // 프로필 사진 변경 처리 함수
+  // 이미지 업로드
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfileImage(reader.result as string);
-    };
+    reader.onloadend = () => setProfileImage(reader.result as string);
     reader.readAsDataURL(file);
   };
 
+  // 팝오버 액션
+  const handleUploadFromMenu = () => {
+    fileInputRef.current?.click();
+    closeProfileMenu();
+  };
+  const handleResetToDefault = () => {
+    setProfileImage(DEFAULT_PROFILE);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    closeProfileMenu();
+  };
+
+  // 한 줄 소개(25자 제한)
+  const handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value ?? '';
+    const trimmed = v.slice(0, MAX_BIO_LEN);
+    setBio(trimmed);
+    setBioLen(trimmed.length);
+  };
+
+  const isFormValid =
+    !!name && !!nickname && !!gender && !!birthdate && isNicknameChecked;
+
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pt-15 pb-6 font-Pretendard">
-      {/* 눈에 보이지 않는 파일 input을 추가 */}
+    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-Pretendard">
       <input
         type="file"
         ref={fileInputRef}
@@ -60,20 +107,89 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         프로필 생성하기
       </h1>
 
+      {/* 프로필 이미지 + 연필(팝오버 트리거) */}
       <div className="relative mb-10">
-        <img
-          src={profileImage}
-          alt="기본 프로필 이미지"
-          className="w-32 h-32 rounded-full object-cover"
-        />
-        <img
-          src="/edit-icon.svg"
-          alt="프로필 수정"
-          className="w-10 h-10 absolute bottom-0 right-0 cursor-pointer"
-          onClick={() => fileInputRef.current?.click()}
-        />
+        {profileImage ? (
+          <img
+            src={profileImage}
+            alt="프로필 이미지"
+            className="w-32 h-32 rounded-full object-cover"
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-32 h-32 rounded-full bg-[#F5F5F5] grid place-items-center text-sm text-[#737373]"
+            aria-label="프로필 이미지 업로드"
+            title="프로필 이미지 업로드"
+          >
+            이미지 추가
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={openProfileMenu}
+          aria-haspopup="menu"
+          aria-expanded={isProfileMenuOpen}
+          className="absolute bottom-1 right-1 p-1 cursor-pointer"
+          title="프로필 이미지 변경"
+        >
+          <img
+            src="/edit-icon.svg"
+            alt="프로필 이미지 변경"
+            className="w-6 h-6"
+          />
+        </button>
+
+        {/* 팝오버: 아바타 하단 중앙 */}
+        {isProfileMenuOpen && (
+          <div
+            ref={menuRef}
+            role="menu"
+            className={[
+              'absolute left-1/2 top-full mt-2 -translate-x-1/2',
+              'w-45 rounded-xl',
+              'bg-white/90 backdrop-blur-sm ring-1 ring-black/5 shadow-md',
+              'transition-all duration-150 ease-out translate-y-0 opacity-100',
+              'overflow-hidden z-10',
+            ].join(' ')}
+          >
+            <button
+              type="button"
+              onClick={handleUploadFromMenu}
+              role="menuitem"
+              autoFocus
+              className="w-full text-left px-4 py-3 text-[#262626] outline-none focus:bg-gray-50 cursor-pointer"
+            >
+              사진 변경
+            </button>
+
+            <div className="h-px bg-[#EDEDED]" />
+
+            {/* 기본 이미지 상태면 비활성화(항상 노출) */}
+            <button
+              type="button"
+              onClick={
+                profileImage !== DEFAULT_PROFILE
+                  ? handleResetToDefault
+                  : undefined
+              }
+              disabled={profileImage === DEFAULT_PROFILE}
+              role="menuitem"
+              className={`w-full text-left px-4 py-3 outline-none ${
+                profileImage === DEFAULT_PROFILE
+                  ? 'text-[#262626]/40 cursor-default'
+                  : 'text-[#262626] focus:bg-gray-50 cursor-pointer'
+              }`}
+            >
+              기본 이미지로 변경
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* 입력 폼 */}
       <div className="w-full flex flex-col gap-4">
         {/* 이름 */}
         <div className="flex flex-col gap-2">
@@ -100,12 +216,11 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
                 value={nickname}
                 onChange={(e) => {
                   setNickname(e.target.value);
-                  setIsNicknameChecked(false);
+                  setIsNicknameChecked(false); // 닉네임 변경 시 중복확인 초기화
                 }}
                 className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
               />
             </div>
-            {/* '중복확인'은 Button 컴포넌트 사용 */}
             <Button
               size="small"
               variant="primary"
@@ -114,7 +229,6 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
               중복확인
             </Button>
           </div>
-          {/* 닉네임 확인 완료 메시지를 조건부로 보여줌*/}
           {isNicknameChecked && (
             <p className="mt-1 text-sm text-[#F78938]">
               사용 가능한 닉네임입니다.
@@ -122,32 +236,28 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           )}
         </div>
 
-        {/* 성별 버튼은 일반 <button> 태그 사용 */}
+        {/* 성별 */}
         <div className="flex flex-col gap-2">
           <label className="text-[16px] font-medium">성별</label>
           <div className="flex gap-4">
             <button
               type="button"
-              className={`flex-1 py-2 rounded-[12px] border border-[#F78938] transition-colors duration-200
-        ${
-          gender === '남자'
-            ? 'bg-[#F78938] text-white'
-            : 'bg-white text-[#5D5D5D]'
-        }
-        hover:bg-[#F78938] hover:text-white`}
+              className={`flex-1 py-2 rounded-[12px] border border-[#F78938] transition-colors duration-200 ${
+                gender === '남자'
+                  ? 'bg-[#F78938] text-white'
+                  : 'bg-white text-[#5D5D5D]'
+              } hover:bg-[#F78938] hover:text-white`}
               onClick={() => setGender('남자')}
             >
               남자
             </button>
             <button
               type="button"
-              className={`flex-1 py-2 rounded-[12px] border border-[#F78938] transition-colors duration-200
-        ${
-          gender === '여자'
-            ? 'bg-[#F78938] text-white'
-            : 'bg-white text-[#5D5D5D]'
-        }
-        hover:bg-[#F78938] hover:text-white`}
+              className={`flex-1 py-2 rounded-[12px] border border-[#F78938] transition-colors duration-200 ${
+                gender === '여자'
+                  ? 'bg-[#F78938] text-white'
+                  : 'bg-white text-[#5D5D5D]'
+              } hover:bg-[#F78938] hover:text-white`}
               onClick={() => setGender('여자')}
             >
               여자
@@ -156,7 +266,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         </div>
 
         {/* 생년월일 */}
-        <div className="flex flex-col gap-2 mb-8">
+        <div className="flex flex-col gap-2">
           <label className="text-[16px] font-medium">생년월일</label>
           <div className="border-b border-gray-300 pb-2">
             <Input
@@ -169,7 +279,27 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           </div>
         </div>
 
-        {/* '다음으로' 버튼은 Button 컴포넌트 사용 */}
+        {/* 한 줄 소개 (선택 입력, 25자 제한) */}
+        <div className="flex flex-col gap-2 mb-8">
+          <label className="text-[16px] font-medium">
+            한 줄 소개{' '}
+            <span className="text-sm text-[#666666] ml-2">*선택</span>
+          </label>
+          <div className="border-b border-gray-300 pb-2">
+            <Input
+              type="text"
+              placeholder="한 줄 소개를 입력해주세요"
+              value={bio}
+              onChange={handleBioChange}
+              maxLength={MAX_BIO_LEN}
+              className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
+            />
+          </div>
+          <div className="text-xs text-[#999999] text-right">
+            {bioLen}/{MAX_BIO_LEN}
+          </div>
+        </div>
+
         <Button
           size="large"
           variant="primary"

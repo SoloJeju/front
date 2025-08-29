@@ -6,12 +6,12 @@ interface BackHeaderProps {
   title?: string;
   isChatRoom?: boolean;
   onClick?: () => void;
-  //rightContent?: React.ReactNode;
+  rightContent?: React.ReactNode;
 }
 
 const BackHeader = ({
   title,
-  // rightContent,
+  rightContent,
   isChatRoom = false,
   onClick,
 }: BackHeaderProps) => {
@@ -44,7 +44,7 @@ const BackHeader = ({
       ) : (
         <div className="w-6 h-6"></div>
       )}
-      {/* {rightContent || <div className="w-6 h-6"></div>} */}
+      {rightContent || <div className="w-6 h-6"></div>}
     </header>
   );
 };
