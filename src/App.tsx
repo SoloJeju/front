@@ -42,6 +42,8 @@ import ReportPage from './pages/report-page';
 import MyReportsPage from './pages/report-page/my-reports';
 import InquiryPage from './pages/inquiry-page';
 import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
+import SafetyCheckPage from './pages/safety-check-page';
+import StatsPage from './pages/safety-check-page/stats-page';
 
 function App() {
   return (
@@ -61,6 +63,8 @@ function App() {
           <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
           <Route path="/profile/:userId" element={<UserProfilePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
+          <Route path="/safety-check" element={<SafetyCheckPage />} />
+          <Route path="/safety-check/stats" element={<StatsPage />} />
           <Route path="mypage" element={<MyPage />} />
           <Route path="mypage/profile-edit" element={<ProfileEdit />} />
           <Route path="/cart" element={<CartPage />} />
