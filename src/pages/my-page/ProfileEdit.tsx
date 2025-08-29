@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
-import { useProfileStore } from '../../stores/profile-store';
+import { useProfileStore, initialState } from '../../stores/profile-store';
+import editIcon from '../../assets/edit-icon.svg';
 
 const MAX_BIO_LEN = 25;
-const DEFAULT_PROFILE = '/default-profile.svg';
 
 export default function ProfileEdit() {
   const { nickname, setNickname, profileImage, setProfileImage, bio, setBio } =
@@ -76,7 +76,7 @@ export default function ProfileEdit() {
   };
 
   const handleResetToDefault = () => {
-    setProfileImage(DEFAULT_PROFILE);
+    setProfileImage(initialState.profileImage);
     if (fileInputRef.current) fileInputRef.current.value = '';
     closeProfileMenu();
   };
@@ -138,11 +138,7 @@ export default function ProfileEdit() {
           className="absolute bottom-1 right-1 p-1 cursor-pointer"
           title="프로필 이미지 변경"
         >
-          <img
-            src="/edit-icon.svg"
-            alt="프로필 이미지 변경"
-            className="w-6 h-6"
-          />
+          <img src={editIcon} alt="프로필 이미지 변경" className="w-6 h-6" />
         </button>
 
         {/* 팝오버 */}
@@ -174,14 +170,14 @@ export default function ProfileEdit() {
             <button
               type="button"
               onClick={
-                profileImage !== DEFAULT_PROFILE
+                profileImage !== initialState.profileImage
                   ? handleResetToDefault
                   : undefined
               }
-              disabled={profileImage === DEFAULT_PROFILE}
+              disabled={profileImage === initialState.profileImage}
               role="menuitem"
               className={`w-full text-left px-4 py-3 outline-none ${
-                profileImage === DEFAULT_PROFILE
+                profileImage === initialState.profileImage
                   ? 'text-[#262626]/40 cursor-default'
                   : 'text-[#262626] focus:bg-gray-50 cursor-pointer'
               }`}

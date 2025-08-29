@@ -3,9 +3,11 @@ import { useState, useRef, useEffect } from 'react';
 import Input from '../../common/Input';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
+import defaultProfile from '../../../assets/profileDefault.svg';
+import editIcon from '../../../assets/edit-icon.svg';
 
 const MAX_BIO_LEN = 25;
-const DEFAULT_PROFILE = '/default-profile.svg';
+const DEFAULT_PROFILE = defaultProfile;
 
 export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   const {
@@ -135,11 +137,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
           className="absolute bottom-1 right-1 p-1 cursor-pointer"
           title="프로필 이미지 변경"
         >
-          <img
-            src="/edit-icon.svg"
-            alt="프로필 이미지 변경"
-            className="w-6 h-6"
-          />
+          <img src={editIcon} alt="프로필 이미지 변경" className="w-6 h-6" />
         </button>
 
         {/* 팝오버: 아바타 하단 중앙 */}

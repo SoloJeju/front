@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import logoImage from '../../assets/logo-sernam.svg';
+import kakaoLogo from '../../assets/kakao.svg';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -31,11 +33,7 @@ const LoginPage = () => {
       <main className="w-full mx-auto mb-20">
         {/* 로고 영역 */}
         <div className="my-16 text-center">
-          <img
-            src="/logo-sernam.svg"
-            alt="혼자옵서예 로고"
-            className="w-65 mx-auto"
-          />
+          <img src={logoImage} alt="혼자옵서예 로고" className="w-65 mx-auto" />
         </div>
 
         {/* 로그인 폼 */}
@@ -77,7 +75,7 @@ const LoginPage = () => {
           onClick={handleKakaoLogin}
           className="flex items-center justify-center w-full py-3 bg-[#FEE500] rounded-[10px] hover:opacity-75"
         >
-          <img src="/kakao.svg" alt="카카오 로고" className="w-5 h-5" />
+          <img src={kakaoLogo} alt="카카오 로고" className="w-5 h-5" />
           <span className="ml-2 text-[16px] font-semibold text-black text-opacity-85">
             카카오 로그인
           </span>

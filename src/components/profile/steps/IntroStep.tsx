@@ -1,6 +1,7 @@
 // 여행 성향 질문 시작을 알리는 인트로 화면
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
+import questionLogo from '../../../assets/question-logo.svg';
 
 export default function IntroStep({ onNext }: { onNext: () => void }) {
   const nickname = useProfileStore((state) => state.nickname);
@@ -9,7 +10,7 @@ export default function IntroStep({ onNext }: { onNext: () => void }) {
     <div className="max-w-app mx-auto px-6 pb-6 flex flex-col min-h-screen items-center text-center justify-center">
       <div className="flex-grow flex flex-col items-center justify-center">
         <img
-          src="/question-logo.svg"
+          src={questionLogo}
           alt="여행 성향 질문 인트로 일러스트"
           className="w-70 h-70 mb-8"
         />

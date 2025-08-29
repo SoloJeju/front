@@ -45,7 +45,7 @@ export interface ProfileState {
 type ProfileData = Omit<ProfileState, 'setName' | 'setNickname' | 'setGender' | 'setBirthdate' | 'setProfileImage' | 'setType' | 'setBio' | 'setQ1' | 'setQ2' | 'setQ3' | 'setQ4' | 'setQ5' | 'reset' | 'setSoloTripCount' | 'setCompanionRoomCount'>;
 
 // 초기 상태
-const initialState: ProfileData = {
+export const initialState: ProfileData = {
   name: '',
   nickname: '',
   gender: '',
