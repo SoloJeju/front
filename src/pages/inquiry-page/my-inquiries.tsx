@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyInquiries } from '../../apis/inquiry';
 import type { MyInquiry } from '../../types/inquiry';
@@ -13,11 +13,7 @@ const MyInquiriesPage: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchMyInquiries();
-  }, [currentPage, selectedStatus]);
-
-  const fetchMyInquiries = async () => {
+  const fetchMyInquiries = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await getMyInquiries(currentPage, 10, selectedStatus);
@@ -35,7 +31,11 @@ const MyInquiriesPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, selectedStatus]);
+
+  useEffect(() => {
+    fetchMyInquiries();
+  }, [fetchMyInquiries]);
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {

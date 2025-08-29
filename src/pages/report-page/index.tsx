@@ -28,7 +28,6 @@ const ReportPage: React.FC = () => {
 
   // 신고 타입과 대상 정보
   const reportType = targetUserId ? 'USER' : targetPostId ? 'POST' : targetCommentId ? 'COMMENT' : 'UNKNOWN';
-  const targetId = targetUserId || targetPostId || targetCommentId;
 
   useEffect(() => {
     fetchReportReasons();

@@ -4,6 +4,7 @@ import { getInquiryCategories, createInquiry } from '../../apis/inquiry';
 import { useImageUpload, validateImageFile } from '../../apis/s3';
 import type { InquiryCategoryInfo, CreateInquiryRequest } from '../../types/inquiry';
 import toast from 'react-hot-toast';
+import type { InquiryCategory } from '../../types/inquiry';
 
 const InquiryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -202,7 +203,7 @@ const InquiryPage: React.FC = () => {
       const inquiryData: CreateInquiryRequest = {
         title: title.trim(),
         content: content.trim(),
-        category: selectedCategory as any,
+        category: selectedCategory as InquiryCategory,
         attachmentUrls: attachmentUrls.filter(url => url.trim() !== ''),
         ...(uploadedImage && { 
           imageUrl: uploadedImage.url,
