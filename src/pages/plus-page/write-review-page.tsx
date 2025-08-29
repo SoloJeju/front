@@ -16,6 +16,8 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { useReceiptModal } from '../../hooks/useReceiptModal';
 dayjs.locale('ko');
+import StarIcon from '../../assets/Star.svg?react';
+import NoStarIcon from '../../assets/noStar.svg?react';
 
 const MOCK_MOMENTS = [
   '1인 좌석이 잘 되어있어요',
@@ -33,6 +35,7 @@ const WriteReviewPage = () => {
   const [moments, setMoments] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard' | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [rating, setRating] = useState<number>(0);
   const { startReceiptFlow, ModalComponent } = useReceiptModal({
     onFinalize: () => {
       console.log('리뷰 최종 등록 및 페이지 이동');
@@ -82,6 +85,25 @@ const WriteReviewPage = () => {
             <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer" onClick={() => setIsCalendarOpen(true)}>
               <input type="text" placeholder="방문 날짜를 선택해주세요" className="w-full focus:outline-none font-medium bg-transparent cursor-pointer" value={formattedDate} readOnly/>
               <CalendarIcon/>
+            </div>
+          </div>
+          <div>
+            <label className="text-black text-base font-medium leading-none">별점</label>
+            <div className="flex flex-row gap-2 mt-3 items-center justify-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className="focus:outline-none"
+                >
+                  {star <= rating ? (
+                    <StarIcon className="w-10 h-10 text-[#FFD700]" />
+                  ) : (
+                    <NoStarIcon className="w-10 h-10 text-[#D9D9D9]" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
           <div>
