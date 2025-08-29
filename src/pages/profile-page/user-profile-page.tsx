@@ -93,7 +93,9 @@ export default function UserProfilePage() {
           <ProfileModal
             ref={modalBg}
             onModify={handleModify}
-            onReport={() => console.log('신고 실행')}
+            onReport={() => {
+              navigate(`/report?targetUserId=${userId}`);
+            }}
             onBlock={() => console.log('차단 실행')}
           />
         </div>

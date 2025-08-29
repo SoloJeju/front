@@ -24,7 +24,8 @@ export default function DeleteAccountModal({
   const [reason, setReason] = useState<string>('');
   const [detail, setDetail] = useState<string>('');
 
-  if (!open) return null;
+  // 안전장치: open이 false이거나 undefined이면 아무것도 렌더링하지 않음
+  if (!open || open === undefined) return null;
 
   const isEtc = reason === '기타';
   const canConfirm = reason && (!isEtc || (isEtc && detail.trim().length > 0));
