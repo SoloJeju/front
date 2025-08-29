@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import Alarm from '../../../assets/alarmIcon.svg';
 import Logo from '../../../assets/logo-home.svg';
+import { useEffect, useRef, useState } from 'react';
+import { getUnreadNoti } from '../../../apis/alarm';
 
 interface AlarmHeaderProps {
   title?: string;
@@ -14,6 +16,25 @@ const AlarmHeader = ({
   showTitle = true,
 }: AlarmHeaderProps) => {
   const navigate = useNavigate();
+  const initialized = useRef(false);
+  const [hasUnreadNoti, setHasUnreadNoti] = useState(false);
+
+  useEffect(() => {
+    const fetchUnreadNoti = async () => {
+      // 중복 방지
+      if (initialized.current) return;
+      initialized.current = true;
+
+      try {
+        const data = await getUnreadNoti();
+        setHasUnreadNoti(data.result);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchUnreadNoti();
+  }, []);
 
   const handleClickAlarm = () => {
     navigate('/alarm');
@@ -31,12 +52,18 @@ const AlarmHeader = ({
           </span>
         )}
       </div>
-      <div className="w-6 h-6 flex justify-end">
+      <div className="w-6 h-6 flex justify-end relative">
         <button
           type="button"
           className="cursor-pointer w-6 h-6"
           onClick={handleClickAlarm}
         >
+          {hasUnreadNoti && (
+            <div
+              className="absolute right-0 w-2 h-2 rounded-full bg-red-500"
+              aria-label="읽지 않은 알림 존재"
+            ></div>
+          )}
           <img src={Alarm} alt="알람" />
         </button>
       </div>
