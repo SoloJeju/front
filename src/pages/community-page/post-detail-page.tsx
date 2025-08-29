@@ -1,26 +1,11 @@
-// import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useEffect, useRef, useState } from 'react';
 import PostDetailCard from '../../components/CommunityPage/PostDetailCard';
 import CommentCard from '../../components/CommunityPage/CommentCard';
 import Modal from '../../components/common/Modal';
 import CommentInput from '../../components/CommunityPage/CommentInput';
-
-const postDetailData = [
-  {
-    id: 1,
-    type: '궁금해요',
-    title: '혼자 성산일출봉 가도 괜찮을까요?',
-    content:
-      '저 혼자 성산일출봉 가려는데 괜찮을지 모르겠습니다. 거기 분위기 괜찮을까요?? 주변 맛집은 뭐가 있나요?? 주변 관광지는요?? 다 알려주세요~ 제발요~~~~ 혼자 가는 사람 많나요??? 성산일출봉 많이 힘든가요??????????????',
-    writer: '감귤',
-    time: '2025/01/01 14:52',
-    image: null,
-    commentNumber: 3,
-    scriptNumber: 2,
-  },
-];
+import useGetPostDetail from '../../hooks/community/useGetPostDetail';
 
 const commentData = [
   {
@@ -41,8 +26,8 @@ const commentData = [
 ];
 
 export default function PostDetailPage() {
-  // const params = useParams();
-  // const { postId } = params;
+  const params = useParams();
+  const { postId } = params;
   const navigate = useNavigate();
 
   const [isOpenPostDetail, setIsOpenPostDetail] = useState(false);
@@ -60,6 +45,12 @@ export default function PostDetailPage() {
   // const [isMine, setIsMine] = useState(true);
   const [comment, setComment] = useState('');
   const modalBg = useRef<HTMLDivElement | null>(null);
+
+  const {
+    data: postDetail,
+    isPending: isPostDetailLoading,
+    isError: isPostDetailError,
+  } = useGetPostDetail(Number(postId));
 
   useEffect(() => {
     const handleModalBg = (e: MouseEvent) => {
@@ -83,33 +74,45 @@ export default function PostDetailPage() {
     setComment('');
   };
 
+  if (isPostDetailLoading) {
+    // loading ui
+    return <div>Loading...</div>;
+  }
+
+  if (isPostDetailError) {
+    return <div>Erorr</div>;
+  }
+
   return (
     <>
       <div className="min-h-screen pb-20">
         <div className="pb-4">
-          {postDetailData.map((data) => (
+          {
             <PostDetailCard
-              key={data.id}
-              id={data.id}
-              type={data.type}
-              title={data.title}
-              content={data.content}
-              writer={data.writer}
-              time={data.time}
-              image={data.image}
-              commentNumber={data.commentNumber}
-              scriptNumber={data.scriptNumber}
+              key={postDetail.postId}
+              id={postDetail.postId}
+              type={postDetail.postCategory}
+              title={postDetail.title}
+              content={postDetail.content}
+              author={postDetail.authorNickname}
+              authorId={postDetail.authorId}
+              authorImage={postDetail.authorProfileImage}
+              time={postDetail.updatedAt}
+              images={postDetail.images}
+              commentNumber={postDetail.commentCount}
+              scriptNumber={postDetail.scrapCount}
               onClick={() => setIsOpenPostDetail(true)}
               isOpenMore={isOpenPostDetail}
-              isMine={false}
+              isMine={postDetail.isMine}
+              isScraped={postDetail.isScraped}
               ref={modalBg}
               onDelete={() => setIsDeletePostDetail(true)}
               onModify={() => console.log('수정페이지 이동')}
               onReport={() => {
-                navigate(`/report?targetPostId=${data.id}`);
+                navigate(`/report?targetPostId=${postDetail.postId}`);
               }}
             />
-          ))}
+          }
         </div>
         {isDeletePostDetail && (
           <Modal

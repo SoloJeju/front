@@ -7,6 +7,7 @@ import More from '/src/assets/more.svg';
 import BasicProfile from '/src/assets/basicProfile.png';
 import Comment from '/src/assets/comment.svg';
 import Script from '/src/assets/script.svg';
+import FilledScript from '/src/assets/script-filled.svg';
 import MoreButton from './MoreButton';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,15 +15,18 @@ interface PostDetailCardProps {
   id: number;
   type: string;
   title: string;
-  writer: string | null;
-  time: string;
+  authorId: number;
+  author: string | null;
+  authorImage: string;
+  time: Date;
   content: string;
-  image: string | null;
+  images: { imageUrl: string; imageName: string }[];
   commentNumber: number;
   scriptNumber: number;
   onClick: () => void;
   isOpenMore: boolean;
   isMine: boolean;
+  isScraped: boolean;
   ref: React.RefObject<HTMLDivElement | null>;
   onDelete: () => void;
   onModify: () => void;
@@ -32,15 +36,18 @@ interface PostDetailCardProps {
 const PostDetailCard = ({
   type,
   title,
-  writer,
+  authorId,
+  author,
+  authorImage,
   time,
   content,
-  image,
+  images,
   commentNumber,
   scriptNumber,
   onClick,
   isOpenMore,
   isMine,
+  isScraped,
   ref,
   onDelete,
   onModify,
@@ -60,8 +67,6 @@ const PostDetailCard = ({
   };
 
   const navigate = useNavigate();
-  // ex authorId
-  const authorId = 1;
 
   const handleProfileDetail = (id: number) => {
     navigate(`/profile/${id}`);
@@ -102,17 +107,17 @@ const PostDetailCard = ({
           onClick={() => handleProfileDetail(authorId)}
         >
           <img
-            src={BasicProfile}
-            alt={writer ? writer : '익명'}
+            src={authorImage ?? BasicProfile}
+            alt={author ? author : '익명'}
             className="w-6 h-6"
           />
           <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D]">
-            {writer ? writer : '익명'}
+            {author ? author : '익명'}
           </span>
         </div>
 
         <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-          {time}
+          {time.toLocaleDateString()}
         </time>
       </div>
 
@@ -120,7 +125,11 @@ const PostDetailCard = ({
         <p className="font-[pretendard] font-medium text-[#262626] break-keep">
           {content}
         </p>
-        {image ? <img src={image} alt={`${title}의 이미지`} /> : null}
+        {images
+          ? images.map((img) => (
+              <img src={img.imageUrl} alt={`${img.imageName}`} />
+            ))
+          : null}
       </div>
 
       <div className="flex justify-end gap-1">
@@ -131,7 +140,11 @@ const PostDetailCard = ({
           </span>
         </div>
         <div className="flex gap-1 items-center">
-          <img src={Script} alt="스크립 수" className="w-6 h-6" />
+          <img
+            src={isScraped ? FilledScript : Script}
+            alt="스크립 수"
+            className="w-6 h-6"
+          />
           <span className="font-[pretendard] font-medium text-xs text-[#F78938]">
             {scriptNumber}
           </span>
