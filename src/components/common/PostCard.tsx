@@ -11,7 +11,7 @@ interface PostCardProps {
   title: string;
   content: string;
   commentNumber: number;
-  time: string;
+  time: Date;
   writer: string | null;
   image: string | null;
 }
@@ -73,7 +73,7 @@ const PostCard = ({
             </span>
           </div>
           <time className='font-[pretendard] font-normal text-xs text-[#666666] after:content-["|"] after:pl-1 after:text-[#666666]'>
-            {time}
+            {time.toLocaleDateString()}
           </time>
           <span
             aria-label="작성자"
@@ -85,7 +85,7 @@ const PostCard = ({
       </div>
 
       {image && (
-        <img src={image} alt="ex-place" className="w-25 h-25 rounded-xl" />
+        <img src={image} alt={title} className="w-25 h-25 rounded-xl" />
       )}
     </div>
   );
