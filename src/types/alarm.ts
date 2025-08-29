@@ -1,0 +1,21 @@
+import type { CommonResponse } from './common';
+
+// 내 알림 조회
+export type MyNoti = {
+  id: number;
+  type: string;
+  message: string;
+  resourceType: string;
+  resourceId: number;
+  isRead: boolean;
+  createdAt: Date;
+};
+
+export type ResponseMyNotiListDto = CommonResponse<{
+  notifications: MyNoti[];
+  hasUnread: boolean;
+  totalCount: number;
+}>;
+
+// 미확인 알림 여부
+export type ResponseUnreadNotiDto = CommonResponse<boolean>;
