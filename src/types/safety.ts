@@ -23,3 +23,4 @@ export interface SafetyStats {
   streak: number;
   monthlyData: { [date: string]: number };
 }
+

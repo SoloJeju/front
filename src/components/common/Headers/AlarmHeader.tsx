@@ -59,11 +59,11 @@ const AlarmHeader = ({
 
   return (
     <header className="fixed top-0 max-w-[480px] w-full p-3 flex items-center justify-between bg-white z-50">
-      <div className="flex justify-start items-center">
+      <div className="flex justify-start items-center w-20">
         {showBackButton && (
           <button
             onClick={handleBackClick}
-            className="flex items-center justify-center w-8 h-8 mr-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-800 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -79,7 +79,7 @@ const AlarmHeader = ({
           </span>
         )}
       </div>
-      <div className="flex justify-start items-center gap-2">
+      <div className="flex justify-end items-center gap-2 w-20">
         <button
           type="button"
           className="cursor-pointer w-8 h-8"
