@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useProfileStore } from '../../stores/profile-store';
 import LogoutModal from './modal/LogoutModal';
 import DeleteAccountModal from './modal/DeleteAccountModal';
+import { logout } from '../../apis/auth';
+import toast from 'react-hot-toast';
 
 type MenuItemProps = {
   to?: string;
@@ -34,13 +36,58 @@ const MyPage = () => {
   const { nickname, type, profileImage } = useProfileStore();
 
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const openLogout = () => setLogoutOpen(true);
   const closeLogout = () => setLogoutOpen(false);
-  const handleLogoutConfirm = () => {
-    // TODO: 실제 로그아웃 로직 (토큰/세션 정리)
-    // e.g., localStorage.removeItem('accessToken')
-    closeLogout();
-    navigate('/login');
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
+    try {
+      // 토큰 존재 여부 확인
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        // 토큰이 없는 경우 로컬 정리만 수행
+        toast.success('이미 로그아웃된 상태입니다.');
+        localStorage.removeItem('refreshToken');
+        useProfileStore.getState().reset();
+        closeLogout();
+        navigate('/login');
+        return;
+      }
+
+      // 로그아웃 API 호출
+      await logout();
+      
+      // 로컬 스토리지 정리
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      
+      // 프로필 스토어 초기화
+      useProfileStore.getState().reset();
+      
+      // 성공 메시지 표시
+      toast.success('로그아웃되었습니다.');
+      
+      // 로그인 페이지로 이동
+      closeLogout();
+      navigate('/login');
+    } catch (error: any) {
+      // API 호출 실패 시에도 로컬 정리 후 로그인 페이지로 이동
+      console.error('로그아웃 API 실패, 로컬 정리 후 이동:', error);
+      
+      // 사용자에게 구체적인 에러 메시지 표시
+      const errorMessage = error.message || '로그아웃 중 오류가 발생했습니다.';
+      toast.error(errorMessage);
+      
+      // 로컬 데이터 정리
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      useProfileStore.getState().reset();
+      
+      closeLogout();
+      navigate('/login');
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
   const [deleteOpen, setDeleteOpen] = useState(false);
   const openDelete = () => setDeleteOpen(true);
@@ -169,6 +216,7 @@ const MyPage = () => {
         open={logoutOpen}
         onClose={closeLogout}
         onConfirm={handleLogoutConfirm}
+        isLoading={isLoggingOut}
       />
       <DeleteAccountModal
         open={deleteOpen === true}
@@ -176,20 +224,7 @@ const MyPage = () => {
         onConfirm={handleDeleteConfirm}
       />
 
-      {logoutOpen && (
-        <LogoutModal
-          open={logoutOpen}
-          onClose={closeLogout}
-          onConfirm={handleLogoutConfirm}
-        />
-      )}
-      {deleteOpen && (
-        <DeleteAccountModal
-          open={deleteOpen}
-          onClose={closeDelete}
-          onConfirm={handleDeleteConfirm}
-        />
-      )}
+
 
     </div>
   );

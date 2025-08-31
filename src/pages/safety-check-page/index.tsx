@@ -19,7 +19,77 @@ import icMicMute from '../../assets/ic_mic_mute.png';
 import icKeypad from '../../assets/ic_keypad.png';
 import icCallAnswer from '../../assets/ic_call_answer.png';
 import icCallEnd from '../../assets/ic_call_end.png';
-import galaxyRingtone from '../../assets/galaxy.mp3';
+// 오디오 파일 경로 - public 폴더의 galaxy.wav 사용
+const galaxyRingtone = '/galaxy.wav';
+
+// 전역 오디오 관리자
+class AudioManager {
+  private static instance: AudioManager;
+  private currentAudio: HTMLAudioElement | null = null;
+
+  static getInstance(): AudioManager {
+    if (!AudioManager.instance) {
+      AudioManager.instance = new AudioManager();
+    }
+    return AudioManager.instance;
+  }
+
+  playRingtone(): void {
+    this.stopRingtone(); // 기존 오디오 정지
+    
+    try {
+      const audio = new Audio(galaxyRingtone);
+      audio.volume = 1.0;
+      audio.loop = true;
+      
+      audio.play().then(() => {
+
+        this.currentAudio = audio;
+      }).catch((error) => {
+        console.log('[ring] 벨소리 재생 실패:', error);
+      });
+    } catch (error) {
+      console.log('[ring] 오디오 생성 에러:', error);
+    }
+  }
+
+  stopRingtone(): void {
+    
+    // 현재 오디오 정지
+    if (this.currentAudio) {
+      try {
+        this.currentAudio.pause();
+        this.currentAudio.currentTime = 0;
+        this.currentAudio.src = '';
+        this.currentAudio = null;
+      } catch (error) {
+        console.log('[ring] 현재 오디오 정지 에러:', error);
+      }
+    }
+
+    // 모든 오디오 요소 정지
+    const allAudios = document.querySelectorAll('audio');
+    
+    allAudios.forEach((audio, index) => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 0;
+        audio.src = '';
+        audio.load();
+        // DOM에서 제거
+        if (audio.parentNode) {
+          audio.parentNode.removeChild(audio);
+        }
+      } catch (error) {
+        console.log(`[ring] 오디오 ${index} 정지 에러:`, error);
+      }
+    });
+
+  }
+}
+
+const audioManager = AudioManager.getInstance();
 
 // 타입 정의
 interface SafetyCheckItem {
@@ -61,6 +131,10 @@ const FakeCallModal = ({ isOpen, onClose, audioRef }: {
       setCallDuration(0);
       setIsVibrating(true);
       
+                    // 벨소리 재생
+      
+                 audioManager.playRingtone();
+      
       // 진동 시작
       if (navigator.vibrate) {
         const vibrateInterval = setInterval(() => {
@@ -72,16 +146,12 @@ const FakeCallModal = ({ isOpen, onClose, audioRef }: {
           navigator.vibrate(0);
         };
       }
-    } else {
-      setIsVibrating(false);
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      if (navigator.vibrate) {
-        navigator.vibrate(0);
-      }
-    }
+         } else {
+       setIsVibrating(false);
+       if (navigator.vibrate) {
+         navigator.vibrate(0);
+       }
+     }
   }, [isOpen]);
 
   useEffect(() => {
@@ -95,30 +165,26 @@ const FakeCallModal = ({ isOpen, onClose, audioRef }: {
     }
   }, [isOpen, isAnswered]);
 
-  const handleAnswer = () => {
-    setIsRinging(false);
-    setIsAnswered(true);
-    setIsVibrating(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    if (navigator.vibrate) {
-      navigator.vibrate(0);
-    }
-  };
+           const handleAnswer = () => {
+      setIsRinging(false);
+      setIsAnswered(true);
+      setIsVibrating(false);
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+      
+      audioManager.stopRingtone();
+    };
 
-  const handleDecline = () => {
-    setIsVibrating(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    if (navigator.vibrate) {
-      navigator.vibrate(0);
-    }
-    onClose();
-  };
+      const handleDecline = () => {
+      setIsVibrating(false);
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+      
+      audioManager.stopRingtone();
+      onClose();
+    };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -278,9 +344,10 @@ const SafetyCheckPage = () => {
   const [showFakeCall, setShowFakeCall] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
+    useEffect(() => {
     const data = loadSafetyCheckData();
     setSafetyData(data);
+    
   }, []);
 
   const toggleCategory = (categoryId: string) => {
@@ -470,16 +537,6 @@ const SafetyCheckPage = () => {
       {/* 헤더 영역 */}
       <div className="pt-6 px-4 pb-6">
         {/* 도움말 섹션 */}
-        <audio
-  ref={audioRef as React.MutableRefObject<HTMLAudioElement | null>}
-  preload="auto"
-  playsInline
-  className="hidden"
->
-  <source src={galaxyRingtone} type="audio/mpeg" />
-</audio>
-
-
                  <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
            <div className="flex items-center justify-between">
              <div className="text-center flex-1 min-w-0">
@@ -489,62 +546,12 @@ const SafetyCheckPage = () => {
                  </p>
 
              </div>
-                                                     <button
-                 onClick={async () => {
-                  console.log('[ring] click'); // 1) 클릭 들어옴
-                  setShowFakeCall(true);
+                                    <button
+                                    onClick={() => {
                 
-                  let el = audioRef.current;
-                
-                  if (!el) {
-                    console.log('[ring] no <audio> in DOM, creating new Audio()');
-                    el = new Audio(galaxyRingtone);
-                    el.preload = 'auto';
-                    (audioRef as any).current = el;
-                  } else {
-                    console.log('[ring] using <audio> element in DOM');
-                  }
-                
-                  // 디버그 이벤트 훅
-                  const events = ['loadstart','loadeddata','canplay','canplaythrough','play','playing','pause','ended','stalled','suspend','abort','error','timeupdate'];
-                  events.forEach(ev => el!.addEventListener(ev, () => console.log(`[ring] ${ev}`), { once: ev !== 'timeupdate' }));
-                
-                  // 추가 안전장치
-                  el.loop = true;
-                  el.muted = false;
-                  el.volume = 1.0;
-                
-                  try {
-                    console.log('[ring] readyState before load:', el.readyState);
-                    await new Promise<void>((resolve, reject) => {
-                      const onReady = () => {
-                        el!.removeEventListener('canplaythrough', onReady);
-                        console.log('[ring] canplaythrough fired');
-                        resolve();
-                      };
-                      el!.addEventListener('canplaythrough', onReady, { once: true });
-                
-                      if (el!.readyState >= 3) {
-                        console.log('[ring] already buffer-ready');
-                        resolve();
-                      } else {
-                        console.log('[ring] calling load()');
-                        el!.load();
-                        // 5초 타임아웃
-                        setTimeout(() => reject(new Error('timeout waiting canplaythrough')), 5000);
-                      }
-                    });
-                
-                    el.currentTime = 0;
-                    console.log('[ring] calling play()');
-                    await el.play();
-                    console.log('[ring] play() resolved — 벨소리 재생 시작!');
-                  } catch (err) {
-                    console.log('[ring] play() failed:', err);
-                    console.log('[ring] media error:', (el as any)?.error); // MediaError 있으면 code 확인
-                  }
-                }}
-                
+                    setShowFakeCall(true);
+                  }}
+                 
                  className="ml-3 px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs font-medium hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1 flex-shrink-0"
                >
                  <span>📞</span>
@@ -734,12 +741,15 @@ const SafetyCheckPage = () => {
          </div>
        )}
        
-               {/* 가짜 전화 모달 */}
-        <FakeCallModal 
-          isOpen={showFakeCall} 
-          onClose={() => setShowFakeCall(false)}
-          audioRef={audioRef}
-        />
+                        {/* 가짜 전화 모달 */}
+         <FakeCallModal 
+           isOpen={showFakeCall} 
+           onClose={() => {
+             setShowFakeCall(false);
+             audioManager.stopRingtone();
+           }}
+           audioRef={audioRef}
+         />
      </div>
    );
  };

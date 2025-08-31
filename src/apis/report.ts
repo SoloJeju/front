@@ -55,6 +55,48 @@ export const getMyReports = async (
   return data;
 };
 
+// 신고 상세 조회
+export const getReportDetail = async (
+  reportId: number
+): Promise<CommonResponse<{
+  reportId: number;
+  targetType: string;
+  targetId: number;
+  targetTitle: string;
+  targetContent: string;
+  targetUserName: string;
+  targetUserId: number;
+  reason: string;
+  reasonName: string;
+  detail: string;
+  evidence: string | null;
+  imageUrl: string | null;
+  imageName: string | null;
+  status: string;
+  statusName: string;
+  createdAt: string;
+  processedAt: string | null;
+  adminNote: string | null;
+  canCancel: boolean;
+}>> => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/reports/${reportId}`,
+    { headers: getAuthHeaders() }
+  );
+  return data;
+};
+
+// 신고 취소
+export const cancelReport = async (
+  reportId: number
+): Promise<CommonResponse<null>> => {
+  const { data } = await axios.delete(
+    `${import.meta.env.VITE_API_URL}/api/reports/${reportId}`,
+    { headers: getAuthHeaders() }
+  );
+  return data;
+};
+
 // 이미지 업로드 (S3 공통 함수 사용)
 export { uploadImageToS3 as uploadImage } from './s3';
 

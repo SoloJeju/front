@@ -180,13 +180,16 @@ const MyReportsPage: React.FC = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-[#666666]">
-                        {getTargetTypeText(report.targetType)} #{report.targetId}
+                        {getTargetTypeText(report.targetType)}
                       </span>
                       {getStatusBadge(report.status)}
                     </div>
                   </div>
-                  <div className="text-sm text-[#262626] mb-2">
-                    신고 사유: {report.reason}
+                  <div 
+                    className="text-sm text-[#262626] mb-2 cursor-pointer hover:text-[#F78938] transition-colors"
+                    onClick={() => navigate(`/report/${report.reportId}`)}
+                  >
+                    신고 사유: {report.reasonName}
                   </div>
                   <div className="text-xs text-[#B4B4B4]">
                     접수일: {new Date(report.createdAt).toLocaleDateString('ko-KR')}

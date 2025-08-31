@@ -40,8 +40,10 @@ import TermsOfService from './pages/my-page/TermsOfService';
 import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
 import ReportPage from './pages/report-page';
 import MyReportsPage from './pages/report-page/my-reports';
+import ReportDetailPage from './pages/report-page/report-detail';
 import InquiryPage from './pages/inquiry-page';
 import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
+import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
 import SafetyCheckPage from './pages/safety-check-page';
 import StatsPage from './pages/safety-check-page/stats-page';
 
@@ -95,8 +97,10 @@ function App() {
           <Route path="mypage/privacy" element={<PrivacyPolicy />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/report/my" element={<MyReportsPage />} />
+          <Route path="/report/:id" element={<ReportDetailPage />} />
           <Route path="/inquiry" element={<InquiryPage />} />
           <Route path="/inquiry/my" element={<MyInquiriesPage />} />
+          <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
