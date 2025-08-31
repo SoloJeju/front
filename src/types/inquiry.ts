@@ -45,6 +45,12 @@ export type InquiryResponse = {
   createdDate: string;
   isReplied: boolean;
   isClosed: boolean;
+  attachments?: string[];
+  imageUrl?: string;
+  imageName?: string;
+  adminReply?: string;
+  repliedAt?: string;
+  modifiedDate?: string;
 };
 
 export type MyInquiry = {
