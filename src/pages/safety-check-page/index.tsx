@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlarmHeader from '../../components/common/Headers/AlarmHeader';
 import { 
@@ -113,10 +113,9 @@ interface SafetyCheckData {
 }
 
 // 가짜 전화 모달 컴포넌트
-const FakeCallModal = ({ isOpen, onClose, audioRef }: { 
+const FakeCallModal = ({ isOpen, onClose }: { 
   isOpen: boolean; 
   onClose: () => void;
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
 }) => {
   const [callDuration, setCallDuration] = useState(0);
   const [isRinging, setIsRinging] = useState(true);
@@ -342,7 +341,6 @@ const SafetyCheckPage = () => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showFakeCall, setShowFakeCall] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
     const data = loadSafetyCheckData();
@@ -421,29 +419,7 @@ const SafetyCheckPage = () => {
     saveSafetyCheckData(updatedData);
   };
 
-  const toggleAllItems = () => {
-    if (!safetyData) return;
 
-    const allChecked = safetyData.categories.every(category => 
-      category.items.every(item => item.checked)
-    );
-    
-    const updatedData = {
-      ...safetyData,
-      categories: safetyData.categories.map(category => ({
-        ...category,
-        items: category.items.map(item => ({ ...item, checked: !allChecked }))
-      }))
-    };
-
-    const totalChecked = updatedData.categories.reduce((sum, cat) => {
-      return sum + cat.items.filter(item => item.checked).length;
-    }, 0);
-
-    updatedData.totalChecked = totalChecked;
-    setSafetyData(updatedData);
-    saveSafetyCheckData(updatedData);
-  };
 
   const handleSave = () => {
     if (safetyData) {
@@ -693,7 +669,7 @@ const SafetyCheckPage = () => {
                                  {/* 체크리스트 아이템들 */}
                  {isExpanded && (
                    <div className="border-t border-orange-100 bg-gradient-to-br from-orange-25 to-amber-25">
-                     {category.items.map((item, index) => (
+                     {category.items.map((item) => (
                        <div
                          key={item.id}
                          className="flex items-start p-3 sm:p-4 hover:bg-white transition-all duration-200 cursor-pointer border-b border-orange-100 last:border-b-0"
@@ -748,7 +724,6 @@ const SafetyCheckPage = () => {
              setShowFakeCall(false);
              audioManager.stopRingtone();
            }}
-           audioRef={audioRef}
          />
      </div>
    );

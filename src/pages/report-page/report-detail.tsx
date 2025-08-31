@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getReportDetail, cancelReport } from '../../apis/report';
-import type { ReportStatus } from '../../types/report';
 import toast from 'react-hot-toast';
+
+interface Report {
+  reportId: number;
+  targetType: string;
+  targetId: number;
+  targetTitle: string;
+  targetContent: string;
+  targetUserName: string;
+  targetUserId: number;
+  reason: string;
+  reasonName: string;
+  detail: string;
+  status: string;
+  statusName: string;
+  createdAt: string;
+  processedAt: string | null;
+  adminNote: string | null;
+  evidence?: string | null;
+  imageUrl?: string | null;
+  imageName?: string | null;
+  canCancel: boolean;
+}
 
 const ReportDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<Report | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

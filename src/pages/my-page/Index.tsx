@@ -70,12 +70,12 @@ const MyPage = () => {
       // 로그인 페이지로 이동
       closeLogout();
       navigate('/login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       // API 호출 실패 시에도 로컬 정리 후 로그인 페이지로 이동
       console.error('로그아웃 API 실패, 로컬 정리 후 이동:', error);
       
       // 사용자에게 구체적인 에러 메시지 표시
-      const errorMessage = error.message || '로그아웃 중 오류가 발생했습니다.';
+      const errorMessage = error instanceof Error ? error.message : '로그아웃 중 오류가 발생했습니다.';
       toast.error(errorMessage);
       
       // 로컬 데이터 정리

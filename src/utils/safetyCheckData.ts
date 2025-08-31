@@ -197,7 +197,11 @@ export const loadSafetyStats = () => {
 };
 
 // 통계 데이터 저장
-export const saveSafetyStats = (stats: any): void => {
+export const saveSafetyStats = (stats: {
+  completionRate: number;
+  streak: number;
+  monthlyData: { [key: string]: { [key: string]: number } };
+}): void => {
   try {
     localStorage.setItem(SAFETY_STATS_KEY, JSON.stringify(stats));
   } catch (error) {

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlarmHeader from '../../components/common/Headers/AlarmHeader';
-import { loadSafetyStats, saveSafetyStats } from '../../utils/safetyCheckData';
+import { loadSafetyStats } from '../../utils/safetyCheckData';
 
 const StatsPage = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<{
     completionRate: number;
     streak: number;
-    monthlyData: { [key: string]: any };
+    monthlyData: { [key: string]: { [key: string]: number } };
   }>({
     completionRate: 0,
     streak: 0,
@@ -19,11 +19,6 @@ const StatsPage = () => {
     const savedStats = loadSafetyStats();
     setStats(savedStats);
   }, []);
-
-  const getCurrentMonth = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  };
 
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month, 0).getDate();

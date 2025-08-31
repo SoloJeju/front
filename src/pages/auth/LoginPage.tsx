@@ -37,8 +37,8 @@ const LoginPage = () => {
       } else {
         toast.error(response.message || '로그인에 실패했습니다.');
       }
-    } catch (error: any) {
-      toast.error(error.message || '로그인 중 오류가 발생했습니다.');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
