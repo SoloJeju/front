@@ -47,6 +47,15 @@ export const getMyInquiries = async (
   return data;
 };
 
+// 문의 상세 조회
+export const getInquiryDetail = async (id: number): Promise<CommonResponse<InquiryResponse>> => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/inquiries/${id}`,
+    { headers: getAuthHeaders() }
+  );
+  return data;
+};
+
 // 문의 카테고리 목록
 export const getInquiryCategories = async (): Promise<CommonResponse<InquiryCategoriesResponse>> => {
   const { data } = await axios.get(
