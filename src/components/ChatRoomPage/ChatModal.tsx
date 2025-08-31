@@ -28,9 +28,10 @@ const mockData = [
 interface ChatModalProps {
   ref: React.RefObject<HTMLDivElement | null>;
   roomId: string | undefined;
+  onLeaveRoom: () => void;
 }
 
-const ChatModal = ({ ref, roomId }: ChatModalProps) => {
+const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
   console.log(roomId);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,7 +99,7 @@ const ChatModal = ({ ref, roomId }: ChatModalProps) => {
             },
             {
               text: '확인',
-              onClick: () => console.log('채팅방 나가기'),
+              onClick: onLeaveRoom,
               variant: 'orange',
             },
           ]}
