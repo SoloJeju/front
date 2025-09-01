@@ -1,73 +1,87 @@
-// src/apis/auth.ts
 import axios from 'axios';
 
-type ApiWrapper<T = unknown> = {
-  isSuccess: boolean;
-  code: string;
-  message: string;
-  result: T;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+// 로그인 API
+export const login = async (email: string, password: string) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response: { status: number; data: { message?: string } } };
+      console.error('로그인 실패:', {
+        status: axiosError.response.status,
+        data: axiosError.response.data,
+        message: axiosError.response.data?.message || '알 수 없는 오류가 발생했습니다.'
+      });
+      
+      if (axiosError.response.status === 401) {
+        throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+      
+      if (axiosError.response.status === 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+      
+      throw new Error(axiosError.response.data?.message || '로그인 중 오류가 발생했습니다.');
+    } else if (error && typeof error === 'object' && 'request' in error) {
+      console.error('로그인 요청 실패 (응답 없음):', (error as { request: unknown }).request);
+      throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
+    } else {
+      console.error('로그인 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
+      throw new Error('로그인 요청을 보낼 수 없습니다.');
+    }
+  }
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
+// 로그아웃 API
+export const logout = async () => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    
+    if (!accessToken) {
+      throw new Error('액세스 토큰이 없습니다.');
+    }
 
-const unwrap = async <T>(p: Promise<{ data: ApiWrapper<T> }>): Promise<T> => {
-  const { data } = await p;
-  if (!data.isSuccess) throw new Error(data.message || 'Request failed');
-  return data.result;
-};
-
-export const AuthApi = {
-  // 로그인
-  login: (payload: { email: string; password: string }) =>
-    unwrap<{ accessToken: string; refreshToken: string }>(
-      axios.post(`${API_URL}/api/auth/login`, payload)
-    ),
-
-  // 회원가입(사용자)
-  userSignUp: (payload: { email: string; password: string; nickname: string; userType: string }) =>
-    // 필요 시 제네릭을 실제 스키마로 변경(예: { userId: string })
-    unwrap<Record<string, unknown>>(
-      axios.post(`${API_URL}/api/auth/userSignUp`, payload)
-    ),
-
-  // 로그아웃
-  logout: () =>
-    unwrap<null>(axios.delete(`${API_URL}/api/auth/logout`)),
-
-  // 토큰 재발급
-  reissue: (payload: { refreshToken: string }) =>
-    unwrap<{ accessToken: string }>(
-      axios.post(`${API_URL}/api/auth/reissue`, payload)
-    ),
-
-  // 선택: 이메일/닉네임/비밀번호 유틸 (스웨거 스키마에 맞춰 필요 시 사용)
-  checkEmail: (email: string) =>
-    unwrap<{ available: boolean }>(
-      axios.get(`${API_URL}/api/auth/check-email`, { params: { email } })
-    ),
-
-  sendEmail: (email: string) =>
-    unwrap<{ sent: boolean }>(
-      axios.post(`${API_URL}/api/auth/send-email`, { email })
-    ),
-
-  checkNumber: (email: string, code: string) =>
-    unwrap<{ valid: boolean }>(
-      axios.get(`${API_URL}/api/auth/check-number`, { params: { email, code } })
-    ),
-
-  checkNickname: (nickname: string) =>
-    unwrap<{ available: boolean }>(
-      axios.get(`${API_URL}/api/auth/check-nickname`, { params: { nickname } })
-    ),
-
-  validatePassword: (password: string) =>
-    unwrap<{ valid: boolean }>(
-      axios.get(`${API_URL}/api/auth/validate-password`, { params: { password } })
-    ),
-
-  changePassword: (payload: { oldPassword: string; newPassword: string }) =>
-    unwrap<{ success: boolean }>(
-      axios.patch(`${API_URL}/api/auth/password`, payload)
-    ),
+    const response = await axios.delete(`${API_BASE_URL}/api/auth/logout`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response: { status: number; data: { message?: string } } };
+      // 서버 응답이 있는 경우
+      console.error('로그아웃 실패:', {
+        status: axiosError.response.status,
+        data: axiosError.response.data,
+        message: axiosError.response.data?.message || '알 수 없는 오류가 발생했습니다.'
+      });
+      
+      // 401 에러인 경우 토큰이 만료되었거나 유효하지 않음
+      if (axiosError.response.status === 401) {
+        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      }
+      
+      // 500 에러인 경우 서버 내부 오류
+      if (axiosError.response.status === 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+      
+      throw new Error(axiosError.response.data?.message || '로그아웃 중 오류가 발생했습니다.');
+    } else if (error && typeof error === 'object' && 'request' in error) {
+      // 요청은 보냈지만 응답을 받지 못한 경우
+      console.error('로그아웃 요청 실패 (응답 없음):', (error as { request: unknown }).request);
+      throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
+    } else {
+      // 요청 자체를 보내지 못한 경우
+      console.error('로그아웃 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
+      throw new Error('로그아웃 요청을 보낼 수 없습니다.');
+    }
+  }
 };
