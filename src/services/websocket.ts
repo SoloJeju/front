@@ -40,7 +40,7 @@ class WebSocketService {
     try {
       // STOMP 클라이언트 생성
       this.stompClient = new Client({
-        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/ws`),
+        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_WS_URL}`),
         connectHeaders: {
           'Authorization': `Bearer ${token}`,
           'roomId': roomId.toString(),
