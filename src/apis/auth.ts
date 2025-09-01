@@ -1,14 +1,23 @@
 import axios from 'axios';
+import type { CommonResponse, LoginResponse } from '../types/common';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 // 로그인 API
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string): Promise<CommonResponse<LoginResponse>> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+    const response = await axios.post<CommonResponse<LoginResponse>>(`${API_BASE_URL}/api/auth/login`, {
       email,
       password,
     });
+    
+    // 로그인 성공 시 id 값을 로컬스토리지에 저장
+    if (response.data.isSuccess && response.data.result) {
+      localStorage.setItem('userId', response.data.result.id.toString());
+      localStorage.setItem('accessToken', response.data.result.accessToken);
+      localStorage.setItem('refreshToken', response.data.result.refreshToken);
+    }
+    
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error) {
@@ -52,6 +61,12 @@ export const logout = async () => {
         'Authorization': `Bearer ${accessToken}`,
       },
     });
+    
+    // 로그아웃 성공 시 로컬스토리지에서 사용자 정보 제거
+    localStorage.removeItem('userId');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    
     return response.data;
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error) {
@@ -84,4 +99,25 @@ export const logout = async () => {
       throw new Error('로그아웃 요청을 보낼 수 없습니다.');
     }
   }
+};
+
+// 사용자 ID 가져오기
+export const getUserId = (): number | null => {
+  const userId = localStorage.getItem('userId');
+  return userId ? parseInt(userId, 10) : null;
+};
+
+// 액세스 토큰 가져오기
+export const getAccessToken = (): string | null => {
+  return localStorage.getItem('accessToken');
+};
+
+// 리프레시 토큰 가져오기
+export const getRefreshToken = (): string | null => {
+  return localStorage.getItem('refreshToken');
+};
+
+// 로그인 상태 확인
+export const isLoggedIn = (): boolean => {
+  return !!getAccessToken();
 };

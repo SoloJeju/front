@@ -19,9 +19,6 @@ class WebSocketService {
   private connectCallbacks: (() => void)[] = [];
   private disconnectCallbacks: (() => void)[] = [];
   private errorCallbacks: ((error: Event) => void)[] = [];
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectInterval = 3000;
 
   connect(roomId: number, token: string) {
     // 이전 연결이 있다면 정리
@@ -67,7 +64,6 @@ class WebSocketService {
         console.log('세션 ID:', frame.headers['simp-session-id']);
         console.log('전달된 인증 헤더:', { 'Authorization': `Bearer ${token}`, 'roomId': roomId.toString() });
         this.connectionStatus = true;
-        this.reconnectAttempts = 0;
         
         // 연결 후 잠시 대기 후 구독 (서버 준비 시간 확보)
         setTimeout(() => {
@@ -185,7 +181,6 @@ class WebSocketService {
     this.connectionStatus = false;
     this.currentRoomId = null;
     this.currentToken = null;
-    this.reconnectAttempts = 0;
   }
 
   sendMessage(message: WebSocketMessage) {

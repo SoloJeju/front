@@ -1,18 +1,13 @@
 import axios from 'axios';
 import type { 
-  ChatRoom, 
-  ChatMessage, 
   CreateChatRoomRequest, 
-  ChatRoomUsersResponse, 
-  JoinChatRoomResponse,
   ChatRoomResponse,
   ChatRoomListResponse,
   ChatMessageResponse,
   ChatRoomUsersResponseWrapper,
   JoinChatRoomResponseWrapper,
   SimpleResponse,
-  MyChatRoomListResponse,
-  MyChatRoomResponse
+  MyChatRoomListResponse
 } from '../types/chat';
 
 // API 기본 설정

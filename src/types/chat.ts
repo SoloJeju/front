@@ -1,15 +1,32 @@
 // 채팅 메시지 타입
 export type ChatMessageType = 'ENTER' | 'TALK' | 'EXIT';
 
-// 채팅 메시지
+// API 응답의 채팅 메시지 (isMine 포함)
 export interface ChatMessage {
-  id: number;
+  id: string;
   type: ChatMessageType;
-  content?: string;
+  roomId: number;
   senderId: number;
   senderName: string;
-  roomId: number;
+  senderProfileImage: string | null;
+  content: string;
+  image: string | null;
   sendAt: string;
+  isMine: boolean;
+}
+
+// WebSocket으로 받는 실시간 메시지 (isMine 없음)
+export interface WebSocketChatMessage {
+  id: string;
+  type: ChatMessageType;
+  roomId: number;
+  senderId: number | null;
+  senderName: string;
+  senderProfileImage: string | null;
+  content: string;
+  image: string | null;
+  sendAt: string;
+  isMine: boolean | null;
 }
 
 // WebSocket 메시지
@@ -82,7 +99,10 @@ export interface JoinChatRoomResponseWrapper {
 export interface ChatRoomUser {
   userId: number;
   username: string;
-  isActive: boolean;
+  profileImage: string | null;
+  joinedAt: string;
+  active: boolean;
+  mine: boolean;
 }
 
 // 채팅방 사용자 목록 응답

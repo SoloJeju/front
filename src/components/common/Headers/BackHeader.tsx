@@ -36,7 +36,7 @@ const BackHeader = ({
       {isChatRoom ? (
         <button
           type="button"
-          className="w-7 h-7 cursor-pointer"
+          className="w-7 h-7 cursor-pointer ml-auto"
           onClick={() => onClick?.()}
         >
           <img src={Menu} alt="채팅방 정보 보기" />

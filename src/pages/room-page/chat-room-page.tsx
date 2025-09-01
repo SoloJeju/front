@@ -2,82 +2,34 @@ import { useParams, useNavigate } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import ChatInput from '../../components/ChatRoomPage/ChatInput';
 import { useEffect, useRef, useState } from 'react';
-import ChatMessages from '../../components/ChatRoomPage/ChatMessages';
 import ChatModal from '../../components/ChatRoomPage/ChatModal';
 import chatApiService from '../../services/chat';
 import websocketService from '../../services/websocket';
-import type { ChatMessage, ChatRoomUsersResponse } from '../../types/chat';
+import type { ChatMessage, WebSocketChatMessage } from '../../types/chat';
 
-const mockData = [
-  {
-    senderName: '홍길동',
-    message: '',
-    time: '2025-07-09T09:00',
-    type: 'ENTER',
-  },
-  {
-    senderName: '박길동',
-    message: '안녕하세요 홍길동님',
-    time: '2025-07-08T09:27',
-    type: 'CHAT',
-  },
-  {
-    senderName: '홍길동',
-    message: '안녕하세용 방가방가 ~~~',
-    time: '2025-07-08T09:27',
-    type: 'CHAT',
-  },
-  {
-    senderName: '박길동',
-    message: '저도 돌솥밥 좋아해요 얌~~~',
-    time: '2025-07-08T09:27',
-    type: 'CHAT',
-  },
-  {
-    senderName: '박길동',
-    message: '안녕하세요 홍길동님!!! 밥은 먹고 다니냐 맛있는거 먹어라',
-    time: '2025-07-08T09:27',
-    type: 'CHAT',
-  },
-  {
-    senderName: '박길동',
-    message:
-      '혹시 제가 11시 이후에 도착하는데 괜찮을까요? 제발 저 돌솥밥 먹으러가고싶어요 제발요 저 두고가지마세요',
-    time: '2025-07-09T09:27',
-    type: 'CHAT',
-  },
-  {
-    senderName: '홍길동',
-    message: '예.. 얼른 오세요 배고프니까...',
-    time: '2025-07-09T09:27',
-    type: 'CHAT',
-  },
-];
+
 
 export default function ChatRoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  console.log(roomId);
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalBg = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [users, setUsers] = useState<ChatRoomUsersResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState('연결 중...');
   const [hasNext, setHasNext] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesTopRef = useRef<HTMLDivElement>(null);
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
 
   useEffect(() => {
     if (roomId) {
       loadMessages();
-      loadUsers();
       // WebSocket 연결은 한 번만 실행
       if (!isConnected) {
         connectWebSocket();
@@ -86,6 +38,7 @@ export default function ChatRoomPage() {
 
     return () => {
       websocketService.disconnect();
+
     };
   }, [roomId]); // roomId만 의존성으로 설정
 
@@ -108,8 +61,12 @@ export default function ChatRoomPage() {
       return;
     }
 
-    console.log('WebSocket 연결 시도, roomId:', roomId);
-    setConnectionStatus('연결 중...');
+    // 이미 연결된 상태라면 중복 연결 방지
+    if (isConnected) {
+      return;
+    }
+    
+
 
     // 기존 콜백 제거 (중복 방지)
     websocketService.removeMessageCallback(handleWebSocketMessage);
@@ -129,8 +86,8 @@ export default function ChatRoomPage() {
   // WebSocket 콜백 함수들을 별도로 정의
   const handleWebSocketConnect = () => {
     setIsConnected(true);
-    setConnectionStatus('연결됨');
-    console.log('WebSocket 연결됨');
+
+
     
     // 입장 메시지 전송하지 않음 (중복 방지)
     // websocketService.sendMessage({
@@ -139,12 +96,13 @@ export default function ChatRoomPage() {
     // });
   };
 
-  const handleWebSocketMessage = (data: any) => {
-    console.log('새 메시지 수신:', data);
-    
-    // 내가 보낸 메시지는 무시 (낙관적 업데이트로 이미 표시됨)
-    if (data.senderName === userInfo.name) {
-      console.log('내가 보낸 메시지 무시:', data.content);
+  const handleWebSocketMessage = (data: WebSocketChatMessage) => {
+
+
+    // 내가 보낸 메시지인지 senderId 기준으로 확인
+    const userId = localStorage.getItem('userId');
+    if (userId && data.senderId && Number(userId) === data.senderId) {
+      // console.log('내가 보낸 메시지 무시 (senderId:', data.senderId, 'content:', data.content, ')');
       return;
     }
     
@@ -156,11 +114,10 @@ export default function ChatRoomPage() {
         // 이미 같은 ID의 메시지가 있는지 확인
         const isDuplicate = currentMessages.some(msg => msg.id === data.id);
         if (isDuplicate) {
-          console.log('중복 메시지 무시:', data.id);
           return currentMessages;
         }
         
-        // 새로운 메시지 추가
+        // WebSocket 메시지를 ChatMessage로 변환 (isMine 계산)
         const newMessage: ChatMessage = {
           id: data.id,
           type: data.type,
@@ -168,9 +125,15 @@ export default function ChatRoomPage() {
           senderId: data.senderId || 0,
           senderName: data.senderName,
           roomId: data.roomId,
-          sendAt: data.sendAt
+          sendAt: data.sendAt,
+          senderProfileImage: data.senderProfileImage,
+          image: data.image,
+          isMine: false // 수신된 메시지는 항상 false (내가 보낸 메시지는 이미 스킵됨)
         };
         
+        // 처리된 메시지 ID에 추가
+
+      
         return [...currentMessages, newMessage];
       });
     }
@@ -178,42 +141,45 @@ export default function ChatRoomPage() {
 
   const handleWebSocketDisconnect = () => {
     setIsConnected(false);
-    setConnectionStatus('연결 종료됨');
-    console.log('WebSocket 연결 종료');
+
+   
   };
 
   const handleWebSocketError = (error: Event) => {
     console.error('WebSocket 오류:', error);
-    setConnectionStatus('연결 오류');
+
     setError('채팅 연결에 문제가 발생했습니다. 백엔드 WebSocket 서버가 실행 중인지 확인해주세요.');
   };
 
   const loadMessages = async () => {
     try {
-      console.log('메시지 로드 시작, roomId:', roomId);
+
       
       const response = await chatApiService.getChatRoomMessages(Number(roomId));
       
       if (response.isSuccess) {
-        console.log('메시지 로드 성공:', response.result);
+       
         // API 응답 구조에 맞게 messages 배열 추출
         if (response.result && response.result.messages && Array.isArray(response.result.messages)) {
-          // API 응답을 ChatMessage 타입에 맞게 변환
+          // API 응답을 ChatMessage 타입에 맞게 변환 (API에는 이미 isMine이 포함됨)
           const formattedMessages: ChatMessage[] = response.result.messages.map((msg: any) => ({
-            id: msg.id,
+            id: String(msg.id),
             type: msg.type,
             content: msg.content,
             senderId: msg.senderId,
             senderName: msg.senderName,
             roomId: msg.roomId,
-            sendAt: msg.sendAt
+            sendAt: msg.sendAt,
+            senderProfileImage: msg.senderProfileImage,
+            image: msg.image,
+            isMine: msg.isMine
           }));
           
           setMessages(formattedMessages);
           setHasNext(response.result.hasNext);
-          console.log('메시지 개수:', formattedMessages.length, 'hasNext:', response.result.hasNext);
+         
         } else {
-          console.warn('메시지 응답 구조가 올바르지 않습니다:', response.result);
+          
           setMessages([]);
           setHasNext(false);
         }
@@ -230,27 +196,14 @@ export default function ChatRoomPage() {
     }
   };
 
-  const loadUsers = async () => {
-    try {
-      console.log('사용자 목록 로드 시작, roomId:', roomId);
-      
-      const response = await chatApiService.getChatRoomUsers(Number(roomId));
-      
-      if (response.isSuccess) {
-        console.log('사용자 목록 로드 성공:', response.result);
-        setUsers(response.result);
-      }
-    } catch (err: any) {
-      console.error('사용자 목록 로드 오류:', err);
-    }
-  };
+
 
   const loadMoreMessages = async () => {
     if (isLoadingMore || !hasNext || messages.length === 0) return;
 
     try {
       setIsLoadingMore(true);
-      console.log('이전 메시지 로드 시작, roomId:', roomId);
+
       
       // 가장 오래된 메시지의 시간을 기준으로 이전 메시지 조회
       const oldestMessage = messages[0];
@@ -259,22 +212,25 @@ export default function ChatRoomPage() {
       const response = await chatApiService.getChatRoomMessages(Number(roomId), lastMessageTime);
       
       if (response.isSuccess) {
-        console.log('이전 메시지 로드 성공:', response.result);
+    
         if (response.result && response.result.messages && Array.isArray(response.result.messages)) {
-          // API 응답을 ChatMessage 타입에 맞게 변환
+          // API 응답을 ChatMessage 타입에 맞게 변환 (API에는 이미 isMine이 포함됨)
           const formattedMessages: ChatMessage[] = response.result.messages.map((msg: any) => ({
-            id: msg.id,
+            id: String(msg.id),
             type: msg.type,
             content: msg.content,
             senderId: msg.senderId,
             senderName: msg.senderName,
             roomId: msg.roomId,
-            sendAt: msg.sendAt
+            sendAt: msg.sendAt,
+            senderProfileImage: msg.senderProfileImage,
+            image: msg.image,
+            isMine: msg.isMine
           }));
           
           setMessages(prev => [...formattedMessages, ...prev]);
           setHasNext(response.result.hasNext);
-          console.log('이전 메시지 개수:', formattedMessages.length, 'hasNext:', response.result.hasNext);
+        
         }
       }
     } catch (err: any) {
@@ -287,20 +243,28 @@ export default function ChatRoomPage() {
   const sendMessage = () => {
     if (!newMessage.trim() || !isConnected) return;
 
-    console.log('메시지 전송:', newMessage);
-
+  
+    // 고유한 임시 ID 생성 (타임스탬프 + 랜덤 숫자)
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     // 즉시 화면에 메시지 표시 (낙관적 업데이트)
     const tempMessage: ChatMessage = {
-      id: Date.now(), // 임시 ID는 숫자로 설정
+      id: tempId,
       type: 'TALK',
       content: newMessage,
       senderId: userInfo.id || 0,
       senderName: userInfo.name || '',
       roomId: Number(roomId),
-      sendAt: new Date().toISOString()
+      sendAt: new Date().toISOString(),
+      senderProfileImage: userInfo.profileImage || null,
+      image: null,
+      isMine: true
     };
 
     setMessages(prev => [...prev, tempMessage]);
+    
+    // 임시 ID를 대기 중인 메시지 ID 목록에 추가
+    
 
     // 백엔드 DTO 구조에 맞춰 메시지 전송
     websocketService.sendMessage({
@@ -321,7 +285,7 @@ export default function ChatRoomPage() {
 
   const leaveRoom = async () => {
     try {
-      console.log('채팅방 나가기 시도, roomId:', roomId);
+      
       
       // 나가기 메시지 전송 (백엔드 DTO 구조에 맞춤)
       websocketService.sendMessage({
@@ -333,7 +297,7 @@ export default function ChatRoomPage() {
       const response = await chatApiService.leaveChatRoom(Number(roomId));
       
       if (response.isSuccess) {
-        console.log('채팅방 나가기 성공');
+      
       } else {
         console.error('채팅방 나가기 실패:', response.message);
       }
@@ -362,7 +326,7 @@ export default function ChatRoomPage() {
   };
 
   const isMyMessage = (message: ChatMessage) => {
-    return message.senderName === userInfo.name;
+    return message.isMine;
   };
 
   const isSystemMessage = (message: ChatMessage) => {
@@ -389,20 +353,18 @@ export default function ChatRoomPage() {
   };
 
   return (
-    <div>
-      <div className="relative">
-        <div className="flex items-center justify-between">
-          <BackHeader
-            title="동행방 개설"
-            isChatRoom={true}
-            onClick={() => setIsModalOpen(true)}
-          />
-          <div className="connection-status flex items-center gap-2 mr-4">
-            <span className={`status-indicator w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}>
-            </span>
-            <span className="text-sm text-gray-600">{connectionStatus}</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-white">
+      {/* 고정된 헤더 */}
+      <div className="fixed top-0 left-0 right-0 bg-white z-50">
+        <BackHeader
+          title="동행방 개설"
+          isChatRoom={true}
+          onClick={() => setIsModalOpen(true)}
+        />
+      </div>
+
+      {/* 메시지 영역 - 헤더 높이만큼 상단 여백 */}
+      <div className="pt-16 px-4 pb-20">
         {error && (
           <div className="error-message p-4 bg-red-100 border border-red-400 text-red-700 rounded mb-4">
             <p>{error}</p>
@@ -420,7 +382,7 @@ export default function ChatRoomPage() {
           </div>
         )}
 
-        <div className="pb-10">
+        <div>
           {isLoading ? (
             <div className="loading text-center py-8">
               <p>채팅방을 불러오는 중...</p>
@@ -441,7 +403,7 @@ export default function ChatRoomPage() {
                   <p>이전 메시지를 불러오는 중...</p>
                 </div>
               )}
-                             {messages.map((message, index) => (
+                             {messages.map((message) => (
                  <div key={message.id}>
                    {isSystemMessage(message) ? (
                      <div className="system-message-content text-center py-2">
@@ -451,7 +413,7 @@ export default function ChatRoomPage() {
                        </span>
                      </div>
                    ) : (
-                     <div className={`flex items-end gap-1 pb-4 ${isMyMessage(message) ? 'flex-row-reverse justify-end' : 'justify-start'}`}>
+                     <div className={`flex items-end gap-1 pb-4 w-full ${isMyMessage(message) ? 'flex-row-reverse ml-auto' : 'justify-start'}`}>
                        {!isMyMessage(message) && (
                          <img
                            src="/src/assets/basicProfile.png"
@@ -489,6 +451,10 @@ export default function ChatRoomPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* 고정된 입력 영역 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
         <ChatInput
           message={newMessage}
           onChange={setNewMessage}
@@ -499,7 +465,7 @@ export default function ChatRoomPage() {
       </div>
 
       {isModalOpen && (
-        <div className="absolute top-0 right-7 w-2/3 h-full">
+        <div className="fixed top-0 right-0 w-2/3 h-full z-50">
           <ChatModal ref={modalBg} roomId={roomId} onLeaveRoom={leaveRoom} />
         </div>
       )}
