@@ -14,6 +14,7 @@ type RoomCardProps = {
   imageUrl?: string;
   gender?: string | null;
   hasUnreadMessages?: boolean;
+  unreadCount?: number; // 읽지 않은 메시지 개수
 };
 
 const RoomCard = ({
@@ -27,6 +28,7 @@ const RoomCard = ({
   imageUrl,
   gender,
   hasUnreadMessages,
+  unreadCount,
 }: RoomCardProps) => {
   const navigate = useNavigate();
 
@@ -36,44 +38,85 @@ const RoomCard = ({
 
   return (
     <div
-      className="flex w-full rounded-xl shadow-[0px_0px_2px_0px_rgba(247,137,56,1.00)] border border-[#F78938] overflow-hidden cursor-pointer relative"
+      className={`flex w-full rounded-xl shadow-[0px_0px_2px_0px_rgba(247,137,56,1.00)] border border-[#F78938] overflow-hidden cursor-pointer relative ${
+        hasUnreadMessages ? 'bg-orange-50' : 'bg-white'
+      }`}
       onClick={handleNavigate}
     >
       {/* 안읽은 메시지 표시 */}
       {hasUnreadMessages && (
-        <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full z-10" />
+        <div className="absolute top-2 right-2 z-10">
+          {unreadCount && unreadCount > 0 ? (
+            <div className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 min-w-[20px] text-center">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </div>
+          ) : (
+            <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-white rounded-full" />
+            </div>
+          )}
+        </div>
       )}
       
       <div className="flex flex-col justify-between p-4 w-2/3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
             <div
-              className={`text-xs font-medium font-['Pretendard'] leading-3 ${isEnd ? 'text-[#666666]' : 'text-[#F78938]'}`}
+              className={`text-xs font-medium font-['Pretendard'] leading-3 ${
+                isEnd ? 'text-[#666666]' : hasUnreadMessages ? 'text-[#F78938] font-bold' : 'text-[#F78938]'
+              }`}
             >
               {isEnd ? '모집완료' : '모집중'}
             </div>
             <div
-              className={`px-1 py-0.5 rounded-sm text-xs font-medium font-['Pretendard'] ${gender === 'MALE' ? 'bg-[#BBE7FF] text-[#3E7EFF]' : gender === 'FEMALE' ? 'bg-[#FFCFCF] text-[#FF3E3E]' : ''}`}
+              className={`px-1 py-0.5 rounded-sm text-xs font-medium font-['Pretendard'] ${
+                gender === 'MALE' 
+                  ? hasUnreadMessages 
+                    ? 'bg-[#BBE7FF] text-[#3E7EFF] font-bold' 
+                    : 'bg-[#BBE7FF] text-[#3E7EFF]'
+                  : gender === 'FEMALE' 
+                    ? hasUnreadMessages 
+                      ? 'bg-[#FFCFCF] text-[#FF3E3E] font-bold' 
+                      : 'bg-[#FFCFCF] text-[#FF3E3E]'
+                    : ''
+              }`}
             >
               {gender === 'MALE' ? '남성' : gender === 'FEMALE' ? '여성' : ''}
             </div>
           </div>
-          <div className="text-black text-base font-semibold font-['Pretendard'] leading-tight tracking-tight pb-2">
-            {title}
+          <div className="flex items-center gap-2 pb-2">
+            <div className={`text-base font-['Pretendard'] leading-tight tracking-tight ${
+              hasUnreadMessages 
+                ? 'text-black font-bold' 
+                : 'text-black font-semibold'
+            }`}>
+              {title}
+            </div>
+            {hasUnreadMessages && (
+              <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-medium">
+                새 메시지
+              </span>
+            )}
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 text-[#666666] text-xs font-normal font-['Pretendard']">
           <div className="inline-flex items-center gap-1">
             <Map />
-            {location}
+            <span className={hasUnreadMessages ? 'text-black font-medium' : 'text-[#666666]'}>
+              {location}
+            </span>
           </div>
           <div className="inline-flex items-center gap-1 pb-1">
             <Clock />
-            {date ? new Date(date).toLocaleDateString() : ''}
+            <span className={hasUnreadMessages ? 'text-red-600 font-medium' : 'text-[#666666]'}>
+              {date ? new Date(date).toLocaleDateString() : ''}
+            </span>
           </div>
           <div className="inline-flex items-center gap-1 text-[#F78938]">
             <WithIcon className="w-3.5 h-3.5" />
-            <div className="text-xs font-medium font-['Pretendard']">
+            <div className={`text-xs font-medium font-['Pretendard'] ${
+              hasUnreadMessages ? 'font-bold' : 'font-medium'
+            }`}>
               {pre}명/{all}명
             </div>
           </div>

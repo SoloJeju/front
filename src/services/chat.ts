@@ -177,6 +177,13 @@ class ChatApiService {
     const response = await this.api.get(url);
     return response.data;
   }
+
+  // 채팅방 메시지 읽음 처리
+  async markMessagesAsRead(roomId: number): Promise<SimpleResponse> {
+    console.log('채팅방 메시지 읽음 처리 요청, roomId:', roomId);
+    const response = await this.api.post(`/api/chatrooms/${roomId}/read`);
+    return response.data;
+  }
 }
 
 export default new ChatApiService();

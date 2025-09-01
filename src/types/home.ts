@@ -58,6 +58,7 @@ export type MyChatRoom = {
   maxMembers: number;
   isCompleted: boolean;
   hasUnreadMessages: boolean;
+  unreadCount?: number; // 읽지 않은 메시지 개수 (선택적)
   genderRestriction: string;
   touristSpotImage: string;
   spotName: string;

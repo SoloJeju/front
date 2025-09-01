@@ -6,13 +6,12 @@ import ChatModal from '../../components/ChatRoomPage/ChatModal';
 import chatApiService from '../../services/chat';
 import websocketService from '../../services/websocket';
 import type { ChatMessage, WebSocketChatMessage } from '../../types/chat';
-
-
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ChatRoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalBg = useRef<HTMLDivElement | null>(null);
@@ -26,33 +25,91 @@ export default function ChatRoomPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
-
   useEffect(() => {
     if (roomId) {
-      loadMessages();
-      // WebSocket 연결은 한 번만 실행
-      if (!isConnected) {
-        connectWebSocket();
-      }
+      enterChatRoom();
     }
 
     return () => {
       websocketService.disconnect();
-
     };
   }, [roomId]); // roomId만 의존성으로 설정
+
+  // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
+  const enterChatRoom = async () => {
+    try {
+      // 1-1. 기존 메시지 조회
+      await loadMessages();
+      
+      // 1-2. WebSocket 구독 시작
+      if (!isConnected) {
+        connectWebSocket();
+      }
+      
+      // 1-3. 읽음 처리 API 호출 (중요!)
+      await markMessagesAsRead();
+      
+      // 1-4. 입장 메시지 전송 (WebSocket 연결 후)
+      if (isConnected) {
+        sendEnterMessage();
+      }
+    } catch (error) {
+      console.error('채팅방 입장 중 오류:', error);
+    }
+  };
+
+  // 읽음 처리 API 호출
+  const markMessagesAsRead = async () => {
+    try {
+      const response = await chatApiService.markMessagesAsRead(Number(roomId));
+      if (response.isSuccess) {
+        console.log('메시지 읽음 처리 완료');
+        // 미확인 메시지 상태와 동행방 목록 캐시 무효화
+        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+        queryClient.invalidateQueries({ queryKey: ['myChatRooms'] });
+      } else {
+        console.error('메시지 읽음 처리 실패:', response.message);
+      }
+    } catch (error) {
+      console.error('메시지 읽음 처리 API 오류:', error);
+    }
+  };
+
+  // 메시지 스크롤시 읽음 처리 (가이드 4.2에 따라 구현)
+  const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    
+    // 스크롤이 하단에 가까워지면 읽음 처리
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    
+    if (isNearBottom) {
+      // 스크롤이 하단에 가까우면 읽음 처리 (가이드 4.2에 따라)
+      markMessagesAsRead();
+    }
+    
+    
+    // 기존 무한 스크롤 로직
+    if (target.scrollTop === 0 && hasNext && !isLoadingMore) {
+      loadMoreMessages();
+    }
+  };
+
+  // 입장 메시지 전송
+  const sendEnterMessage = () => {
+    if (isConnected) {
+      websocketService.sendMessage({
+        type: 'ENTER',
+        roomId: Number(roomId)
+      });
+    }
+  };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // 스크롤 이벤트 핸들러
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
-    if (target.scrollTop === 0 && hasNext && !isLoadingMore) {
-      loadMoreMessages();
-    }
-  };
+  // 스크롤 이벤트 핸들러 (읽음 처리 포함)
+  const handleScroll = handleMessageScroll;
 
   const connectWebSocket = () => {
     const token = localStorage.getItem('accessToken');
@@ -86,23 +143,15 @@ export default function ChatRoomPage() {
   // WebSocket 콜백 함수들을 별도로 정의
   const handleWebSocketConnect = () => {
     setIsConnected(true);
-
-
     
-    // 입장 메시지 전송하지 않음 (중복 방지)
-    // websocketService.sendMessage({
-    //   type: 'ENTER',
-    //   roomId: Number(roomId)
-    // });
+    // WebSocket 연결 후 입장 메시지 전송
+    sendEnterMessage();
   };
 
   const handleWebSocketMessage = (data: WebSocketChatMessage) => {
-
-
     // 내가 보낸 메시지인지 senderId 기준으로 확인
     const userId = localStorage.getItem('userId');
     if (userId && data.senderId && Number(userId) === data.senderId) {
-      // console.log('내가 보낸 메시지 무시 (senderId:', data.senderId, 'content:', data.content, ')');
       return;
     }
     
@@ -131,11 +180,19 @@ export default function ChatRoomPage() {
           isMine: false // 수신된 메시지는 항상 false (내가 보낸 메시지는 이미 스킵됨)
         };
         
-        // 처리된 메시지 ID에 추가
-
-      
+        // 새 메시지가 추가되면 읽음 처리 (가이드 4.2에 따라)
+        setTimeout(() => {
+          markMessagesAsRead();
+        }, 1000); // 1초 후 읽음 처리
+        
         return [...currentMessages, newMessage];
       });
+      
+      // 새 메시지가 도착했을 때 미확인 메시지 상태 업데이트
+      if (data.type === 'TALK') {
+        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+        queryClient.invalidateQueries({ queryKey: ['myChatRooms'] });
+      }
     }
   };
 
