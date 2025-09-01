@@ -50,20 +50,25 @@ const CreateRoomPage = () => {
   };
 
   const handleTimeSelect = (time: string) => {
-    if (!time) return;
-    const [ampm, hm] = time.split(' ');
-    let [hours, minutes] = hm.split(':').map(Number);
+  if (!time) return;
 
-    if (ampm === '오후' && hours < 12) hours += 12;
-    if (ampm === '오전' && hours === 12) hours = 0;
+  const [ampm, hm] = time.split(' ');
+  const [h, m] = hm.split(':').map(Number);
 
-    const convertedTime = `${hours.toString().padStart(2, '0')}:${minutes
-      .toString()
-      .padStart(2, '0')}`;
+  let hours = h;    
+  const minutes = m;   
 
-    setSelectedTime(convertedTime);
-    setIsTimeOpen(false);
-  };
+  if (ampm === '오후' && hours < 12) hours += 12;
+  if (ampm === '오전' && hours === 12) hours = 0;
+
+  const convertedTime = `${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}`;
+
+  setSelectedTime(convertedTime);
+  setIsTimeOpen(false);
+};
+
 
   const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY. MM. DD (ddd)') : '';
   const handleSubmit = async () => {
