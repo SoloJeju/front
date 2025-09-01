@@ -171,12 +171,6 @@ export default function HomePage() {
             <h3 className="font-[pretendard] font-semibold text-black text-xl">
               최신 혼행 후기 👀
             </h3>
-            <button
-              type="button"
-              className="flex gap-2 items-center font-[pretendard] font-medium text-[12px] text-[#F78938] cursor-pointer"
-            >
-              더보기 <img src={MoreArrow} />
-            </button>
           </div>
           <div className="grid grid-cols-2 gap-2">
             {lastestReviews?.map((review) => (

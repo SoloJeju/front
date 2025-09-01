@@ -4,6 +4,7 @@ type ModalButton = {
   text: string;
   onClick: () => void;
   variant?: 'gray' | 'orange';
+  disabled?: boolean;
 };
 
 interface ModalProps {
@@ -44,11 +45,12 @@ const Modal = ({ title, children, buttons = [], onClose }: ModalProps) => {
 
           {buttons.length > 0 && (
             <div className="flex w-full gap-3 mt-3">
-              {buttons.map(({ text, onClick, variant }, idx) => (
+              {buttons.map(({ text, onClick, variant, disabled }, idx) => (
                 <button
                   key={idx}
                   onClick={onClick}
-                  className={`w-full py-3 rounded-[10px] cursor-pointer transition ${getButtonStyle(variant)}`}
+                  className={`w-full py-3 rounded-[10px] cursor-pointer transition ${getButtonStyle(variant)} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={disabled}
                 >
                   <span className="text-base font-medium">{text}</span>
                 </button>

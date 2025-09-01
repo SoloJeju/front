@@ -6,7 +6,7 @@ export default function IntroStep({ onNext }: { onNext: () => void }) {
   const nickname = useProfileStore((state) => state.nickname);
 
   return (
-    <div className="max-w-app mx-auto p-6 flex flex-col min-h-screen items-center justify-center text-center">
+    <div className="max-w-app mx-auto px-6 pb-6 flex flex-col min-h-screen items-center text-center justify-center">
       <div className="flex-grow flex flex-col items-center justify-center">
         <img
           src="/question-logo.svg"
@@ -24,7 +24,7 @@ export default function IntroStep({ onNext }: { onNext: () => void }) {
       </div>
       <Button
         onClick={onNext}
-        className="w-full py-3 rounded-md text-white bg-[#F78938]"
+        className="w-full py-3 rounded-[10px] text-white bg-[#F78938]"
         variant="primary"
       >
         시작하기

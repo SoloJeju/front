@@ -1,4 +1,5 @@
 // import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useEffect, useRef, useState } from 'react';
 import PostDetailCard from '../../components/CommunityPage/PostDetailCard';
@@ -42,6 +43,7 @@ const commentData = [
 export default function PostDetailPage() {
   // const params = useParams();
   // const { postId } = params;
+  const navigate = useNavigate();
 
   const [isOpenPostDetail, setIsOpenPostDetail] = useState(false);
   const [isOpenCommentId, setIsOPenCommentId] = useState<number | null>(null);
@@ -103,7 +105,9 @@ export default function PostDetailPage() {
               ref={modalBg}
               onDelete={() => setIsDeletePostDetail(true)}
               onModify={() => console.log('수정페이지 이동')}
-              onReport={() => console.log('신고 실행')}
+              onReport={() => {
+                navigate(`/report?targetPostId=${data.id}`);
+              }}
             />
           ))}
         </div>
@@ -143,7 +147,9 @@ export default function PostDetailPage() {
               setIsOpenMore={(id) => setIsOPenCommentId(id)}
               onDelete={(id) => setIsDeleteCommentId(id)}
               onModify={(id) => console.log('수정페이지 이동', id)}
-              onReport={(id) => console.log('신고 실행', id)}
+              onReport={(id) => {
+                navigate(`/report?targetCommentId=${id}`);
+              }}
             />
           ))}
         </div>

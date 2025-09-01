@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'gray';
   size?: 'large' | 'small';
 }
 
@@ -21,12 +21,12 @@ export default function Button({
       disabled={disabled}
       className={clsx(
         // 1. 공통 스타일
-        'font-SemiBold rounded-[10px] flex-shrink-0 transition-all duration-200 ease-out transform',
+        'rounded-[10px] flex-shrink-0 transition-all duration-200 ease-out transform',
 
         // 2. 사이즈에 따른 스타일
         {
-          'w-full h-12 text-[16px]': size === 'large',
-          'h-9 px-4 text-[14px]': size === 'small',
+          'w-full h-12 text-[16px] font-semibold': size === 'large',
+          'h-9 px-4 text-[14px] font-medium': size === 'small',
         },
 
         // 3. 활성화/비활성화 상태에 따른 스타일

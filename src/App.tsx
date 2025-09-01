@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import PublicLayout from './layouts/public-layout';
 import ProtectedLayout from './layouts/protected-layout';
 import HomePage from './pages/home-page';
-import MyPage from './pages/MyPage';
 import SearchPage from './pages/search-page/index';
 import SearchMapPage from './pages/search-page/search-map-page';
 import SearchBoxPage from './pages/search-page/search-box-page';
@@ -27,6 +26,26 @@ import SignupPage from './pages/auth/SignupPage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ProfileCreationPage from './pages/profile/ProfileCreationPage';
 import AlarmPage from './pages/alarm-page';
+import MyPage from './pages/my-page/Index';
+import ProfileEdit from './pages/my-page/ProfileEdit';
+import MyPosts from './pages/my-page/MyPosts';
+import MyPlans from './pages/my-page/MyPlans';
+import MyRooms from './pages/my-page/MyRooms';
+import MyReviews from './pages/my-page/MyReviews';
+import MyBookmarks from './pages/my-page/MyBookmarks';
+import MyComments from './pages/my-page/MyComments';
+import LanguageSettings from './pages/my-page/LanguageSetting';
+import ContactUs from './pages/my-page/ContactUs';
+import TermsOfService from './pages/my-page/TermsOfService';
+import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
+import ReportPage from './pages/report-page';
+import MyReportsPage from './pages/report-page/my-reports';
+import ReportDetailPage from './pages/report-page/report-detail';
+import InquiryPage from './pages/inquiry-page';
+import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
+import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
+import SafetyCheckPage from './pages/safety-check-page';
+import StatsPage from './pages/safety-check-page/stats-page';
 
 function App() {
   return (
@@ -46,8 +65,11 @@ function App() {
           <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
           <Route path="/profile/:userId" element={<UserProfilePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
+          <Route path="/safety-check" element={<SafetyCheckPage />} />
+          <Route path="/safety-check/stats" element={<StatsPage />} />
           <Route path="mypage" element={<MyPage />} />
-          <Route path="/cart" element={<CartPage/>}/>
+          <Route path="mypage/profile-edit" element={<ProfileEdit />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
 
         <Route path="/" element={<PublicLayout />}>
@@ -62,6 +84,23 @@ function App() {
           <Route path="search-detail/:placeId" element={<SearchDetailPage />} />
           <Route path="community" element={<CommunityPage />} />
           <Route path="community/:postId" element={<PostDetailPage />} />
+          <Route path="my" element={<MyPage />} />
+          <Route path="mypage/posts" element={<MyPosts />} />
+          <Route path="mypage/plans" element={<MyPlans />} />
+          <Route path="mypage/rooms" element={<MyRooms />} />
+          <Route path="mypage/reviews" element={<MyReviews />} />
+          <Route path="mypage/bookmarks" element={<MyBookmarks />} />
+          <Route path="mypage/comments" element={<MyComments />} />
+          <Route path="mypage/language" element={<LanguageSettings />} />
+          <Route path="mypage/contact" element={<ContactUs />} />
+          <Route path="mypage/terms" element={<TermsOfService />} />
+          <Route path="mypage/privacy" element={<PrivacyPolicy />} />
+          <Route path="/report" element={<ReportPage />} />
+          <Route path="/report/my" element={<MyReportsPage />} />
+          <Route path="/report/:id" element={<ReportDetailPage />} />
+          <Route path="/inquiry" element={<InquiryPage />} />
+          <Route path="/inquiry/my" element={<MyInquiriesPage />} />
+          <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
