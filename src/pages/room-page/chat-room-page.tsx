@@ -326,13 +326,33 @@ export default function ChatRoomPage() {
     return `${period} ${displayHours}:${minutes.toString().padStart(2, '0')}`;
   };
 
+  // 날짜 포맷팅 함수
+  const formatDate = (timeString: string) => {
+    const date = new Date(timeString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    return `${year}년 ${month}월 ${day}일`;
+  };
+
+  // 날짜 구분선이 필요한지 확인하는 함수
+  const shouldShowDateDivider = (currentMessage: ChatMessage, previousMessage: ChatMessage | null) => {
+    if (!previousMessage) return true; // 첫 번째 메시지는 항상 날짜 표시
+    
+    const currentDate = new Date(currentMessage.sendAt).toDateString();
+    const previousDate = new Date(previousMessage.sendAt).toDateString();
+    
+    return currentDate !== previousDate;
+  };
+
   const leaveRoom = async () => {
     try {
       const response = await chatApiService.leaveChatRoom(Number(roomId));
       if (response.isSuccess) {
         console.log('채팅방 나가기 성공');
         websocketService.disconnect();
-        navigate('/my-page/my-rooms');
+        navigate('/mypage/rooms');
       } else {
         console.error('채팅방 나가기 실패:', response.message);
       }
@@ -410,50 +430,64 @@ export default function ChatRoomPage() {
                   <p>이전 메시지를 불러오는 중...</p>
                 </div>
               )}
-                             {messages.map((message) => (
-                 <div key={message.id}>
-                   {isSystemMessage(message) ? (
-                     <div className="system-message-content text-center py-2">
-                       <span className="system-text text-sm text-gray-600">
-                         {message.type === 'ENTER' ? `${message.senderName}님이 입장하셨습니다.` : 
-                          message.type === 'EXIT' ? `${message.senderName}님이 나가셨습니다.` : ''}
-                       </span>
-                     </div>
-                   ) : (
-                     <div className={`flex items-end gap-1 pb-4 w-full ${isMyMessage(message) ? 'flex-row-reverse ml-auto' : 'justify-start'}`}>
-                       {!isMyMessage(message) && (
-                         <img
-                           src="/src/assets/basicProfile.png"
-                           alt={`${message.senderName}님의 프로필`}
-                           className="w-8 h-8 shrink-0"
-                         />
-                       )}
-                       
-                       <div className={`flex flex-col gap-1 ${isMyMessage(message) ? 'items-end' : 'items-start'}`}>
-                         {!isMyMessage(message) && (
-                           <span className="font-[pretendard] font-normal text-[10px] text-[#262626]">
-                             {message.senderName}
-                           </span>
-                         )}
-                         <div className={`flex items-end gap-1 ${isMyMessage(message) ? 'flex-row-reverse' : 'flex-row'}`}>
-                           <p
-                             className={`max-w-68 px-4 py-2.5 rounded-xl font-[pretendard] font-normal text-sm break-words ${
-                               isMyMessage(message)
-                                 ? 'bg-[#F78938] text-white rounded-br-md' 
-                                 : 'text-black bg-[#F5F5F5] rounded-bl-md'
-                             }`}
-                           >
-                             {message.content}
-                           </p>
-                           <time className="font-[pretendard] font-normal text-[10px] text-[#B4B4B4] shrink-0">
-                             {formatTime(message.sendAt)}
-                           </time>
-                         </div>
-                       </div>
-                     </div>
-                   )}
-                 </div>
-               ))}
+              {messages.map((message, index) => {
+                const previousMessage = index > 0 ? messages[index - 1] : null;
+                const showDateDivider = shouldShowDateDivider(message, previousMessage);
+                
+                return (
+                  <div key={message.id}>
+                    {/* 날짜 구분선 */}
+                    {showDateDivider && (
+                      <div className="flex justify-center py-4">
+                        <div className="text-gray-600 text-xs font-[pretendard]">
+                          {formatDate(message.sendAt)}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {isSystemMessage(message) ? (
+                      <div className="system-message-content text-center py-2">
+                        <span className="system-text text-sm text-gray-600">
+                          {message.type === 'ENTER' ? `${message.senderName}님이 입장하셨습니다.` : 
+                           message.type === 'EXIT' ? `${message.senderName}님이 나가셨습니다.` : ''}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className={`flex items-end gap-1 pb-4 w-full ${isMyMessage(message) ? 'flex-row-reverse ml-auto' : 'justify-start'}`}>
+                        {!isMyMessage(message) && (
+                          <img
+                            src="/src/assets/basicProfile.png"
+                            alt={`${message.senderName}님의 프로필`}
+                            className="w-8 h-8 shrink-0"
+                          />
+                        )}
+                        
+                        <div className={`flex flex-col gap-1 ${isMyMessage(message) ? 'items-end' : 'items-start'}`}>
+                          {!isMyMessage(message) && (
+                            <span className="font-[pretendard] font-normal text-[10px] text-[#262626]">
+                              {message.senderName}
+                            </span>
+                          )}
+                          <div className={`flex items-end gap-1 ${isMyMessage(message) ? 'flex-row-reverse' : 'flex-row'}`}>
+                            <p
+                              className={`max-w-68 px-4 py-2.5 rounded-xl font-[pretendard] font-normal text-sm break-words ${
+                                isMyMessage(message)
+                                  ? 'bg-[#F78938] text-white rounded-br-md' 
+                                  : 'text-black bg-[#F5F5F5] rounded-bl-md'
+                              }`}
+                            >
+                              {message.content}
+                            </p>
+                            <time className="font-[pretendard] font-normal text-[10px] text-[#B4B4B4] shrink-0">
+                              {formatTime(message.sendAt)}
+                            </time>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -473,7 +507,7 @@ export default function ChatRoomPage() {
 
       {isModalOpen && (
         <div className="fixed top-0 right-0 w-2/3 h-full z-50">
-          <ChatModal ref={modalBg} roomId={roomId} onLeaveRoom={leaveRoom} />
+          <ChatModal ref={modalBg} roomId={roomId} onLeaveRoom={leaveRoom} onClose={() => setIsModalOpen(false)} />
         </div>
       )}
     </div>

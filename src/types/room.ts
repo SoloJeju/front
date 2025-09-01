@@ -22,3 +22,6 @@ export type CreatedRoomResult = {
 };
 
 export type CreateRoomApiResponse = CommonResponse<CreatedRoomResult>;
+
+// 채팅방 나가기 API 응답 타입
+export type LeaveRoomApiResponse = CommonResponse<string>;

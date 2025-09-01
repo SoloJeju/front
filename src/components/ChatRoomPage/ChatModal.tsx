@@ -15,9 +15,10 @@ interface ChatModalProps {
   ref: React.RefObject<HTMLDivElement | null>;
   roomId: string | undefined;
   onLeaveRoom: () => void;
+  onClose?: () => void;
 }
 
-const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
+const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
   console.log(roomId);
   const navigate = useNavigate();
 
@@ -43,9 +44,9 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   };
 
-  // 해당 채팅방 정보 찾기 (InfiniteQuery 구조에 맞게 수정)
+  // 해당 채팅방 정보 찾기 (roomId 또는 chatRoomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
-    (room: any) => room.roomId === Number(roomId)
+    (room: any) => room.roomId === Number(roomId) || room.chatRoomId === Number(roomId)
   );
 
   useEffect(() => {
@@ -81,9 +82,16 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
     }
   };
 
+  // 바깥 부분 클릭 시 모달 닫기
+  const handleOutsideClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose?.();
+    }
+  };
+
   if (isLoading || isRoomDetailPending) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20">
+      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
         <div
           className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
           ref={ref}
@@ -98,7 +106,7 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
 
   if (error || !room) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20">
+      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
         <div
           className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
           ref={ref}
@@ -122,54 +130,24 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black/20">
+    <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
       <div
         className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15 overflow-y-auto"
         ref={ref}
       >
+        {/* 채팅방 이름을 맨 위에 배치 */}
         <h1 className="font-[pretendard] font-semibold text-[22px] text-black">
-          동행방
+          {room.title}
         </h1>
 
-        {/* 채팅방 상세 정보 */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <h2 className="font-[pretendard] font-semibold text-lg text-black mb-3">
-            {room.title}
-          </h2>
-          
-          <div className="space-y-2 mb-3">
-            <p className="flex gap-2 items-center">
-              <img src={Location} alt="동행 위치" className="w-4 h-4" />
-              <span className="font-[pretendard] font-normal text-sm text-[#666666]">
-                {room.spotName}
-              </span>
-            </p>
-            <p className="flex gap-2 items-center">
-              <img src={Clock} alt="동행 시간" className="w-4 h-4" />
-              <span className="font-[pretendard] font-normal text-sm text-[#666666]">
-                {formatDate(room.joinDate)}
-              </span>
-            </p>
-            <p className="flex gap-2 items-center">
-              <img src={People} alt="동행 인원수" className="w-4 h-4" />
-              <span className="font-[pretendard] font-medium text-sm text-[#F78938]">
-                {room.currentMembers}명/{room.maxMembers}명
-              </span>
-            </p>
-          </div>
-
-          <p className="font-[pretendard] font-normal text-sm text-[#262626] mb-3">
-            {room.description}
-          </p>
-
-          <button
-            type="button"
-            className="flex items-center gap-2 font-[pretendard] font-medium text-sm text-[#F78938] cursor-pointer"
-            onClick={handleGoToRoomDetail}
-          >
-            동행방 글 다시 보러가기 <img src={MoreArrow} className="w-3 h-3" />
-          </button>
-        </div>
+        {/* 동행방 글 다시 보러가기 버튼 */}
+        <button
+          type="button"
+          className="flex items-center gap-2 font-[pretendard] font-medium text-sm text-[#F78938] cursor-pointer"
+          onClick={handleGoToRoomDetail}
+        >
+          동행방 글 다시 보러가기 <img src={MoreArrow} className="w-3 h-3" />
+        </button>
 
         <p className="flex gap-3">
           <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D]">
@@ -180,7 +158,7 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
             aria-label={`총 ${usersData.totalMembers}명 참여자`}
           >
             <img src={People} />
-            {usersData.totalMembers}명
+            {usersData.totalMembers} / {room.maxMembers || room.maxParticipants || 0}
           </span>
         </p>
 

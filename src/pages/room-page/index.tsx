@@ -152,11 +152,13 @@ export default function RoomPage() {
     description: roomData.description,
     spotName: roomData.spotName,
     spotImage: roomData.spotImage || roomData.touristSpotImage,
-    currentMembers: roomData.currentParticipants || roomData.currentMembers,
-    maxMembers: roomData.maxParticipants || roomData.maxMembers,
+    currentMembers: roomData.currentParticipants || 0,
+    maxMembers: roomData.maxParticipants || 0,
     scheduledDate: roomData.scheduledDate || roomData.joinDate,
     isCompleted: roomData.isCompleted || false,
   };
+
+
 
   return (
     <div className="h-full p-5 bg-[#F78938]">
@@ -192,7 +194,7 @@ export default function RoomPage() {
               aria-label={`최대 ${room.maxMembers}명 현재 인원 ${room.currentMembers}명`}
               className="font-[pretendard] font-medium text-base text-[#F78938]"
             >
-              {room.currentMembers}명/{room.maxMembers}명
+              {room.currentMembers || 0}명/{room.maxMembers}명
             </span>
           </p>
         </div>

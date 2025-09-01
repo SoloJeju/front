@@ -29,7 +29,7 @@ const Modal = ({ title, children, buttons = [], onClose }: ModalProps) => {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/40 z-[1000] p-4"
     >
       <div className="w-full max-w-[480px] bg-white p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex flex-col gap-6">
         <div className="w-full flex justify-end">
