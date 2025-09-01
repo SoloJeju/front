@@ -13,6 +13,7 @@ type RoomCardProps = {
   all: number;
   imageUrl?: string;
   gender?: string | null;
+  hasUnreadMessages?: boolean;
 };
 
 const RoomCard = ({
@@ -25,6 +26,7 @@ const RoomCard = ({
   all,
   imageUrl,
   gender,
+  hasUnreadMessages,
 }: RoomCardProps) => {
   const navigate = useNavigate();
 
@@ -34,9 +36,14 @@ const RoomCard = ({
 
   return (
     <div
-      className="flex w-full rounded-xl shadow-[0px_0px_2px_0px_rgba(247,137,56,1.00)] border border-[#F78938] overflow-hidden cursor-pointer"
+      className="flex w-full rounded-xl shadow-[0px_0px_2px_0px_rgba(247,137,56,1.00)] border border-[#F78938] overflow-hidden cursor-pointer relative"
       onClick={handleNavigate}
     >
+      {/* 안읽은 메시지 표시 */}
+      {hasUnreadMessages && (
+        <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full z-10" />
+      )}
+      
       <div className="flex flex-col justify-between p-4 w-2/3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">

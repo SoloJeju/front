@@ -47,3 +47,53 @@ export type ResponseRecommendedChatRoomsDto = CommonResponse<
 //   latestReviews: LatestReviews[];
 //   recommendedChatRooms: RecommendedChatRooms[];
 // }>;
+
+// 마이페이지 동행방 목록
+export type MyChatRoom = {
+  chatRoomId: number;
+  title: string;
+  description: string;
+  joinDate: string;
+  currentMembers: number;
+  maxMembers: number;
+  isCompleted: boolean;
+  hasUnreadMessages: boolean;
+  genderRestriction: string;
+  touristSpotImage: string;
+  spotName: string;
+};
+
+export type MyChatRoomPageable = {
+  pageNumber: number;
+  pageSize: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+};
+
+export type MyChatRoomSort = {
+  empty: boolean;
+  sorted: boolean;
+  unsorted: boolean;
+};
+
+export type MyChatRoomResult = {
+  content: MyChatRoom[];
+  pageable: MyChatRoomPageable;
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  sort: MyChatRoomSort;
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+};
+
+export type ResponseMyChatRoomsDto = CommonResponse<MyChatRoomResult>;
