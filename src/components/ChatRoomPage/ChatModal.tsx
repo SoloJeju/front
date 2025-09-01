@@ -1,8 +1,6 @@
 import MoreArrow from '/src/assets/arrow-more.svg';
 import People from '/src/assets/people.svg';
 import Exit from '/src/assets/Exit.svg';
-import Location from '/src/assets/location.svg';
-import Clock from '/src/assets/clock.svg';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../common/Modal';
@@ -19,7 +17,7 @@ interface ChatModalProps {
 }
 
 const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
-  console.log(roomId);
+  
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,21 +30,11 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
     isPending: isRoomDetailPending,
   } = useGetMyChatRooms();
 
-  // 날짜 포맷팅 함수
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
-    return `${year}.${month}.${day} ${hours}:${minutes}`;
-  };
 
-  // 해당 채팅방 정보 찾기 (roomId 또는 chatRoomId로 찾기)
+
+  // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
-    (room: any) => room.roomId === Number(roomId) || room.chatRoomId === Number(roomId)
+    (room: any) => room.roomId === Number(roomId)
   );
 
   useEffect(() => {
@@ -64,7 +52,7 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
       
       if (response.isSuccess) {
         setUsersData(response.result);
-        console.log('채팅방 사용자 목록 로드 성공:', response.result);
+      
       } else {
         setError(response.message || '사용자 목록을 불러오는데 실패했습니다.');
       }

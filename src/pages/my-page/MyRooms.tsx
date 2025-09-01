@@ -4,14 +4,12 @@ import BackHeader from '../../components/common/Headers/BackHeader';
 import RoomCard from '../../components/common/RoomCard/RoomCard';
 import PostNone from '/src/assets/post-none.svg';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
-import { useUnreadMessages } from '../../hooks/mypage/useUnreadMessages';
 
 export default function MyRooms() {
   const { data, isFetching, hasNextPage, fetchNextPage, isPending, isError } =
     useGetMyChatRooms();
   
-  const { data: unreadMessagesData } = useUnreadMessages();
-  const hasUnreadMessages = unreadMessagesData?.result;
+
 
   const { ref, inView } = useInView({
     threshold: 0,

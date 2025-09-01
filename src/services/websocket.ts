@@ -28,14 +28,13 @@ class WebSocketService {
 
     // 같은 방에 이미 연결되어 있다면 재연결하지 않음
     if (this.currentRoomId === roomId && this.connectionStatus) {
-      console.log('이미 같은 방에 연결되어 있습니다:', roomId);
       return;
     }
 
     this.currentRoomId = roomId;
     this.currentToken = token;
 
-    console.log('STOMP WebSocket 연결 시도, roomId:', roomId);
+
 
     try {
       // STOMP 클라이언트 생성
@@ -46,8 +45,7 @@ class WebSocketService {
           'roomId': roomId.toString(),
           'Content-Type': 'application/json'
         },
-        debug: (str) => {
-          console.log('STOMP Debug:', str);
+        debug: () => {
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
@@ -55,19 +53,11 @@ class WebSocketService {
       });
 
       // 연결 성공 시 콜백
-      this.stompClient.onConnect = (frame) => {
-        console.log('=== STOMP 연결 성공 ===');
-        console.log('연결 프레임:', frame);
-        console.log('연결된 서버:', frame.headers.server);
-        console.log('STOMP 버전:', frame.headers.version);
-        console.log('사용자 정보:', frame.headers.user);
-        console.log('세션 ID:', frame.headers['simp-session-id']);
-        console.log('전달된 인증 헤더:', { 'Authorization': `Bearer ${token}`, 'roomId': roomId.toString() });
+      this.stompClient.onConnect = () => {
         this.connectionStatus = true;
         
         // 연결 후 잠시 대기 후 구독 (서버 준비 시간 확보)
         setTimeout(() => {
-          console.log('연결 후 1초 대기 완료, 채팅방 구독 시작');
           this.subscribeToRoom(roomId);
         }, 1000);
         
@@ -76,15 +66,13 @@ class WebSocketService {
       };
 
       // 연결 해제 시 콜백
-      this.stompClient.onDisconnect = (frame) => {
-        console.log('STOMP 연결 해제됨:', frame);
+      this.stompClient.onDisconnect = () => {
         this.connectionStatus = false;
         this.disconnectCallbacks.forEach(cb => cb());
       };
 
       // 에러 발생 시 콜백
-      this.stompClient.onStompError = (frame) => {
-        console.error('STOMP 에러:', frame);
+      this.stompClient.onStompError = () => {
         this.errorCallbacks.forEach(cb => cb(new Event('stomp-error')));
       };
 
@@ -92,7 +80,6 @@ class WebSocketService {
       this.stompClient.activate();
 
     } catch (error) {
-      console.error('STOMP 연결 생성 오류:', error);
       this.errorCallbacks.forEach(cb => cb(error as Event));
     }
   }
@@ -103,23 +90,14 @@ class WebSocketService {
       // 백엔드: /topic/{roomId} (예: /topic/1)
       const topicPath = `/topic/${roomId}`;
       
-      console.log(`채팅방 ${roomId} 구독 시도 - 토픽: ${topicPath}`);
-      console.log('STOMP 클라이언트 상태:', this.stompClient.connected);
-      console.log('연결 상태:', this.connectionStatus);
-      console.log('현재 토큰:', this.currentToken);
-      
       try {
         // 구독 시에도 인증 헤더 포함
-        const subscription = this.stompClient.subscribe(topicPath, (message: Message) => {
-          console.log('=== 메시지 수신 시작 ===');
-          console.log('메시지 객체:', message);
-          console.log('메시지 헤더:', message.headers);
-          console.log('메시지 본문:', message.body);
+        this.stompClient.subscribe(topicPath, (message: Message) => {
+ 
           
           try {
             const data = JSON.parse(message.body);
-            console.log('파싱된 메시지 데이터:', data);
-            console.log('=== 메시지 수신 완료 ===');
+     
             
             // 구독테스트 메시지 필터링
             if (data.content && (
@@ -127,45 +105,28 @@ class WebSocketService {
               data.content.includes('test') ||
               data.content.includes('테스트')
             )) {
-              console.log('테스트 메시지 무시:', data.content);
               return;
             }
             
             this.messageCallbacks.forEach(cb => cb(data));
           } catch (error) {
-            console.error('채팅방 메시지 파싱 오류:', error);
-            console.error('원본 메시지:', message.body);
           }
         }, {
           // 구독 시 인증 헤더 추가
           'Authorization': `Bearer ${this.currentToken}`,
           'roomId': roomId.toString()
         });
-
-        console.log(`채팅방 ${roomId} 구독 완료 - 토픽: ${topicPath}`);
-        console.log('구독 객체:', subscription);
-        console.log('구독 시 전달된 헤더:', { 'Authorization': `Bearer ${this.currentToken}`, 'roomId': roomId.toString() });
-        
-        // 구독 상태 확인 (테스트 메시지 전송 제거)
-        console.log('구독 완료 - 테스트 메시지 전송 없음');
         
       } catch (error) {
-        console.error('구독 생성 중 오류:', error);
         // 구독 실패 시 3초 후 재시도
         setTimeout(() => {
-          console.log('구독 재시도...');
           this.subscribeToRoom(roomId);
         }, 3000);
       }
     } else {
-      console.error('구독 실패 - STOMP 클라이언트 또는 연결 상태 문제');
-      console.log('stompClient:', this.stompClient);
-      console.log('connectionStatus:', this.connectionStatus);
-      
       // 연결 상태가 아니면 3초 후 재시도
       if (!this.connectionStatus) {
         setTimeout(() => {
-          console.log('연결 상태 확인 후 구독 재시도...');
           this.subscribeToRoom(roomId);
         }, 3000);
       }
@@ -174,7 +135,6 @@ class WebSocketService {
 
   disconnect() {
     if (this.stompClient) {
-      console.log('STOMP 연결 종료');
       this.stompClient.deactivate();
       this.stompClient = null;
     }
@@ -185,7 +145,6 @@ class WebSocketService {
 
   sendMessage(message: WebSocketMessage) {
     if (this.stompClient && this.connectionStatus) {
-      console.log('STOMP 메시지 전송:', message);
       
       // 백엔드 DTO 구조에 맞춰 메시지 전송
       const stompMessage: StompMessage = {
@@ -202,7 +161,6 @@ class WebSocketService {
         body: JSON.stringify(stompMessage)
       });
     } else {
-      console.error('STOMP가 연결되지 않았습니다. 현재 상태:', this.connectionStatus);
     }
   }
 

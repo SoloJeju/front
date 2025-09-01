@@ -1,10 +1,6 @@
 import { publicAxios, authAxios, setAuthData, clearAuthData } from './axios';
 import type { CommonResponse, LoginResponse } from '../types/common';
 
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
-
 
 // 로그인 API
 export const login = async (email: string, password: string): Promise<CommonResponse<LoginResponse>> => {
@@ -90,6 +86,56 @@ export const logout = async () => {
       // 요청 자체를 보내지 못한 경우
       console.error('로그아웃 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
       throw new Error('로그아웃 요청을 보낼 수 없습니다.');
+    }
+  }
+};
+
+// 토큰 갱신 API
+export const reissueToken = async (refreshToken: string): Promise<CommonResponse<{ accessToken: string }>> => {
+  try {
+    const response = await publicAxios.post<CommonResponse<{ accessToken: string }>>('/api/auth/reissue', {
+      refreshToken,
+    });
+    
+    // 토큰 갱신 성공 시 새로운 accessToken 저장
+    if (response.data.isSuccess && response.data.result) {
+      const currentRefreshToken = localStorage.getItem('refreshToken');
+      const userId = localStorage.getItem('userId');
+      
+      if (currentRefreshToken && userId) {
+        setAuthData(
+          parseInt(userId),
+          response.data.result.accessToken,
+          currentRefreshToken
+        );
+      }
+    }
+    
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response: { status: number; data: { message?: string } } };
+      console.error('토큰 갱신 실패:', {
+        status: axiosError.response.status,
+        data: axiosError.response.data,
+        message: axiosError.response.data?.message || '알 수 없는 오류가 발생했습니다.'
+      });
+      
+      if (axiosError.response.status === 401) {
+        throw new Error('리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.');
+      }
+      
+      if (axiosError.response.status === 500) {
+        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+      
+      throw new Error(axiosError.response.data?.message || '토큰 갱신 중 오류가 발생했습니다.');
+    } else if (error && typeof error === 'object' && 'request' in error) {
+      console.error('토큰 갱신 요청 실패 (응답 없음):', (error as { request: unknown }).request);
+      throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
+    } else {
+      console.error('토큰 갱신 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
+      throw new Error('토큰 갱신 요청을 보낼 수 없습니다.');
     }
   }
 };

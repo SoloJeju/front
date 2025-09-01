@@ -29,7 +29,6 @@ const RoomCard = ({
   imageUrl,
   gender,
   hasUnreadMessages,
-  unreadCount,
   from = 'mypage', // 기본값은 마이페이지
 }: RoomCardProps) => {
   const navigate = useNavigate();
