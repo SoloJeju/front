@@ -6,24 +6,8 @@ import CommentCard from '../../components/CommunityPage/CommentCard';
 import Modal from '../../components/common/Modal';
 import CommentInput from '../../components/CommunityPage/CommentInput';
 import useGetPostDetail from '../../hooks/community/useGetPostDetail';
-
-const commentData = [
-  {
-    id: 1,
-    wrtier: '홍길동',
-    time: '2025/01/01 14:52',
-    comment:
-      '안녕하세요!  혼놀 꿀팁 전문가입니다 ~ 혼자 성산일출봉에 가는 것이 고민이시군요..얼른 가시길..밥 든든히 먹고 가세요.. 배고픔.',
-    image: null,
-  },
-  {
-    id: 2,
-    wrtier: '홍길동',
-    time: '2025/01/01 14:52',
-    comment: '저 좀 데려가주세요~~~~!!!!!',
-    image: null,
-  },
-];
+import useGetInfiniteCommentList from '../../hooks/community/useGetInfiniteCommentList';
+import { useInView } from 'react-intersection-observer';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -52,6 +36,25 @@ export default function PostDetailPage() {
     isError: isPostDetailError,
   } = useGetPostDetail(Number(postId));
 
+  const {
+    data: comments,
+    isPending: isCommentLoading,
+    isError: isCommentError,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetInfiniteCommentList(Number(postId));
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, isFetching, hasNextPage, fetchNextPage]);
+
   useEffect(() => {
     const handleModalBg = (e: MouseEvent) => {
       if (isOpenPostDetail || isOpenCommentId !== null) {
@@ -74,12 +77,12 @@ export default function PostDetailPage() {
     setComment('');
   };
 
-  if (isPostDetailLoading) {
+  if (isPostDetailLoading || isCommentLoading) {
     // loading ui
     return <div>Loading...</div>;
   }
 
-  if (isPostDetailError) {
+  if (isPostDetailError || isCommentError) {
     return <div>Erorr</div>;
   }
 
@@ -135,26 +138,31 @@ export default function PostDetailPage() {
         )}
 
         <div className="flex flex-col gap-2 pl-5">
-          {commentData.map((data) => (
-            // 무한 스크롤 처리
-            <CommentCard
-              key={data.id}
-              id={data.id}
-              writer={data.wrtier}
-              image={data.image}
-              time={data.time}
-              comment={data.comment}
-              isMine={false}
-              ref={modalBg}
-              isOpenMore={isOpenCommentId === data.id}
-              setIsOpenMore={(id) => setIsOPenCommentId(id)}
-              onDelete={(id) => setIsDeleteCommentId(id)}
-              onModify={(id) => console.log('수정페이지 이동', id)}
-              onReport={(id) => {
-                navigate(`/report?targetCommentId=${id}`);
-              }}
-            />
-          ))}
+          {comments?.pages.flatMap((data) => {
+            const comment = data.result.content;
+
+            return comment.map((c) => (
+              <CommentCard
+                key={c.commentId}
+                id={c.commentId}
+                writer={c.authorNickname}
+                image={c.authorProfileImage}
+                time={c.createdAt}
+                comment={c.content}
+                isMine={c.isMine}
+                ref={modalBg}
+                isOpenMore={isOpenCommentId === c.commentId}
+                setIsOpenMore={(id) => setIsOPenCommentId(id)}
+                onDelete={(id) => setIsDeleteCommentId(id)}
+                onModify={(id) => console.log('수정페이지 이동', id)}
+                onReport={(id) => {
+                  navigate(`/report?targetCommentId=${id}`);
+                }}
+              />
+            ));
+          })}
+
+          <div ref={ref}></div>
         </div>
         {isDeleteCommentId && (
           <Modal
