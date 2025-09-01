@@ -57,6 +57,7 @@ function App() {
           <Route path="/plan/:planId" element={<PlanDetailPage />} />
           <Route path="/create-room" element={<CreateRoomPage />} />
           <Route path="community/new-post" element={<PostWritePage />} />
+          <Route path="community/:postId" element={<PostDetailPage />} />
           <Route path="/room/:roomId" element={<RoomPage />} />
           <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
           <Route path="/profile/:userId" element={<UserProfilePage />} />
@@ -77,7 +78,6 @@ function App() {
           <Route path="search-box" element={<SearchBoxPage />} />
           <Route path="search-detail/:placeId" element={<SearchDetailPage />} />
           <Route path="community" element={<CommunityPage />} />
-          <Route path="community/:postId" element={<PostDetailPage />} />
           <Route path="my" element={<MyPage />} />
           <Route path="mypage/posts" element={<MyPosts />} />
           <Route path="mypage/plans" element={<MyPlans />} />
