@@ -207,18 +207,26 @@ class WebSocketService {
   }
 
   onMessage(callback: (data: any) => void) {
+    // 기존 콜백 제거 후 새로운 콜백만 등록
+    this.messageCallbacks = [];
     this.messageCallbacks.push(callback);
   }
 
   onConnect(callback: () => void) {
+    // 기존 콜백 제거 후 새로운 콜백만 등록
+    this.connectCallbacks = [];
     this.connectCallbacks.push(callback);
   }
 
   onDisconnect(callback: () => void) {
+    // 기존 콜백 제거 후 새로운 콜백만 등록
+    this.disconnectCallbacks = [];
     this.disconnectCallbacks.push(callback);
   }
 
   onError(callback: (error: Event) => void) {
+    // 기존 콜백 제거 후 새로운 콜백만 등록
+    this.errorCallbacks = [];
     this.errorCallbacks.push(callback);
   }
 

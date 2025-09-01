@@ -45,7 +45,7 @@ const ChatModal = ({ ref, roomId, onLeaveRoom }: ChatModalProps) => {
 
   // 해당 채팅방 정보 찾기 (InfiniteQuery 구조에 맞게 수정)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
-    (room: any) => room.chatRoomId === Number(roomId)
+    (room: any) => room.roomId === Number(roomId)
   );
 
   useEffect(() => {

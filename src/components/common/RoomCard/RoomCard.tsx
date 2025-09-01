@@ -15,6 +15,7 @@ type RoomCardProps = {
   gender?: string | null;
   hasUnreadMessages?: boolean;
   unreadCount?: number; // 읽지 않은 메시지 개수
+  from?: 'home' | 'mypage'; // 어디서 왔는지 구분
 };
 
 const RoomCard = ({
@@ -29,11 +30,13 @@ const RoomCard = ({
   gender,
   hasUnreadMessages,
   unreadCount,
+  from = 'mypage', // 기본값은 마이페이지
 }: RoomCardProps) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate(`/room/${id}`);
+    // from 파라미터를 추가하여 어디서 왔는지 구분
+    navigate(`/room/${id}?from=${from}`);
   };
 
   return (
@@ -46,15 +49,7 @@ const RoomCard = ({
       {/* 안읽은 메시지 표시 */}
       {hasUnreadMessages && (
         <div className="absolute top-2 right-2 z-10">
-          {unreadCount && unreadCount > 0 ? (
-            <div className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 min-w-[20px] text-center">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </div>
-          ) : (
-            <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-              <div className="w-1.5 h-1.5 bg-white rounded-full" />
-            </div>
-          )}
+          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
         </div>
       )}
       
@@ -92,11 +87,6 @@ const RoomCard = ({
             }`}>
               {title}
             </div>
-            {hasUnreadMessages && (
-              <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-medium">
-                새 메시지
-              </span>
-            )}
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 text-[#666666] text-xs font-normal font-['Pretendard']">

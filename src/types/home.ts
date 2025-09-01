@@ -48,20 +48,27 @@ export type ResponseRecommendedChatRoomsDto = CommonResponse<
 //   recommendedChatRooms: RecommendedChatRooms[];
 // }>;
 
-// 마이페이지 동행방 목록
+// 마이페이지 동행방 목록 (업데이트된 구조)
 export type MyChatRoom = {
-  chatRoomId: number;
+  roomId: number;
   title: string;
   description: string;
-  joinDate: string;
-  currentMembers: number;
-  maxMembers: number;
-  isCompleted: boolean;
-  hasUnreadMessages: boolean;
-  unreadCount?: number; // 읽지 않은 메시지 개수 (선택적)
-  genderRestriction: string;
-  touristSpotImage: string;
+  spotContentId: number | null;
   spotName: string;
+  spotImage: string;
+  currentParticipants: number;
+  maxParticipants: number;
+  scheduledDate: string;
+  genderRestriction: string;
+  // 기존 필드들 (하위 호환성을 위해 유지)
+  chatRoomId?: number;
+  joinDate?: string;
+  currentMembers?: number;
+  maxMembers?: number;
+  isCompleted?: boolean;
+  hasUnreadMessages?: boolean;
+  unreadCount?: number;
+  touristSpotImage?: string;
 };
 
 export type MyChatRoomPageable = {

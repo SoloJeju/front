@@ -37,18 +37,7 @@ export default function MyRooms() {
       <div className="w-full max-w-[480px]">
         {/* 헤더 */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-         
-            <BackHeader title="동행방 리스트" />
-            {/* 미확인 메시지가 있을 때 빨간색 점 표시 */}
-            {hasUnreadMessages && (
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            )}
-     
-          {/* {sortedRooms.length > 0 && (
-            <div className="text-sm text-gray-600">
-              읽지 않은 메시지: {sortedRooms.filter(room => room.hasUnreadMessages).length}개
-            </div>
-          )} */}
+          <BackHeader title="동행방 리스트" />
         </div>
 
         {/* 콘텐츠 */}
@@ -76,18 +65,19 @@ export default function MyRooms() {
             <div className="flex flex-col gap-2">
               {sortedRooms.map((room) => (
                 <RoomCard
-                  key={room.chatRoomId}
-                  id={room.chatRoomId}
-                  isEnd={room.isCompleted}
+                  key={room.roomId}
+                  id={room.roomId}
+                  isEnd={room.isCompleted || room.currentParticipants === room.maxParticipants}
                   title={room.title}
                   location={room.spotName}
-                  date={room.joinDate}
-                  pre={room.currentMembers}
-                  all={room.maxMembers}
-                  imageUrl={room.touristSpotImage}
+                  date={room.scheduledDate || room.joinDate || ''}
+                  pre={room.currentParticipants || room.currentMembers || 0}
+                  all={room.maxParticipants || room.maxMembers || 0}
+                  imageUrl={room.spotImage || room.touristSpotImage}
                   gender={room.genderRestriction}
                   hasUnreadMessages={room.hasUnreadMessages}
                   unreadCount={room.unreadCount}
+                  from="mypage"
                 />
               ))}
               

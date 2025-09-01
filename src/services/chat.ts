@@ -11,7 +11,7 @@ import type {
 } from '../types/chat';
 
 // API 기본 설정
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'; // 백엔드 서버 주소
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 class ChatApiService {
   private api: ReturnType<typeof axios.create>;

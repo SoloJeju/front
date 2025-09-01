@@ -1,11 +1,10 @@
-<<<<<<< HEAD
 import { publicAxios, authAxios, setAuthData, clearAuthData } from './axios';
 import type { CommonResponse, LoginResponse } from '../types/common';
-=======
+
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
->>>>>>> 66823fff5d5651faedf241a7315e32fef3584b02
+
 
 // 로그인 API
 export const login = async (email: string, password: string): Promise<CommonResponse<LoginResponse>> => {

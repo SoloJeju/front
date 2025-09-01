@@ -146,6 +146,17 @@ export default function ChatRoomPage() {
     websocketService.onMessage((data: WebSocketChatMessage) => {
       console.log('WebSocket 메시지 수신:', data);
       
+    
+      // 현재 사용자 정보 가져오기
+      const currentUserId = localStorage.getItem('userId');
+      
+     
+      // 내가 보낸 메시지는 WebSocket으로 받지 않음 (이미 UI에 추가했으므로)
+      if (data.senderId === Number(currentUserId)) {
+        console.log('내가 보낸 메시지 무시:', data.content);
+        return;
+      }
+      
       if (data.type === 'TALK') {
         const newChatMessage: ChatMessage = {
           id: data.id,
@@ -157,7 +168,7 @@ export default function ChatRoomPage() {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: data.isMine || false
+          isMine: false
         };
         
         setMessages(prev => [...prev, newChatMessage]);
@@ -172,7 +183,7 @@ export default function ChatRoomPage() {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: data.isMine || false
+          isMine: false
         };
         
         setMessages(prev => [...prev, enterMessage]);
@@ -187,7 +198,7 @@ export default function ChatRoomPage() {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: data.isMine || false
+          isMine: false
         };
         
         setMessages(prev => [...prev, exitMessage]);
@@ -264,8 +275,26 @@ export default function ChatRoomPage() {
       content: newMessage.trim()
     };
     
-    websocketService.sendMessage(messageData);
+    // 내가 보낸 메시지를 즉시 UI에 추가
+    const currentUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const myMessage: ChatMessage = {
+      id: Date.now().toString(), // 임시 ID
+      content: newMessage.trim(),
+      senderName: currentUserInfo.name || '나',
+      sendAt: new Date().toISOString(),
+      type: 'TALK',
+      roomId: Number(roomId),
+      senderId: currentUserInfo.userId || 0,
+      senderProfileImage: currentUserInfo.profileImage,
+      image: null,
+      isMine: true
+    };
+    
+    setMessages(prev => [...prev, myMessage]);
     setNewMessage('');
+    
+    // WebSocket으로 메시지 전송
+    websocketService.sendMessage(messageData);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
