@@ -6,7 +6,7 @@ interface ChatMessagesProps {
   message: string;
   time: string;
   prevDate: string;
-  type: string;
+  type: 'ENTER' | 'TALK' | 'EXIT';
 }
 
 const ChatMessages = ({
@@ -20,9 +20,9 @@ const ChatMessages = ({
   const [year, month, day] = date.split('-');
   const formattedTime = time.split('T')[1];
 
-  const shouldShowDate = prevDate !== date && type === 'CHAT';
+  const shouldShowDate = prevDate !== date && type === 'TALK';
   const isEnter = type === 'ENTER';
-  const isLeave = type === 'LEAVE';
+  const isLeave = type === 'EXIT';
 
   return (
     <div className="flex flex-col pb-4">
@@ -40,7 +40,7 @@ const ChatMessages = ({
         </p>
       )}
 
-      {type === 'CHAT' && (
+      {type === 'TALK' && (
         <ChatBox
           senderName={senderName}
           message={message}

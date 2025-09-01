@@ -8,8 +8,9 @@ interface ChatBoxProps {
 }
 
 const ChatBox = ({ senderName, message, time }: ChatBoxProps) => {
-  // zustand store에서 가져오기
-  const userName = '홍길동';
+  // localStorage에서 사용자 정보 가져오기
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const userName = userInfo.name || '';
   const isMine = userName === senderName;
 
   const formatTime = (time: string) => {
