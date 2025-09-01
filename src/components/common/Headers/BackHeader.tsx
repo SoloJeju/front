@@ -22,7 +22,7 @@ const BackHeader = ({
   };
 
   return (
-    <header className="w-full p-3 flex items-center justify-between relative">
+    <header className="fixed w-full max-w-[480px] p-3 flex items-center justify-between bg-white z-50">
       <button
         type="button"
         className="cursor-pointer w-6 h-6"
