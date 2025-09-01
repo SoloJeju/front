@@ -211,6 +211,17 @@ export default function SearchDetailPage() {
 
         {activeTab === '동행방' && (
           <div className="mt-1">
+            {/*<h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+              아직 동행방이 없어요.
+            </h2>
+            <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+             지금 첫 번째 동행방을 만들어보세요!
+            </h2>
+            <button
+              className="mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
+            >
+              새 동행방 개설하기
+            </button>*/}
             <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
               지금 열려있는 동행방
             </p>

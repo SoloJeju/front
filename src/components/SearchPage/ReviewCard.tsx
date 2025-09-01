@@ -2,6 +2,8 @@ import ProfileDefImg from "../../assets/profileDefault.svg?react";
 import EASYIcon from "../../assets/TagEASY.svg?react";
 import NORMALIcon from "../../assets/TagNORMAL.svg?react";
 import HARDIcon from "../../assets/TagHARD.svg?react";
+import StarIcon from "../../assets/Star.svg?react";
+import StarEmptyIcon from "../../assets/StarEmpty.svg?react";
 import ReceiptIcon from "../../assets/receipt.svg?react";
 
 type ReviewCardProps = {
@@ -32,6 +34,11 @@ export default function ReviewCard({
 }: ReviewCardProps) {
   const LevelIcon = levelIcon[level];
 
+  const rating = 4.5;
+
+  const Star = Math.floor(rating);
+  const StarEmpty = 5 - Star;
+
   return (
     <div className="rounded-[12px] border border-[#D9D9D9] shadow-[0_2px_4px_rgba(0,0,0,0.1)] p-4 bg-white w-full">
       <div className="flex items-center justify-between w-full mb-2">
@@ -47,12 +54,22 @@ export default function ReviewCard({
             <ProfileDefImg className="w-8 h-8" />
           )}
           </div>
-          <p className="text-black font-[Pretendard] text-[16px] not-italic font-medium leading-[18px] tracking-[-0.28px]">
-            {user}
-          </p>
+          <div className="flex flex-col">
+            <p className="text-black font-[Pretendard] text-[16px] not-italic font-medium leading-[18px] tracking-[-0.28px]">
+                {user}
+            </p>
+            <div className="flex">
+              {Array.from({ length: Star }).map((_, i) => (
+                <StarIcon key={`full-${i}`} className="w-3 h-3"/>
+                ))}
+              {Array.from({ length: StarEmpty }).map((_, i) => (
+                <StarEmptyIcon key={`empty-${i}`} className="w-3 h-3"/>
+                ))}
+            </div>
+          </div>
         </div>
         <div className="flex items-center">
-          <LevelIcon className="h-8 w-10" />
+          <LevelIcon className="w-14 h-12" />
         </div>
       </div>
       {image && (
