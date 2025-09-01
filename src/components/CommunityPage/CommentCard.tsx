@@ -8,7 +8,7 @@ interface CommentCardProps {
   id: number;
   writer: string;
   image: string | null;
-  time: string;
+  time: Date;
   comment: string;
   isOpenMore: boolean;
   isMine: boolean;
@@ -58,7 +58,7 @@ const CommentCard = ({
               {writer}
             </span>
             <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-              {time}
+              {new Date(time).toLocaleDateString()}
             </time>
           </div>
           <button type="button" onClick={() => setIsOpenMore(id)}>

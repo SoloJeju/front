@@ -10,6 +10,7 @@ import Script from '/src/assets/script.svg';
 import FilledScript from '/src/assets/script-filled.svg';
 import MoreButton from './MoreButton';
 import { useNavigate } from 'react-router-dom';
+import { filterCategoryEntoKo } from '../../utils/filterCategory';
 
 interface PostDetailCardProps {
   id: number;
@@ -76,9 +77,9 @@ const PostDetailCard = ({
     <div className="flex flex-col gap-3 p-5 border border-[#FFCEAA] rounded-xl relative">
       <div className="flex justify-between">
         <div className="flex gap-1.5">
-          {typeIcon(type)}
+          {typeIcon(filterCategoryEntoKo(type) || '')}
           <span className="font-[pretendard] font-medium text-sm text-[#F78938]">
-            {type}
+            {filterCategoryEntoKo(type)}
           </span>
         </div>
         <button type="button" onClick={() => onClick?.()}>
@@ -117,7 +118,7 @@ const PostDetailCard = ({
         </div>
 
         <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-          {time.toLocaleDateString()}
+          {new Date(time).toLocaleDateString()}
         </time>
       </div>
 

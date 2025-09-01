@@ -4,6 +4,7 @@ import Tip from '/src/assets/tip.svg?react';
 import Challenge from '/src/assets/challenge.svg?react';
 import Comment from '/src/assets/comment.svg';
 import { useNavigate } from 'react-router-dom';
+import { filterCategoryEntoKo } from '../../utils/filterCategory';
 
 interface PostCardProps {
   id: number;
@@ -52,9 +53,9 @@ const PostCard = ({
     >
       <div className="flex flex-col gap-2">
         <h2 className="flex gap-1.5">
-          {typeIcon(type)}
+          {typeIcon(filterCategoryEntoKo(type) || '')}
           <p className="font-[pretendard] font-medium text-sm text-[#F78938]">
-            {type}
+            {filterCategoryEntoKo(type)}
           </p>
         </h2>
         <h3 className="font-[pretendard] font-semibold text-black">{title}</h3>
@@ -73,7 +74,7 @@ const PostCard = ({
             </span>
           </div>
           <time className='font-[pretendard] font-normal text-xs text-[#666666] after:content-["|"] after:pl-1 after:text-[#666666]'>
-            {time.toLocaleDateString()}
+            {new Date(time).toLocaleDateString()}
           </time>
           <span
             aria-label="작성자"

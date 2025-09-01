@@ -6,7 +6,7 @@ import Write from '/src/assets/write.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useGetInfinitePostList from '../../hooks/community/useGetInfinitePostList';
 import { useInView } from 'react-intersection-observer';
-import { filteredCategory } from '../../utils/filterCategory';
+import { filterCategoryKoToEn } from '../../utils/filterCategory';
 
 export default function CommunityPage() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function CommunityPage() {
   const [selected, setSelected] = useState(category ? category : '전체');
 
   const { data, isFetching, hasNextPage, isPending, isError, fetchNextPage } =
-    useGetInfinitePostList(filteredCategory(selected));
+    useGetInfinitePostList(filterCategoryKoToEn(selected));
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -49,17 +49,19 @@ export default function CommunityPage() {
 
         return posts.length > 0 ? (
           posts.map((post) => (
-            <PostCard
-              key={post.postId}
-              id={post.postId}
-              type={post.postCategory}
-              title={post.title}
-              content={post.content}
-              commentNumber={post.commentCount}
-              time={post.createdAt}
-              writer={post.authorNickname}
-              image={post.thumbnailUrl}
-            />
+            <div className="pt-5">
+              <PostCard
+                key={post.postId}
+                id={post.postId}
+                type={post.postCategory}
+                title={post.title}
+                content={post.content}
+                commentNumber={post.commentCount}
+                time={post.createdAt}
+                writer={post.authorNickname}
+                image={post.thumbnailUrl}
+              />
+            </div>
           ))
         ) : (
           <div className="flex flex-col justify-center items-center h-full">
