@@ -1,13 +1,14 @@
 import MoreArrow from '/src/assets/arrow-more.svg';
 import People from '/src/assets/people.svg';
 import Exit from '/src/assets/Exit.svg';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../common/Modal';
 import ChatMemberCard from './ChatMemberCard';
 import chatApiService from '../../services/chat';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import type { ChatRoomUsersResponse } from '../../types/chat';
+import type { MyChatRoom } from '../../types/home';
 
 interface ChatModalProps {
   ref: React.RefObject<HTMLDivElement | null>;
@@ -30,20 +31,12 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
     isPending: isRoomDetailPending,
   } = useGetMyChatRooms();
 
-
-
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
-    (room: any) => room.roomId === Number(roomId)
+    (room: MyChatRoom) => room.roomId === Number(roomId)
   );
 
-  useEffect(() => {
-    if (roomId) {
-      loadChatRoomUsers();
-    }
-  }, [roomId]);
-
-  const loadChatRoomUsers = async () => {
+  const loadChatRoomUsers = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -56,13 +49,19 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
       } else {
         setError(response.message || '사용자 목록을 불러오는데 실패했습니다.');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('채팅방 사용자 목록 로드 오류:', err);
-      setError(err.response?.data?.message || '사용자 목록을 불러오는 중 오류가 발생했습니다.');
+      setError('사용자 목록을 불러오는 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [roomId]);
+
+  useEffect(() => {
+    if (roomId) {
+      loadChatRoomUsers();
+    }
+  }, [roomId, loadChatRoomUsers]);
 
   const handleGoToRoomDetail = () => {
     if (roomId) {

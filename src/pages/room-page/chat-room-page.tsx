@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import ChatInput from '../../components/ChatRoomPage/ChatInput';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatModal from '../../components/ChatRoomPage/ChatModal';
 import chatApiService from '../../services/chat';
 import websocketService from '../../services/websocket';
 import type { ChatMessage, WebSocketChatMessage } from '../../types/chat';
+import type { MyChatRoom } from '../../types/home';
 import { useQueryClient } from '@tanstack/react-query';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 
@@ -32,44 +33,11 @@ export default function ChatRoomPage() {
 
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
-    (room: any) => room.roomId === Number(roomId)
+    (room: MyChatRoom) => room.roomId === Number(roomId)
   );
 
-  useEffect(() => {
-    if (roomId) {
-      enterChatRoom();
-    }
-
-    return () => {
-      websocketService.disconnect();
-    };
-  }, [roomId]); // roomId만 의존성으로 설정
-
-  // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
-  const enterChatRoom = async () => {
-    try {
-      // 1-1. 기존 메시지 조회
-      await loadMessages();
-      
-      // 1-2. WebSocket 구독 시작
-      if (!isConnected) {
-        connectWebSocket();
-      }
-      
-      // 1-3. 읽음 처리 API 호출 (중요!)
-      await markMessagesAsRead();
-      
-      // 1-4. 입장 메시지 전송 (WebSocket 연결 후)
-      if (isConnected) {
-        sendEnterMessage();
-      }
-    } catch (error) {
-      console.error('채팅방 입장 중 오류:', error);
-    }
-  };
-
   // 읽음 처리 API 호출
-  const markMessagesAsRead = async () => {
+  const markMessagesAsRead = useCallback(async () => {
     try {
       const response = await chatApiService.markMessagesAsRead(Number(roomId));
       if (response.isSuccess) {
@@ -83,55 +51,33 @@ export default function ChatRoomPage() {
     } catch (error) {
       console.error('메시지 읽음 처리 API 오류:', error);
     }
-  };
+  }, [roomId, queryClient]);
 
-  // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
-  const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
-    
-    // 스크롤이 하단에 가까워지면 읽음 처리
-    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    
-    if (isNearBottom) {
-      // 스크롤이 하단에 가까우면 읽음 처리 (가이드 4.2에 따라)
-      markMessagesAsRead();
+  const loadMessages = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await chatApiService.getChatRoomMessages(Number(roomId));
+      
+      if (response.isSuccess) {
+        setMessages(response.result.messages);
+        setHasNext(response.result.hasNext);
+        
+        // 메시지 로드 후 스크롤을 맨 아래로 이동
+        setTimeout(() => {
+          scrollToBottom();
+        }, 300);
+      } else {
+        setError(response.message || '메시지를 불러오는데 실패했습니다.');
+      }
+    } catch (err: unknown) {
+      console.error('채팅 메시지 로드 오류:', err);
+      setError('메시지를 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    // 무한 스크롤 로직 - 스크롤이 맨 위에 가까워지면 이전 메시지 로드
-    const isNearTop = target.scrollTop < 100; // 감지 범위를 늘림
-    
-    if (isNearTop && hasNext && !isLoadingMore) {
-    
-      loadMoreMessages();
-    }
-  };
+  }, [roomId]);
 
-  // 입장 메시지 전송
-  const sendEnterMessage = () => {
-    if (isConnected) {
-      websocketService.sendMessage({
-        type: 'ENTER',
-        roomId: Number(roomId)
-      });
-    }
-  };
-
-  // 초기 로딩 완료 시에만 스크롤을 맨 아래로 이동
-  useEffect(() => {
-    if (messages.length > 0 && !isLoading && !isLoadingMore && isInitialLoad) {
-      // 초기 로딩이 완료되었을 때만 스크롤을 맨 아래로 이동
-    
-      setTimeout(() => {
-        scrollToBottom();
-        setIsInitialLoad(false); // 초기 로딩 완료 표시
-      }, 200);
-    }
-  }, [messages.length, isLoading, isLoadingMore, isInitialLoad]);
-
-  // 스크롤 이벤트 핸들러 (읽음 처리 포함)
-  const handleScroll = handleMessageScroll;
-
-  const connectWebSocket = () => {
+  const connectWebSocket = useCallback(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       setError('인증 토큰이 없습니다.');
@@ -226,31 +172,86 @@ export default function ChatRoomPage() {
       setIsConnected(false);
       setError('WebSocket 연결 중 오류가 발생했습니다.');
     });
-  };
+  }, [roomId, isConnected]);
 
-  const loadMessages = async () => {
+  // 입장 메시지 전송
+  const sendEnterMessage = useCallback(() => {
+    if (isConnected) {
+      websocketService.sendMessage({
+        type: 'ENTER',
+        roomId: Number(roomId)
+      });
+    }
+  }, [isConnected, roomId]);
+
+  // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
+  const enterChatRoom = useCallback(async () => {
     try {
-      setIsLoading(true);
-      const response = await chatApiService.getChatRoomMessages(Number(roomId));
+      // 1-1. 기존 메시지 조회
+      await loadMessages();
       
-      if (response.isSuccess) {
-        setMessages(response.result.messages);
-        setHasNext(response.result.hasNext);
-        
-        // 메시지 로드 후 스크롤을 맨 아래로 이동
-        setTimeout(() => {
-          scrollToBottom();
-        }, 300);
-      } else {
-        setError(response.message || '메시지를 불러오는데 실패했습니다.');
+      // 1-2. WebSocket 구독 시작
+      if (!isConnected) {
+        connectWebSocket();
       }
-    } catch (err: any) {
-      console.error('채팅 메시지 로드 오류:', err);
-      setError(err.response?.data?.message || '메시지를 불러오는 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
+      
+      // 1-3. 읽음 처리 API 호출 (중요!)
+      await markMessagesAsRead();
+      
+      // 1-4. 입장 메시지 전송 (WebSocket 연결 후)
+      if (isConnected) {
+        sendEnterMessage();
+      }
+    } catch (error) {
+      console.error('채팅방 입장 중 오류:', error);
+    }
+  }, [isConnected, loadMessages, connectWebSocket, markMessagesAsRead, sendEnterMessage]);
+
+  useEffect(() => {
+    if (roomId) {
+      enterChatRoom();
+    }
+
+    return () => {
+      websocketService.disconnect();
+    };
+  }, [roomId, enterChatRoom]); // roomId와 enterChatRoom을 의존성으로 설정
+
+  // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
+  const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    
+    // 스크롤이 하단에 가까워지면 읽음 처리
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    
+    if (isNearBottom) {
+      // 스크롤이 하단에 가까우면 읽음 처리 (가이드 4.2에 따라)
+      markMessagesAsRead();
+    }
+    
+    // 무한 스크롤 로직 - 스크롤이 맨 위에 가까워지면 이전 메시지 로드
+    const isNearTop = target.scrollTop < 100; // 감지 범위를 늘림
+    
+    if (isNearTop && hasNext && !isLoadingMore) {
+    
+      loadMoreMessages();
     }
   };
+
+  // 초기 로딩 완료 시에만 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (messages.length > 0 && !isLoading && !isLoadingMore && isInitialLoad) {
+      // 초기 로딩이 완료되었을 때만 스크롤을 맨 아래로 이동
+    
+      setTimeout(() => {
+        scrollToBottom();
+        setIsInitialLoad(false); // 초기 로딩 완료 표시
+      }, 200);
+    }
+  }, [messages.length, isLoading, isLoadingMore, isInitialLoad]);
+
+  // 스크롤 이벤트 핸들러 (읽음 처리 포함)
+  const handleScroll = handleMessageScroll;
 
   const loadMoreMessages = async () => {
     if (isLoadingMore || !hasNext) return;
@@ -272,7 +273,7 @@ export default function ChatRoomPage() {
       } else {
         console.error('이전 메시지 로드 실패:', response.message);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('이전 메시지 로드 오류:', err);
     } finally {
       setIsLoadingMore(false);

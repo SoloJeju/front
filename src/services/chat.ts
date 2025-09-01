@@ -59,7 +59,7 @@ class ChatApiService {
     lastMessageTime?: string, 
     size: number = 20
   ): Promise<ChatMessageResponse> {
-    // console.log('채팅방 메시지 조회, roomId:', roomId, 'size:', size, 'lastMessageTime:', lastMessageTime);
+  
     let url = `/api/chatrooms/${roomId}/messages?size=${size}`;
     if (lastMessageTime) {
       url += `&lastMessageTime=${lastMessageTime}`;

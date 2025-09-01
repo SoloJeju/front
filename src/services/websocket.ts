@@ -1,7 +1,7 @@
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import type { Message } from '@stomp/stompjs';
-import type { WebSocketMessage } from '../types/chat';
+import type { WebSocketMessage, WebSocketChatMessage } from '../types/chat';
 
 interface StompMessage {
   type: 'ENTER' | 'TALK' | 'EXIT';
@@ -15,7 +15,7 @@ class WebSocketService {
   private connectionStatus: boolean = false;
   private currentRoomId: number | null = null;
   private currentToken: string | null = null;
-  private messageCallbacks: ((data: any) => void)[] = [];
+  private messageCallbacks: ((data: WebSocketChatMessage) => void)[] = [];
   private connectCallbacks: (() => void)[] = [];
   private disconnectCallbacks: (() => void)[] = [];
   private errorCallbacks: ((error: Event) => void)[] = [];
@@ -34,8 +34,6 @@ class WebSocketService {
     this.currentRoomId = roomId;
     this.currentToken = token;
 
-
-
     try {
       // STOMP 클라이언트 생성
       this.stompClient = new Client({
@@ -46,6 +44,7 @@ class WebSocketService {
           'Content-Type': 'application/json'
         },
         debug: () => {
+          // 디버그 로그 비활성화
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
@@ -93,11 +92,8 @@ class WebSocketService {
       try {
         // 구독 시에도 인증 헤더 포함
         this.stompClient.subscribe(topicPath, (message: Message) => {
- 
-          
           try {
-            const data = JSON.parse(message.body);
-     
+            const data = JSON.parse(message.body) as WebSocketChatMessage;
             
             // 구독테스트 메시지 필터링
             if (data.content && (
@@ -109,7 +105,8 @@ class WebSocketService {
             }
             
             this.messageCallbacks.forEach(cb => cb(data));
-          } catch (error) {
+          } catch (parseError) {
+            console.error('메시지 파싱 오류:', parseError);
           }
         }, {
           // 구독 시 인증 헤더 추가
@@ -117,7 +114,7 @@ class WebSocketService {
           'roomId': roomId.toString()
         });
         
-      } catch (error) {
+      } catch {
         // 구독 실패 시 3초 후 재시도
         setTimeout(() => {
           this.subscribeToRoom(roomId);
@@ -161,10 +158,11 @@ class WebSocketService {
         body: JSON.stringify(stompMessage)
       });
     } else {
+      console.warn('WebSocket이 연결되지 않았습니다.');
     }
   }
 
-  onMessage(callback: (data: any) => void) {
+  onMessage(callback: (data: WebSocketChatMessage) => void) {
     // 기존 콜백 제거 후 새로운 콜백만 등록
     this.messageCallbacks = [];
     this.messageCallbacks.push(callback);
@@ -188,7 +186,7 @@ class WebSocketService {
     this.errorCallbacks.push(callback);
   }
 
-  removeMessageCallback(callback: (data: any) => void) {
+  removeMessageCallback(callback: (data: WebSocketChatMessage) => void) {
     this.messageCallbacks = this.messageCallbacks.filter(cb => cb !== callback);
   }
 

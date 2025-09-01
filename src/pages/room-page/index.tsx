@@ -8,14 +8,16 @@ import People from '/src/assets/people.svg';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import { getRecommendedChatRooms } from '../../apis/home';
 import chatApiService from '../../services/chat';
-import type { RecommendedChatRooms } from '../../types/home';
+import type { RecommendedChatRooms, MyChatRoom } from '../../types/home';
+
+type RoomData = RecommendedChatRooms | MyChatRoom;
 
 export default function RoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isJoining, setIsJoining] = useState(false);
-  const [roomData, setRoomData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<RoomData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -64,7 +66,7 @@ export default function RoomPage() {
           // 마이페이지에서 온 경우 - 마이페이지 데이터 사용
           if (myChatRooms && !isMyChatRoomsPending && !isMyChatRoomsError) {
             const room = myChatRooms.pages?.[0]?.result?.content?.find(
-              (room: any) => room.roomId === Number(roomId)
+              (room: MyChatRoom) => room.roomId === Number(roomId)
             );
             if (room) {
               setRoomData(room);
@@ -113,13 +115,18 @@ export default function RoomPage() {
           alert(response.message || '채팅방 입장에 실패했습니다.');
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('채팅방 입장 API 오류:', error);
       
       // API 에러 응답에서 이미 참가한 경우 처리
-      if (error.response?.data?.code === 'CHAT4004') {
-        console.log('이미 참가한 채팅방입니다. 메시지 페이지로 이동합니다.');
-        navigate(`/chat-room/${roomId}`);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response?: { data?: { code?: string } } };
+        if (apiError.response?.data?.code === 'CHAT4004') {
+          console.log('이미 참가한 채팅방입니다. 메시지 페이지로 이동합니다.');
+          navigate(`/chat-room/${roomId}`);
+        } else {
+          alert('채팅방 입장 중 오류가 발생했습니다.');
+        }
       } else {
         alert('채팅방 입장 중 오류가 발생했습니다.');
       }
@@ -151,11 +158,12 @@ export default function RoomPage() {
     title: roomData.title,
     description: roomData.description,
     spotName: roomData.spotName,
-    spotImage: roomData.spotImage || roomData.touristSpotImage,
-    currentMembers: roomData.currentParticipants || 0,
-    maxMembers: roomData.maxParticipants || 0,
-    scheduledDate: roomData.scheduledDate || roomData.joinDate,
-    isCompleted: roomData.isCompleted || false,
+    spotImage: roomData.spotImage,
+    currentMembers: 'currentParticipants' in roomData ? roomData.currentParticipants : 0,
+    maxMembers: 'maxParticipants' in roomData ? roomData.maxParticipants : 0,
+    scheduledDate: 'scheduledDate' in roomData ? 
+      (typeof roomData.scheduledDate === 'string' ? roomData.scheduledDate : roomData.scheduledDate.toISOString()) : '',
+    isCompleted: 'isCompleted' in roomData ? roomData.isCompleted : false,
   };
 
 
