@@ -1,19 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
+import { createComment } from '../../apis/post';
 import { queryClient } from '../../App';
-import { scrapPost } from '../../apis/post';
 import toast from 'react-hot-toast';
 
-function useUpdateScrap() {
+function useCreateComment() {
   return useMutation({
-    mutationFn: scrapPost,
+    mutationFn: createComment,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['postDetail'],
+        queryKey: ['comments'],
       });
     },
     onError: () => {
-      toast.error('스크랩 실패! 잠시 후 다시 시도해주세용...');
+      toast.error('댓글 작성 실패! 잠시 후 다시 시도해주세용...');
     },
   });
 }
-export default useUpdateScrap;
+
+export default useCreateComment;

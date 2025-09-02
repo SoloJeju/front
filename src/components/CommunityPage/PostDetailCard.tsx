@@ -119,6 +119,7 @@ const PostDetailCard = ({
         {isOpenMore && (
           <MoreButton
             isMine={isMine}
+            isComment={false}
             ref={ref}
             onDelete={() => onDelete?.()}
             onModify={() => onModify?.()}

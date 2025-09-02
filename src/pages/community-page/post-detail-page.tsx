@@ -8,6 +8,8 @@ import CommentInput from '../../components/CommunityPage/CommentInput';
 import useGetPostDetail from '../../hooks/community/useGetPostDetail';
 import useGetInfiniteCommentList from '../../hooks/community/useGetInfiniteCommentList';
 import { useInView } from 'react-intersection-observer';
+import useCreateComment from '../../hooks/community/useCreateComment';
+import useDeleteComment from '../../hooks/community/useDeleteComment';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -20,13 +22,6 @@ export default function PostDetailPage() {
   const [isDeleteCommentId, setIsDeleteCommentId] = useState<number | null>(
     null
   );
-  // const [isModifyCommentId, setIsModifyCommentId] = useState<number | null>(
-  //   null
-  // );
-  // const [isReportCommentId, setIsReportCommentId] = useState<number | null>(
-  //   null
-  // );
-  // const [isMine, setIsMine] = useState(true);
   const [comment, setComment] = useState('');
   const modalBg = useRef<HTMLDivElement | null>(null);
 
@@ -44,6 +39,9 @@ export default function PostDetailPage() {
     hasNextPage,
     fetchNextPage,
   } = useGetInfiniteCommentList(Number(postId));
+
+  const { mutate: createComment } = useCreateComment();
+  const { mutate: deleteComment } = useDeleteComment();
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -72,8 +70,15 @@ export default function PostDetailPage() {
     };
   });
 
+  const clickDeleteComment = () => {
+    if (isDeleteCommentId) {
+      deleteComment(isDeleteCommentId);
+      setIsDeleteCommentId(null);
+    }
+  };
+
   const handleSubmitComment = () => {
-    console.log(comment);
+    createComment({ postId: Number(postId), content: comment });
     setComment('');
   };
 
@@ -155,7 +160,8 @@ export default function PostDetailPage() {
               <CommentCard
                 key={c.commentId}
                 id={c.commentId}
-                writer={c.authorNickname}
+                author={c.authorNickname}
+                authorId={c.authorId}
                 image={c.authorProfileImage}
                 time={c.createdAt}
                 comment={c.content}
@@ -164,7 +170,6 @@ export default function PostDetailPage() {
                 isOpenMore={isOpenCommentId === c.commentId}
                 setIsOpenMore={(id) => setIsOPenCommentId(id)}
                 onDelete={(id) => setIsDeleteCommentId(id)}
-                onModify={(id) => console.log('수정페이지 이동', id)}
                 onReport={(id) => {
                   navigate(`/report?targetCommentId=${id}`);
                 }}
@@ -186,7 +191,7 @@ export default function PostDetailPage() {
               },
               {
                 text: '확인',
-                onClick: () => console.log('삭제 실행'),
+                onClick: () => clickDeleteComment(),
                 variant: 'orange',
               },
             ]}
