@@ -8,4 +8,7 @@ import svgr from 'vite-plugin-svgr';
 export default defineConfig({
   plugins: [react(), tailwindcss(), svgr()],
   assetsInclude: ['**/*.mp3'],
+  define: {
+    global: 'globalThis',
+  },
 });

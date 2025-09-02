@@ -6,9 +6,11 @@ import Plus from '/src/assets/plus.svg?react';
 import Community from '/src/assets/community.svg?react';
 import My from '/src/assets/my.svg?react';
 import Modal from '../../Plus/Modal';
+import { useGetUnreadMessages } from '../../../hooks/mypage/useGetUnreadMessages';
 
 const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: unreadMessagesData } = useGetUnreadMessages();
 
   const handlePlusClick = () => {
     setIsModalOpen(true);
@@ -22,7 +24,12 @@ const Navbar = () => {
           <Plus className='w-10 h-10' aria-label='더보기' />
       </button>
       <Navlink to="/community" Icon={Community} alt="커뮤니티" />
-      <Navlink to="/my" Icon={My} alt="마이" />
+      <div className="relative">
+        <Navlink to="/my" Icon={My} alt="마이" />
+        {unreadMessagesData?.result && (
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+        )}
+      </div>
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}/>
       )}
