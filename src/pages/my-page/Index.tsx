@@ -34,7 +34,7 @@ const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { nickname, type, profileImage } = useProfileStore();
+  const { nickName, type, profileImage } = useProfileStore();
   const { data: unreadMessagesData } = useUnreadMessages();
   const hasUnreadMessages = unreadMessagesData?.result;
 
@@ -139,7 +139,7 @@ const MyPage = () => {
             {type || '감성 여유형 여행자'}
           </span>
           <h2 className="mt-0.5 text-[20px] font-semibold text-white">
-            {nickname || '홍길동'}
+            {nickName || '홍길동'}
           </h2>
         </div>
 

@@ -14,7 +14,7 @@ export default function ResultStep() {
     <div className="px-6 pb-6 flex flex-col min-h-screen items-center justify-center text-center">
       <div className="flex-grow flex flex-col items-center justify-center">
         <h2 className="text-xl text-center mb-4 leading-snug">
-          <span className="font-bold text-3xl">{storeData.nickname}</span> 님의
+          <span className="font-bold text-3xl">{storeData.nickName}</span> 님의
           <br />
           여행 성향은?
         </h2>

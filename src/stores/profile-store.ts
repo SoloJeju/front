@@ -9,6 +9,7 @@ export interface ProfileState {
   gender: '남자' | '여자' | '';
   birthdate: string;
   profileImage: string;
+  type: string;
   bio: string;
 
   // 경험 횟수 
@@ -28,6 +29,7 @@ export interface ProfileState {
   setGender: (gender: '남자' | '여자') => void;
   setBirthdate: (birthdate: string) => void;
   setProfileImage: (image: string) => void;
+  setType: (type: string) => void; 
   setBio: (bio: string) => void;
   setQ1: (answer: string) => void;
   setQ2: (answer: string) => void;
@@ -43,7 +45,7 @@ export interface ProfileState {
 // 액션 제외한 상태만 추출
 type ProfileData = Omit<ProfileState,
   | 'setName' | 'setNickName' | 'setGender' | 'setBirthdate'
-  | 'setProfileImage' | 'setBio' | 'setQ1' | 'setQ2'
+  | 'setProfileImage' | 'setType' | 'setBio' | 'setQ1' | 'setQ2'
   | 'setQ3' | 'setQ4' | 'setQ5' | 'reset' | 'setProfileData'
   | 'setSoloTripCount' | 'setCompanionRoomCount'
 >;
@@ -55,6 +57,7 @@ export const initialState: ProfileData = {
   gender: '',
   birthdate: '',
   profileImage: '/default-profile.svg',
+  type: '',
   bio: '',
   soloTripCount: 0,
   companionRoomCount: 0,
@@ -75,6 +78,7 @@ export const useProfileStore = create(
       setGender: (gender) => set({ gender }),
       setBirthdate: (birthdate) => set({ birthdate }),
       setProfileImage: (image) => set({ profileImage: image }),
+      setType: (type) => set({ type }),
       setBio: (bio) => set({ bio }),
       setQ1: (answer) => set({ q1_expect: answer }),
       setQ2: (answer) => set({ q2_habit: answer }),
