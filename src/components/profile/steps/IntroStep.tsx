@@ -4,7 +4,7 @@ import { useProfileStore } from '../../../stores/profile-store';
 import questionLogo from '../../../assets/question-logo.svg';
 
 export default function IntroStep({ onNext }: { onNext: () => void }) {
-  const nickname = useProfileStore((state) => state.nickname);
+  const nickname = useProfileStore((state) => state.nickName);
 
   return (
     <div className="max-w-app mx-auto px-6 pb-6 flex flex-col min-h-screen items-center text-center justify-center">

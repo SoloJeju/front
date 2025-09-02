@@ -46,6 +46,7 @@ import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
 import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
 import SafetyCheckPage from './pages/safety-check-page';
 import StatsPage from './pages/safety-check-page/stats-page';
+import KakaoCallbackPage from './pages/auth/KakaoCallbackPage';
 
 function App() {
   return (
@@ -101,6 +102,7 @@ function App() {
           <Route path="/inquiry" element={<InquiryPage />} />
           <Route path="/inquiry/my" element={<MyInquiriesPage />} />
           <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
+          <Route path="/oauth2/code/kakao" element={<KakaoCallbackPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

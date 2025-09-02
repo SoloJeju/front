@@ -5,11 +5,10 @@ import { persist } from 'zustand/middleware';
 export interface ProfileState {
   // 기본 정보
   name: string;
-  nickname: string;
+  nickName: string;
   gender: '남자' | '여자' | '';
   birthdate: string;
   profileImage: string;
-  type: string;
   bio: string;
 
   // 경험 횟수 
@@ -23,13 +22,12 @@ export interface ProfileState {
   q4_feeling: string;
   q5_necessity: string;
 
-  // 상태 변경 액션 
+  // 상태 변경 액션
   setName: (name: string) => void;
-  setNickname: (nickname: string) => void;
+  setNickName: (nickName: string) => void;
   setGender: (gender: '남자' | '여자') => void;
   setBirthdate: (birthdate: string) => void;
   setProfileImage: (image: string) => void;
-  setType: (type: string) => void;
   setBio: (bio: string) => void;
   setQ1: (answer: string) => void;
   setQ2: (answer: string) => void;
@@ -37,24 +35,29 @@ export interface ProfileState {
   setQ4: (answer: string) => void;
   setQ5: (answer: string) => void;
   reset: () => void;
+  setProfileData: (data: Partial<ProfileData>) => void;
   setSoloTripCount: (count: number) => void;
   setCompanionRoomCount: (count: number) => void;
 }
 
 // 액션 제외한 상태만 추출
-type ProfileData = Omit<ProfileState, 'setName' | 'setNickname' | 'setGender' | 'setBirthdate' | 'setProfileImage' | 'setType' | 'setBio' | 'setQ1' | 'setQ2' | 'setQ3' | 'setQ4' | 'setQ5' | 'reset' | 'setSoloTripCount' | 'setCompanionRoomCount'>;
+type ProfileData = Omit<ProfileState,
+  | 'setName' | 'setNickName' | 'setGender' | 'setBirthdate'
+  | 'setProfileImage' | 'setBio' | 'setQ1' | 'setQ2'
+  | 'setQ3' | 'setQ4' | 'setQ5' | 'reset' | 'setProfileData'
+  | 'setSoloTripCount' | 'setCompanionRoomCount'
+>;
 
 // 초기 상태
 export const initialState: ProfileData = {
   name: '',
-  nickname: '',
+  nickName: '',
   gender: '',
   birthdate: '',
   profileImage: '/default-profile.svg',
-  type: '',
   bio: '',
-  soloTripCount: 16,
-  companionRoomCount: 4,
+  soloTripCount: 0,
+  companionRoomCount: 0,
   q1_expect: '',
   q2_habit: '',
   q3_avoid: '',
@@ -68,11 +71,10 @@ export const useProfileStore = create(
     (set) => ({
       ...initialState,
       setName: (name) => set({ name }),
-      setNickname: (nickname) => set({ nickname }),
+      setNickName: (nickName) => set({ nickName }),
       setGender: (gender) => set({ gender }),
       setBirthdate: (birthdate) => set({ birthdate }),
       setProfileImage: (image) => set({ profileImage: image }),
-      setType: (type) => set({ type }),
       setBio: (bio) => set({ bio }),
       setQ1: (answer) => set({ q1_expect: answer }),
       setQ2: (answer) => set({ q2_habit: answer }),
@@ -80,11 +82,12 @@ export const useProfileStore = create(
       setQ4: (answer) => set({ q4_feeling: answer }),
       setQ5: (answer) => set({ q5_necessity: answer }),
       reset: () => set(initialState),
+      setProfileData: (data) => set((state) => ({ ...state, ...data })),
       setSoloTripCount: (count) => set({ soloTripCount: count }),
       setCompanionRoomCount: (count) => set({ companionRoomCount: count }),
     }),
     {
-      name: 'user-profile-storage', // localStorage key 이름
+      name: 'user-profile-storage',
     },
   ),
 );

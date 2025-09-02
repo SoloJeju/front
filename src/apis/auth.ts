@@ -1,93 +1,36 @@
-import { publicAxios, authAxios, setAuthData, clearAuthData } from './axios';
-import type { CommonResponse, LoginResponse } from '../types/common';
+import axios from 'axios';
+import { publicAxios, authAxios, setAuthData } from './axios';
+import type { CommonResponse } from '../types/common';
+import type {
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+  SignupResponse,
+  SendEmailCodeRequest,
+  CheckEmailCodeRequest,
+  CheckEmailRequest,
+  CheckNicknameRequest,
+  KakaoProfileRequest,
+  KakaoProfileResponse,
+  ChangePasswordRequest,
+} from '../types/auth';
 
 
 // 로그인 API
-export const login = async (email: string, password: string): Promise<CommonResponse<LoginResponse>> => {
-  try {
-    const response = await publicAxios.post<CommonResponse<LoginResponse>>('/api/auth/login', {
-      email,
-      password,
-    });
-    
-    // 로그인 성공 시 토큰 저장
-    if (response.data.isSuccess && response.data.result) {
-      setAuthData(
-        response.data.result.id,
-        response.data.result.accessToken,
-        response.data.result.refreshToken
-      );
-    }
-    
-    return response.data;
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response: { status: number; data: { message?: string } } };
-      console.error('로그인 실패:', {
-        status: axiosError.response.status,
-        data: axiosError.response.data,
-        message: axiosError.response.data?.message || '알 수 없는 오류가 발생했습니다.'
-      });
-      
-      if (axiosError.response.status === 401) {
-        throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
-      }
-      
-      if (axiosError.response.status === 500) {
-        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      }
-      
-      throw new Error(axiosError.response.data?.message || '로그인 중 오류가 발생했습니다.');
-    } else if (error && typeof error === 'object' && 'request' in error) {
-      console.error('로그인 요청 실패 (응답 없음):', (error as { request: unknown }).request);
-      throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
-    } else {
-      console.error('로그인 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
-      throw new Error('로그인 요청을 보낼 수 없습니다.');
-    }
-  }
+export const login = async (
+  requestData: LoginRequest
+): Promise<CommonResponse<LoginResponse>> => {
+  const { data } = await publicAxios.post<CommonResponse<LoginResponse>>(
+    '/api/auth/login',
+    requestData
+  );
+  return data;
 };
 
 // 로그아웃 API
 export const logout = async () => {
-  try {
-    const response = await authAxios.delete('/api/auth/logout');
-    
-    // 로그아웃 성공 시 토큰 제거
-    clearAuthData();
-    
-    return response.data;
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response: { status: number; data: { message?: string } } };
-      // 서버 응답이 있는 경우
-      console.error('로그아웃 실패:', {
-        status: axiosError.response.status,
-        data: axiosError.response.data,
-        message: axiosError.response.data?.message || '알 수 없는 오류가 발생했습니다.'
-      });
-      
-      // 401 에러인 경우 토큰이 만료되었거나 유효하지 않음
-      if (axiosError.response.status === 401) {
-        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
-      }
-      
-      // 500 에러인 경우 서버 내부 오류
-      if (axiosError.response.status === 500) {
-        throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      }
-      
-      throw new Error(axiosError.response.data?.message || '로그아웃 중 오류가 발생했습니다.');
-    } else if (error && typeof error === 'object' && 'request' in error) {
-      // 요청은 보냈지만 응답을 받지 못한 경우
-      console.error('로그아웃 요청 실패 (응답 없음):', (error as { request: unknown }).request);
-      throw new Error('서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.');
-    } else {
-      // 요청 자체를 보내지 못한 경우
-      console.error('로그아웃 요청 실패:', error instanceof Error ? error.message : '알 수 없는 오류');
-      throw new Error('로그아웃 요청을 보낼 수 없습니다.');
-    }
-  }
+  const { data } = await authAxios.delete('/api/auth/logout');  
+  return data;
 };
 
 // 토큰 갱신 API
@@ -138,4 +81,89 @@ export const reissueToken = async (refreshToken: string): Promise<CommonResponse
       throw new Error('토큰 갱신 요청을 보낼 수 없습니다.');
     }
   }
+};
+
+
+// 사용자 회원가입 API
+export const signup = async (signupData: SignupRequest): Promise<CommonResponse<SignupResponse>> => {
+  const { data } = await axios.post<CommonResponse<SignupResponse>>(
+    `${import.meta.env.VITE_API_URL}/api/auth/userSignup`,
+    signupData
+  );
+  return data;
+};
+
+
+// 이메일 인증코드 전송 API
+export const sendEmailCode = async (
+  requestData: SendEmailCodeRequest
+) : Promise<CommonResponse<string>> => {
+  const {data} = await axios.post<CommonResponse<string>>(
+    `${import.meta.env.VITE_API_URL}/api/auth/send-email`,
+    requestData
+  );
+  return data;
+}
+
+// 이메일 인증코드 번호 체크 API
+export const checkEmailCode = async (
+  requestData: CheckEmailCodeRequest
+): Promise<CommonResponse<boolean>> => {
+  const {data} = await axios.get<CommonResponse<boolean>>(
+    `${import.meta.env.VITE_API_URL}/api/auth/check-number`,
+    {
+      params: requestData,
+    }
+  );
+  return data;
+};
+   
+ 
+// 이메일 중복확인 API
+export const checkEmail = async (
+  requestData: CheckEmailRequest
+): Promise<CommonResponse<string>> => {
+  const {data} = await axios.get<CommonResponse<string>>(
+    `${import.meta.env.VITE_API_URL}/api/auth/check-email`,
+    {
+      params: requestData,
+    }
+  );
+  return data;
+}
+
+// 닉네임 중복확인 API
+export const checkNickname = async (
+  requestData: CheckNicknameRequest
+): Promise<CommonResponse<string>> => {
+  const {data} = await axios.get<CommonResponse<string>>(
+    `${import.meta.env.VITE_API_URL}/api/auth/check-nickname`,
+    {
+      params: requestData,
+    }
+  );
+  return data;
+};
+
+// 카카오 회원가입 API 
+export const createKakaoProfile = async (
+  body: KakaoProfileRequest
+): Promise<CommonResponse<KakaoProfileResponse>> => {
+  const {data} = await authAxios.post<CommonResponse<KakaoProfileResponse>>(
+    `/api/auth/kakao/profile`,
+    body
+  );
+  return data;
+}
+
+// 비밀번호 변경 API
+export const changePassword = async (
+  requestData: ChangePasswordRequest,
+): Promise<CommonResponse<string>> => {
+  const { data } = await authAxios.patch<CommonResponse<string>>(
+    '/api/auth/password',
+    null, 
+    { params: requestData }, 
+  );
+  return data;
 };

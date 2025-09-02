@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Input from '../../common/Input';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
+import { useProfile } from '../../../hooks/profile/useProfile';
 import defaultProfile from '../../../assets/profileDefault.svg';
 import editIcon from '../../../assets/edit-icon.svg';
 
@@ -13,8 +14,8 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   const {
     name,
     setName,
-    nickname,
-    setNickname,
+    nickName,
+    setNickName,
     gender,
     setGender,
     birthdate,
@@ -24,6 +25,8 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
     bio,
     setBio,
   } = useProfileStore();
+
+  const { executeCheckNickname, isCheckingNickname } = useProfile();
 
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [bioLen, setBioLen] = useState<number>(bio ? bio.length : 0);
@@ -58,10 +61,16 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   const openProfileMenu = () => setIsProfileMenuOpen(true);
   const closeProfileMenu = () => setIsProfileMenuOpen(false);
 
-  // 닉네임 중복확인 (임시)
+  // 닉네임 중복확인
   const handleCheckNickname = () => {
-    if (!nickname) return;
-    setIsNicknameChecked(true);
+    if (!nickName) return;
+    executeCheckNickname(
+      { nickName },
+      {
+        onSuccess: () => setIsNicknameChecked(true),
+        onError: () => setIsNicknameChecked(false),
+      }
+    );
   };
 
   // 이미지 업로드
@@ -93,7 +102,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
   };
 
   const isFormValid =
-    !!name && !!nickname && !!gender && !!birthdate && isNicknameChecked;
+    !!name && !!nickName && !!gender && !!birthdate && isNicknameChecked;
 
   return (
     <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-Pretendard">
@@ -162,10 +171,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
             >
               사진 변경
             </button>
-
             <div className="h-px bg-[#EDEDED]" />
-
-            {/* 기본 이미지 상태면 비활성화(항상 노출) */}
             <button
               type="button"
               onClick={
@@ -211,10 +217,10 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
               <Input
                 type="text"
                 placeholder="닉네임을 입력해주세요"
-                value={nickname}
+                value={nickName}
                 onChange={(e) => {
-                  setNickname(e.target.value);
-                  setIsNicknameChecked(false); // 닉네임 변경 시 중복확인 초기화
+                  setNickName(e.target.value);
+                  setIsNicknameChecked(false);
                 }}
                 className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
               />
@@ -223,8 +229,9 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
               size="small"
               variant="primary"
               onClick={handleCheckNickname}
+              disabled={!nickName || isCheckingNickname}
             >
-              중복확인
+              {isCheckingNickname ? '확인중...' : '중복확인'}
             </Button>
           </div>
           {isNicknameChecked && (
