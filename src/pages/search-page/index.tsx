@@ -8,6 +8,7 @@ const SearchPage = () => {
   const navigate = useNavigate();
 
   const handleAddCart = () => {
+    //장소 담기 api 연결
     navigate('/cart');
   };
   return (
@@ -29,7 +30,7 @@ const SearchPage = () => {
           className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
           onClick={handleAddCart}
         >
-          <img src={Cart} alt="장소 담기" />
+          <img src={Cart} alt="담은 장소 리스트" />
         </button>
       </div>
     </div>

@@ -8,14 +8,19 @@ import TelIcon from '../../assets/tel.svg?react';
 import InfoIcon from '../../assets/info.svg?react';
 import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
-import { useLocation } from 'react-router-dom';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import Cart from '../../assets/cartIcon.svg';
+import { addToCart } from '../../apis/cart';
 
 export default function SearchDetailPage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
+   const contentId = Number(params.placeId) || location.state?.placeId || null;
 
   const tabs = [
     { label: '홈' },
@@ -28,6 +33,23 @@ export default function SearchDetailPage() {
 
   const [showPopup, setShowPopup] = useState(false);
 
+  const handleAddCart = async () => {
+    if (!contentId) {
+      alert('유효한 장소 ID가 없습니다.');
+      return;
+    }
+    try {
+        const response = await addToCart(contentId);
+      if (response.isSuccess) {
+        navigate('/cart');
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('장소 담기에 실패했습니다.');
+    }
+  };
 
   return (
     <div>
@@ -228,6 +250,15 @@ export default function SearchDetailPage() {
             <RoomCardList />
           </div>
         )}
+      </div>
+      <div className="flex justify-end">
+              <button
+                type="button"
+                className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+                onClick={handleAddCart}
+              >
+                <img src={Cart} alt="장소 담기" />
+              </button>
       </div>
     </div>
   );
