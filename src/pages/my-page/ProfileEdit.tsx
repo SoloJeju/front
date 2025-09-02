@@ -82,6 +82,7 @@ export default function ProfileEdit() {
       }
     } catch (e) {
       setIsNicknameChecked(false);
+      console.error('에러 발생:', e);
       toast.error('닉네임 확인 중 오류가 발생했습니다.');
     } finally {
       setIsChecking(false);
