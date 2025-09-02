@@ -44,34 +44,33 @@ export default function CommunityPage() {
     <>
       <CategoryGroup selected={selected} setSelected={setSelected} />
 
-      {data?.pages.flatMap((page) => {
-        const posts = page.result.content;
-
-        return posts.length > 0 ? (
-          posts.map((post) => (
-            <div className="pt-5">
-              <PostCard
-                key={post.postId}
-                id={post.postId}
-                type={post.postCategory}
-                title={post.title}
-                content={post.content}
-                commentNumber={post.commentCount}
-                time={post.createdAt}
-                writer={post.authorNickname}
-                image={post.thumbnailUrl}
-              />
-            </div>
-          ))
-        ) : (
+      <div className="pt-15 h-full">
+        {data?.pages.every((page) => page.result.content.length === 0) ? (
           <div className="flex flex-col justify-center items-center h-full">
             <img src={PostNone} className="w-20 h-20" />
             <p className="font-[pretendard] font-medium text-[#B4B4B4]">
               게시글이 존재하지 않습니다
             </p>
           </div>
-        );
-      })}
+        ) : (
+          data?.pages.flatMap((page) =>
+            page.result.content.map((post) => (
+              <div className="pt-3" key={post.postId}>
+                <PostCard
+                  id={post.postId}
+                  type={post.postCategory}
+                  title={post.title}
+                  content={post.content}
+                  commentNumber={post.commentCount}
+                  time={post.createdAt}
+                  writer={post.authorNickname}
+                  image={post.thumbnailUrl}
+                />
+              </div>
+            ))
+          )
+        )}
+      </div>
 
       <div ref={ref}></div>
 
