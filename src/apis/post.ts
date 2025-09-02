@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type {
   RequestPostCreateDto,
   RequestPostPatchDto,
@@ -12,9 +11,7 @@ import type {
   ResponsePostPatchDto,
   ResponsePostScrapDto,
 } from '../types/post';
-
-// 임시 acessToken
-const accessToken = '';
+import { authAxios } from './axios';
 
 // 게시글 목록 조회
 export const getPostList = async ({
@@ -26,15 +23,9 @@ export const getPostList = async ({
   cursor?: string;
   size?: number;
 }): Promise<ResponsePostListDto> => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/community/posts`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: { category, cursor, size },
-    }
-  );
+  const { data } = await authAxios.get(`/api/community/posts`, {
+    params: { category, cursor, size },
+  });
 
   return data;
 };
@@ -43,14 +34,7 @@ export const getPostList = async ({
 export const getPostDetail = async (
   postId: number
 ): Promise<ResponsePostDetailDto> => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const { data } = await authAxios.get(`/api/community/posts/${postId}`);
 
   return data;
 };
@@ -59,15 +43,7 @@ export const getPostDetail = async (
 export const scrapPost = async (
   postId: number
 ): Promise<ResponsePostScrapDto> => {
-  const { data } = await axios.put(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}/scrap`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const { data } = await authAxios.put(`/api/community/posts/${postId}/scrap`);
 
   return data;
 };
@@ -76,15 +52,7 @@ export const scrapPost = async (
 export const createPost = async (
   body: RequestPostCreateDto
 ): Promise<ResponsePostCreateDto> => {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/community/posts`,
-    body,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const { data } = await authAxios.post(`/api/community/posts`, body, {});
 
   return data;
 };
@@ -97,14 +65,10 @@ export const patchPost = async ({
   postId: number;
   body: RequestPostPatchDto;
 }): Promise<ResponsePostPatchDto> => {
-  const { data } = await axios.patch(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}`,
+  const { data } = await authAxios.patch(
+    `/api/community/posts/${postId}`,
     body,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    {}
   );
 
   return data;
@@ -114,14 +78,7 @@ export const patchPost = async ({
 export const deletePost = async (
   postId: number
 ): Promise<ResponsePostDeleteDto> => {
-  const { data } = await axios.delete(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const { data } = await authAxios.delete(`/api/community/posts/${postId}`, {});
 
   return data;
 };
@@ -136,12 +93,9 @@ export const getCommentList = async ({
   cursor?: string;
   size?: number;
 }): Promise<ResponseCommentListDto> => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}/comments`,
+  const { data } = await authAxios.get(
+    `/api/community/posts/${postId}/comments`,
     {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       params: { cursor, size },
     }
   );
@@ -157,16 +111,12 @@ export const createComment = async ({
   postId: number;
   content: string;
 }): Promise<ResponseCommentCreateDto> => {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/community/posts/${postId}/comments`,
+  const { data } = await authAxios.post(
+    `/api/community/posts/${postId}/comments`,
     {
       content,
     },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+    {}
   );
 
   return data;
@@ -176,13 +126,8 @@ export const createComment = async ({
 export const deleteComment = async (
   commentId: number
 ): Promise<ResponseCommentDeleteDto> => {
-  const { data } = await axios.delete(
-    `${import.meta.env.VITE_API_URL}/api/community/comments/${commentId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
+  const { data } = await authAxios.delete(
+    `/api/community/comments/${commentId}`
   );
 
   return data;
