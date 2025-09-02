@@ -47,6 +47,13 @@ export type ResponsePostDetailDto = CommonResponse<{
     imageUrl: string;
     imageName: string;
   }[];
+  chatRoomId: number;
+  spotName: string;
+  joinDate: Date;
+  currentMembers: number;
+  maxMembers: number;
+  genderRestriction: string;
+  recruitmentStatus: string;
 }>;
 
 // 게시글 스크랩
