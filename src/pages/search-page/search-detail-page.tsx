@@ -10,15 +10,17 @@ import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Cart from '../../assets/cartIcon.svg';
 import { addToCart } from '../../apis/cart';
 
 export default function SearchDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const params = useParams();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
+   const contentId = Number(params.placeId) || location.state?.placeId || null;
 
   const tabs = [
     { label: '홈' },
@@ -32,9 +34,12 @@ export default function SearchDetailPage() {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleAddCart = async () => {
+    if (!contentId) {
+      alert('유효한 장소 ID가 없습니다.');
+      return;
+    }
     try {
-      //contentId로 바꿔서 넣어야함!!!
-      const response = await addToCart(123);  
+        const response = await addToCart(contentId);
       if (response.isSuccess) {
         navigate('/cart');
       } else {
