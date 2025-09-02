@@ -44,7 +44,7 @@ export default function CommunityPage() {
     <>
       <CategoryGroup selected={selected} setSelected={setSelected} />
 
-      <div className="pt-15 h-full">
+      <div className="pt-15 h-full pb-10">
         {data?.pages.every((page) => page.result.content.length === 0) ? (
           <div className="flex flex-col justify-center items-center h-full">
             <img src={PostNone} className="w-20 h-20" />

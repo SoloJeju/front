@@ -21,7 +21,7 @@ export default function CategoryGroup({
   setSelected,
 }: CategoryGroupProps) {
   return (
-    <div className="fixed top-15 overflow-x-auto scrollbar-hide bg-[#fffffd]">
+    <div className="fixed w-full max-w-[480px] top-12 overflow-x-auto scrollbar-hide bg-[#fffffd]">
       <div className="flex gap-2 whitespace-nowrap px-1 py-3 w-max">
         {categories.map(({ type, icon }) => (
           <CategoryButton
