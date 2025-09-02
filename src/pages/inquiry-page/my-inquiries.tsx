@@ -205,16 +205,23 @@ const MyInquiriesPage: React.FC = () => {
             <div className="space-y-3">
               {inquiries.map((inquiry) => (
                 <div key={inquiry.id} className="p-4 border border-[#FFCEAA] rounded-xl bg-white">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-medium text-[#262626]">{inquiry.title}</h3>
-                      {getStatusBadge(inquiry.status)}
+                                     <div className="flex items-start justify-between">
+                     <div className="flex items-start gap-3 flex-1 min-w-0">
+                       <h3 
+                         className="text-lg font-medium text-[#262626] break-words flex-1 min-w-0 cursor-pointer hover:text-[#F78938] transition-colors"
+                         onClick={() => navigate(`/inquiry/${inquiry.id}`)}
+                       >
+                         {inquiry.title}
+                       </h3>
+                       <div className="flex flex-col gap-2 flex-shrink-0">
+                         {getStatusBadge(inquiry.status)}
+                       </div>
+                     </div>
+                   </div>
+                                       <div className="flex items-center justify-between text-sm text-[#666666] mb-2">
+                      <span>카테고리: {inquiry.categoryName}</span>
                       {getPriorityBadge(inquiry.priority)}
                     </div>
-                  </div>
-                  <div className="text-sm text-[#666666] mb-2">
-                    카테고리: {inquiry.categoryName}
-                  </div>
                   <div className="flex items-center gap-4 text-xs text-[#B4B4B4]">
                     <span>접수일: {new Date(inquiry.createdDate).toLocaleDateString('ko-KR')}</span>
                     {inquiry.hasAttachment && (

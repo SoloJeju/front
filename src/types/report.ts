@@ -38,9 +38,16 @@ export type MyReport = {
   reportId: number;
   targetType: ReportTargetType;
   targetId: number;
+  targetTitle: string;
+  targetUserName: string;
   reason: string;
+  reasonName: string;
+  detail: string;
   status: ReportStatus;
+  statusName: string;
   createdAt: string;
+  processedAt: string | null;
+  adminNote: string | null;
 };
 
 export type ReportReasonsResponse = ReportReason[];
@@ -50,7 +57,8 @@ export type MyReportsResponse = {
     currentPage: number;
     totalPages: number;
     totalElements: number;
+    size: number;
     hasNext: boolean;
-    hasPrev: boolean;
+    hasPrevious: boolean;
   };
 };
