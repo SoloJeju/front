@@ -11,6 +11,8 @@ import FilledScript from '/src/assets/script-filled.svg';
 import MoreButton from './MoreButton';
 import { useNavigate } from 'react-router-dom';
 import { filterCategoryEntoKo } from '../../utils/filterCategory';
+import useUpdateScrap from '../../hooks/community/useUpdateScrap';
+import RoomCard from '../common/RoomCard/RoomCard';
 
 interface PostDetailCardProps {
   id: number;
@@ -28,6 +30,16 @@ interface PostDetailCardProps {
   isOpenMore: boolean;
   isMine: boolean;
   isScraped: boolean;
+  chatRoomId?: number;
+  isEnd?: string;
+  chatRoomTitle?: string;
+  location?: string;
+  date?: Date;
+  pre?: number;
+  all?: number;
+  chatRoomImage?: string;
+  chatRoomImageName?: string;
+  gender?: string;
   ref: React.RefObject<HTMLDivElement | null>;
   onDelete: () => void;
   onModify: () => void;
@@ -35,6 +47,7 @@ interface PostDetailCardProps {
 }
 
 const PostDetailCard = ({
+  id,
   type,
   title,
   authorId,
@@ -49,6 +62,16 @@ const PostDetailCard = ({
   isOpenMore,
   isMine,
   isScraped,
+  chatRoomId,
+  chatRoomTitle,
+  isEnd,
+  location,
+  date,
+  pre,
+  all,
+  chatRoomImage,
+  chatRoomImageName,
+  gender,
   ref,
   onDelete,
   onModify,
@@ -69,8 +92,14 @@ const PostDetailCard = ({
 
   const navigate = useNavigate();
 
-  const handleProfileDetail = (id: number) => {
-    navigate(`/profile/${id}`);
+  const handleProfileDetail = () => {
+    navigate(`/profile/${authorId}`);
+  };
+
+  const { mutate: updateScrap } = useUpdateScrap();
+
+  const handleScrap = () => {
+    updateScrap(id);
   };
 
   return (
@@ -105,7 +134,7 @@ const PostDetailCard = ({
       <div className="flex justify-between items-center">
         <div
           className="flex gap-2 items-center cursor-pointer"
-          onClick={() => handleProfileDetail(authorId)}
+          onClick={handleProfileDetail}
         >
           <img
             src={authorImage ?? BasicProfile}
@@ -133,6 +162,21 @@ const PostDetailCard = ({
           : null}
       </div>
 
+      {chatRoomId && (
+        <RoomCard
+          id={chatRoomId}
+          isEnd={isEnd === '모집중' ? false : true}
+          title={chatRoomTitle}
+          location={location}
+          date={date}
+          pre={pre}
+          all={all}
+          imageUrl={chatRoomImage}
+          iamgeName={chatRoomImageName}
+          gender={gender}
+        />
+      )}
+
       <div className="flex justify-end gap-1">
         <div className="flex gap-1 items-center">
           <img src={Comment} alt="댓글 수" className="w-6 h-6" />
@@ -140,7 +184,11 @@ const PostDetailCard = ({
             {commentNumber}
           </span>
         </div>
-        <div className="flex gap-1 items-center">
+        <button
+          type="button"
+          className="flex gap-1 items-center cursor-pointer"
+          onClick={handleScrap}
+        >
           <img
             src={isScraped ? FilledScript : Script}
             alt="스크립 수"
@@ -149,7 +197,7 @@ const PostDetailCard = ({
           <span className="font-[pretendard] font-medium text-xs text-[#F78938]">
             {scriptNumber}
           </span>
-        </div>
+        </button>
       </div>
     </div>
   );

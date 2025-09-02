@@ -108,6 +108,16 @@ export default function PostDetailPage() {
               isOpenMore={isOpenPostDetail}
               isMine={postDetail.isMine}
               isScraped={postDetail.isScraped}
+              chatRoomId={postDetail.chatRoomId}
+              chatRoomTitle={postDetail.title}
+              isEnd={postDetail.recruitmentStatus}
+              location={postDetail.spotName}
+              date={postDetail.joinDate}
+              pre={postDetail.currentMembers}
+              all={postDetail.maxMembers}
+              chatRoomImage={postDetail.thumbnailUrl}
+              chatRoomImageName={postDetail.thumbnailName}
+              gender={postDetail.genderRestriction}
               ref={modalBg}
               onDelete={() => setIsDeletePostDetail(true)}
               onModify={() => console.log('수정페이지 이동')}
