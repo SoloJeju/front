@@ -82,10 +82,10 @@ const AlarmHeader = ({
       <div className="flex justify-end items-center gap-2 w-20">
         <button
           type="button"
-          className="cursor-pointer w-8 h-8"
+          className="cursor-pointer w-6 h-6"
           onClick={handleClickShieldCheck}
         >
-          <img src={ShieldCheck} alt="Shield Check" className="w-8 h-8" />
+          <img src={ShieldCheck} alt="Shield Check" className="w-6 h-6" />
         </button>
         <button
           type="button"

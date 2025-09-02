@@ -2,19 +2,27 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '../../assets/search-magnifying-glass.svg?react';
 import DropdownIcon from '../../assets/dropdown.svg?react';
-import CircleIcon from '../../assets/circleIcon.svg?react';
+import AllIcon from '../../assets/category-all.svg?react';
+import TourIcon from '../../assets/category-travel.svg?react';
+import BedIcon from '../../assets/category-bed.svg?react';
+import FoodIcon from '../../assets/category-food.svg?react';
+import FestivalIcon from '../../assets/category-festival.svg?react';
+import LeisureIcon from '../../assets/category-leisure.svg?react';
+import ShoppingIcon from '../../assets/category-shopping.svg?react';
+import CourseIcon from '../../assets/category-course.svg?react';
+import CultureIcon from '../../assets/category-culture.svg?react';
 
 const defaultRegions = ['전체', '남제주군', '북제주군', '서귀포시', '제주시'];
 const defaultCategories = [
-  { label: '전체', icon: CircleIcon },
-  { label: '관광지', icon: CircleIcon },
-  { label: '숙박', icon: CircleIcon },
-  { label: '음식점', icon: CircleIcon },
-  { label: '축제', icon: CircleIcon },
-  { label: '레포츠', icon: CircleIcon },
-  { label: '쇼핑', icon: CircleIcon },
-  { label: '여행코스', icon: CircleIcon },
-  { label: '문화시설', icon: CircleIcon },
+  { label: '전체', icon: AllIcon },
+  { label: '관광지', icon: TourIcon },
+  { label: '숙박', icon: BedIcon },
+  { label: '음식점', icon: FoodIcon },
+  { label: '축제', icon: FestivalIcon },
+  { label: '레포츠', icon: LeisureIcon },
+  { label: '쇼핑', icon: ShoppingIcon },
+  { label: '여행코스', icon: CourseIcon },
+  { label: '문화시설', icon: CultureIcon },
 ];
 
 const FilterBar = () => {
@@ -75,8 +83,12 @@ const FilterBar = () => {
             <button  key={category.label + index} onClick={() => setSelectedCategory(category.label)}>
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
+                style={{ color: selectedCategory === category.label ? '#FFF7D1' : '#FFFFFD' }}
               />
-              <span className="mt-1 text-center text-black text-[12px] font-medium leading-[14px] font-[Pretendard]">
+              <span
+                className="mt-1 text-center text-[12px] font-medium leading-[14px] font-[Pretendard]"
+                style={{ color: selectedCategory === category.label ? '#F78938' : '#000' }}
+              >
                 {category.label}
               </span>
             </button>
