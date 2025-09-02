@@ -5,11 +5,11 @@ interface ChatMemberCardProps {
   profileUrl: string;
   name: string;
   id: number;
+  isMine?: boolean;
+  isActive?: boolean;
 }
 
-const ChatMemberCard = ({ profileUrl, name, id }: ChatMemberCardProps) => {
-  // zustand store
-  const userName = '박길동';
+const ChatMemberCard = ({ profileUrl, name, id, isMine = false, isActive = true }: ChatMemberCardProps) => {
   const navigate = useNavigate();
 
   const handleProfileDetail = () => {
@@ -29,9 +29,14 @@ const ChatMemberCard = ({ profileUrl, name, id }: ChatMemberCardProps) => {
       <span className="font-[pretendard] font-normal text-sm text-black">
         {name}
       </span>
-      {name === userName && (
+      {isMine && (
         <span className="w-4 h-4 p-0.5 flex justify-center items-center rounded-full bg-[#FFCEAA] font-[pretendard] font-semibold text-[10px] text-[#F78938] shrink-0">
           나
+        </span>
+      )}
+      {!isActive && (
+        <span className="w-4 h-4 p-0.5 flex justify-center items-center rounded-full bg-gray-300 font-[pretendard] font-semibold text-[10px] text-gray-600 shrink-0">
+          비활성
         </span>
       )}
     </div>

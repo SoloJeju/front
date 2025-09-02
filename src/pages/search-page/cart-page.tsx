@@ -3,29 +3,30 @@ import Header from "../../components/common/Headers/BackHeader";
 import PlaceCardList from "../../components/CartPage/PlaceCardList";
 import PostNone from "../../assets/post-none.svg";
 import Modal from "../../components/common/Modal"; 
-import type { Place } from "../../types/place";
+import { getCartList, bulkDeleteCart } from "../../apis/cart";
+import type { CartItem } from "../../types/cart";
 
 const CartPage = () => {
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<CartItem[]>([]);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    setPlaces([
-      { id: 1, title: '가람돌솥밥',
-        location: '제주특별자치도 서귀포시 중문관광로 332',
-        tel: '064-738-1299',
-        comment: '1인 좌석/테이블이 잘 되어 있었어요!',},
-      { id: "abc", title: '가람돌솥밥',
-        location: '제주특별자치도 서귀포시 중문관광로 332',
-        tel: '064-738-1299',
-        comment: '1인 좌석/테이블이 잘 되어 있었어요!', },
-      { id: 3, title: '가람돌솥밥',
-        location: '제주특별자치도 서귀포시 중문관광로 332',
-        tel: '064-738-1299',
-        comment: '1인 좌석/테이블이 잘 되어 있었어요!', },
-    ]);
+    const fetchCart = async () => {
+      try {
+        const data = await getCartList();
+        if (data.isSuccess) {
+          setPlaces(data.result.items);
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("장바구니를 불러오지 못했습니다.");
+      }
+    };
+    fetchCart();
   }, []);
 
   const toggleEditMode = () => {
@@ -33,7 +34,7 @@ const CartPage = () => {
     setSelectedItems([]); 
   };
 
-  const handleSelectToggle = (id: string | number) => {
+  const handleSelectToggle = (id: number) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
@@ -43,15 +44,27 @@ const CartPage = () => {
     if (selectedItems.length === places.length) {
       setSelectedItems([]); 
     } else {
-      setSelectedItems(places.map((place) => place.id));
+      setSelectedItems(places.map((place) => place.cartId));
     }
   };
 
-  const handleDelete = () => {
-    setPlaces((prev) => prev.filter((place) => !selectedItems.includes(place.id)));
-    setSelectedItems([]);
-    setIsEditMode(false);
-    setIsModalOpen(false);
+  const handleDelete = async () => {
+    try {
+      const response = await bulkDeleteCart(selectedItems);
+      if (response.isSuccess) {
+        setPlaces((prev) =>
+          prev.filter((place) => !selectedItems.includes(place.cartId)),
+        );
+        setSelectedItems([]);
+        setIsEditMode(false);
+        setIsModalOpen(false);
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("삭제 실패");
+    }
   };
 
   return (

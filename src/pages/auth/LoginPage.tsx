@@ -1,29 +1,53 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import { login } from '../../apis/auth';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // 버튼 활성화 여부를 결정하는 변수
   const isFormValid = isEmailValid && password;
 
-  // API 호출 대신 alert 띄우는 상태
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // 실제 로그인 API 호출
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isFormValid) {
       return;
     }
-    alert(`UI 테스트\n아이디: ${email}\n비밀번호: ${password}`);
+
+    setIsLoading(true);
+    try {
+      const response = await login(email, password);
+      
+      if (response.isSuccess) {
+        // 토큰을 로컬 스토리지에 저장
+        localStorage.setItem('accessToken', response.result.accessToken);
+        localStorage.setItem('refreshToken', response.result.refreshToken);
+        
+        toast.success('로그인되었습니다!');
+        navigate('/'); // 홈페이지로 이동
+      } else {
+        toast.error(response.message || '로그인에 실패했습니다.');
+      }
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 카카오 로그인 버튼 클릭 시 동작 (UI 테스트용)
+  // 카카오 로그인 버튼 클릭 시 동작
   const handleKakaoLogin = () => {
-    alert('UI 테스트: 카카오로 시작하기 버튼 클릭');
+    // TODO: 카카오 로그인 구현
+    toast.success('카카오 로그인은 준비 중입니다.');
   };
 
   return (
@@ -58,8 +82,10 @@ const LoginPage = () => {
 
           {/* 로그인 버튼 */}
           <div className="pt-8">
-            <Button type="submit" disabled={!isFormValid}>
-              <span className="font-semibold">로그인</span>
+            <Button type="submit" disabled={!isFormValid || isLoading}>
+              <span className="font-semibold">
+                {isLoading ? '로그인 중...' : '로그인'}
+              </span>
             </Button>
           </div>
         </form>

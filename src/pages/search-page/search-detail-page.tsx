@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import QuestionIcon from '../../assets/question.svg?react';
-// import EASY from '../../../assets/L_EASY.svg?react';
 import MapIcon from '../../assets/mapPin.svg?react';
 import ClockIcon from '../../assets/clock.svg?react';
 import WebIcon from '../../assets/web.svg?react';
@@ -9,12 +8,19 @@ import TelIcon from '../../assets/tel.svg?react';
 import InfoIcon from '../../assets/info.svg?react';
 import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
-import { useLocation } from 'react-router-dom';
+import ReviewList from '../../components/SearchPage/ReviewList';
+import ReviewStats from '../../components/SearchPage/ReviewStats';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import Cart from '../../assets/cartIcon.svg';
+import { addToCart } from '../../apis/cart';
 
-export default function PlacePhotoScreen() {
+export default function SearchDetailPage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
+   const contentId = Number(params.placeId) || location.state?.placeId || null;
 
   const tabs = [
     { label: '홈' },
@@ -23,9 +29,30 @@ export default function PlacePhotoScreen() {
     { label: '동행방' },
   ];
 
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleAddCart = async () => {
+    if (!contentId) {
+      alert('유효한 장소 ID가 없습니다.');
+      return;
+    }
+    try {
+        const response = await addToCart(contentId);
+      if (response.isSuccess) {
+        navigate('/cart');
+      } else {
+        alert(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('장소 담기에 실패했습니다.');
+    }
+  };
+
   return (
     <div>
-      {/* Top Bar */}
       <div className="flex px-4 py-3 justify-between items-center border-b border-neutral-200">
         <button className="p-1 -ml-1">
           <BackIcon className="w-6 h-6" />
@@ -33,10 +60,9 @@ export default function PlacePhotoScreen() {
         <div className="text-[#262626] font-[Pretendard] text-[18px] font-semibold leading-[26px] tracking-[-0.45px]">
           가람돌솥밥
         </div>
-        <div className="w-7" /> {/* 오른쪽 spacer */}
+        <div className="w-7" />
       </div>
 
-      {/* Header Image */}
       <div className="relative w-full h-[240px] flex-shrink-0">
         <img
           src={ExampleImage}
@@ -45,13 +71,27 @@ export default function PlacePhotoScreen() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-        <button className="absolute top-3 right-3 p-1 bg-black/40 rounded-full">
+        <button 
+          className="absolute top-3 right-3 p-1 bg-black/40 rounded-full"
+          onClick={() => setShowPopup(prev => !prev)}
+        >
           <QuestionIcon className="w-6 h-6 text-white" />
         </button>
 
-        {/* 타이틀 & 주소 */}
+        {/*문의 팝업*/}
+        {showPopup && (
+          <div className="absolute top-12 right-3 flex flex-col items-center gap-1 p-4 rounded-[12px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.25)] z-10">
+            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
+              해당 장소가 보이지 않나요?
+            </p>
+            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
+              1:1 문의하기(폐업/오류 신고)    
+            </p>
+          </div>
+        )}
+
+
         <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6">
-          {/* 타이틀 + 음식점 */}
           <div className="flex items-center gap-2">
             <h1 className="text-white font-Pretendard text-[20px] font-semibold leading-[22px]">
               가람돌솥밥 돌솥이야 뭐하니 밥먹는
@@ -162,27 +202,63 @@ export default function PlacePhotoScreen() {
         )}
 
         {activeTab === '리뷰' && (
-          <div className="flex flex-col items-start w-[345px] h-[108px] flex-shrink-0">
-            <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+          <div className="flex flex-col items-start w-full flex-shrink-0">
+            {/*<h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
               <span className="text-[#F78938]">가람돌솥밥</span> 다녀오셨다면,
             </h2>
             <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
               짧은 리뷰로 여행의 기억을 남겨보세요!
             </h2>
-            <button className="mt-[16px] w-full h-[48px] flex justify-center items-center rounded-[10px] bg-[#F78938] text-white font-semibold">
+            <button
+              className="mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
+            >
               리뷰 쓰기
+            </button>*/}
+            <ReviewStats/>
+
+            {!showAllReviews && (
+            <button
+              className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
+                        text-center text-[#F78938] font-[Pretendard] text-[16px] 
+                        not-italic font-medium leading-[18px] tracking-[-0.32px]"
+              onClick={() => setShowAllReviews(true)}
+            >
+              + 더보기
             </button>
+            )}
+
+            {showAllReviews && <ReviewList />}
           </div>
         )}
 
         {activeTab === '동행방' && (
           <div className="mt-1">
+            {/*<h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+              아직 동행방이 없어요.
+            </h2>
+            <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+             지금 첫 번째 동행방을 만들어보세요!
+            </h2>
+            <button
+              className="mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
+            >
+              새 동행방 개설하기
+            </button>*/}
             <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
               지금 열려있는 동행방
             </p>
             <RoomCardList />
           </div>
         )}
+      </div>
+      <div className="flex justify-end">
+              <button
+                type="button"
+                className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+                onClick={handleAddCart}
+              >
+                <img src={Cart} alt="장소 담기" />
+              </button>
       </div>
     </div>
   );
