@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import QuestionIcon from '../../assets/question.svg?react';
 import MapIcon from '../../assets/mapPin.svg?react';
@@ -18,7 +17,6 @@ import { addToCart } from '../../apis/cart';
 export default function SearchDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const navigate = useNavigate();
   const params = useParams();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
