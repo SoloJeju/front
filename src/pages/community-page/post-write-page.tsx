@@ -9,10 +9,10 @@ import {
   filterCategoryKoToEn,
 } from '../../utils/filterCategory';
 import toast from 'react-hot-toast';
-import { useImageUpload } from '../../apis/s3';
 import { createPost, patchPost } from '../../apis/post';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { queryClient } from '../../App';
+import { useImageUpload } from '../../hooks/useImageUpload';
 
 export default function PostWritePage() {
   const location = useLocation();

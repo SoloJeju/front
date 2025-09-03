@@ -12,7 +12,7 @@ interface PostCardProps {
   title: string;
   content: string;
   commentNumber: number;
-  time: Date;
+  time: Date | string;
   writer: string | null;
   image: string | null;
 }
