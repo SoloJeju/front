@@ -7,15 +7,52 @@ interface KakaoMapProps {
 }
 
 // Kakao Maps API 타입 선언
+interface KakaoLatLng {
+  getLat(): number;
+  getLng(): number;
+}
+
+interface KakaoSize {
+  width: number;
+  height: number;
+}
+
+interface KakaoMarkerImage {
+  getUrl(): string;
+  getSize(): KakaoSize;
+}
+
+interface KakaoMarker {
+  setMap(map: KakaoMap | null): void;
+  getPosition(): KakaoLatLng;
+}
+
+interface KakaoMap {
+  setCenter(latlng: KakaoLatLng): void;
+  getCenter(): KakaoLatLng;
+  setLevel(level: number): void;
+  getLevel(): number;
+}
+
+interface KakaoMapOptions {
+  center: KakaoLatLng;
+  level: number;
+}
+
+interface KakaoMarkerOptions {
+  position: KakaoLatLng;
+  image?: KakaoMarkerImage;
+}
+
 declare global {
   interface Window {
     kakao: {
       maps: {
-        Map: new (container: HTMLElement, options: any) => any;
-        LatLng: new (lat: number, lng: number) => any;
-        Marker: new (options: any) => any;
-        MarkerImage: new (src: string, size: any) => any;
-        Size: new (width: number, height: number) => any;
+        Map: new (container: HTMLElement, options: KakaoMapOptions) => KakaoMap;
+        LatLng: new (lat: number, lng: number) => KakaoLatLng;
+        Marker: new (options: KakaoMarkerOptions) => KakaoMarker;
+        MarkerImage: new (src: string, size: KakaoSize) => KakaoMarkerImage;
+        Size: new (width: number, height: number) => KakaoSize;
         load: (callback: () => void) => void;
       };
     };
