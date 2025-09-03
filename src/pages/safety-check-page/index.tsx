@@ -316,10 +316,10 @@ const SafetyCheckPage = () => {
         <div className="flex justify-end items-center gap-2 w-16">
           <button
             type="button"
-            className="cursor-pointer w-8 h-8"
+            className="cursor-pointer"
             onClick={() => navigate('/safety-check')}
           >
-            <img src="/src/assets/shieldCheck.svg" alt="Shield Check" className="w-8 h-8" />
+            <img src="/src/assets/shieldCheck.svg" alt="Shield Check" />
           </button>
           <button
             type="button"

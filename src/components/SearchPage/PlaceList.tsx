@@ -1,6 +1,6 @@
 import PlaceCard from './PlaceCard';
 import ExampleImage from '../../assets/exampleImage.png';
-
+import { useNavigate, useLocation } from "react-router-dom";
 
 const mockPlaces = [
   {
@@ -41,10 +41,25 @@ const mockPlaces = [
 ];
 
 const PlaceCardList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleClick = (place: any) => {
+    if (location.state?.from) {
+      navigate(location.state.from, {
+        state: { selectedPlace: { id: place.id, name: place.title } }, 
+      });
+    } else {
+      navigate(`/search-detail/${place.id}`);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       {mockPlaces.map((place, idx) => (
-        <PlaceCard key={idx} {...place} />
+        <div key={idx} onClick={() => handleClick(place)}>
+          <PlaceCard {...place} />
+        </div>
       ))}
     </div>
   );

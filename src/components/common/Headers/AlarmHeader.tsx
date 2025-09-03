@@ -58,8 +58,8 @@ const AlarmHeader = ({
   };
 
   return (
-    <header className="fixed top-0 max-w-[480px] w-full p-3 flex items-center justify-between bg-white z-50">
-      <div className="flex justify-start items-center w-20">
+    <header className="fixed top-0 max-w-[480px] w-full p-4 flex items-center justify-between bg-white z-50">
+      <div className="flex justify-start items-center">
         {showBackButton && (
           <button
             onClick={handleBackClick}
@@ -85,7 +85,7 @@ const AlarmHeader = ({
           className="cursor-pointer w-6 h-6"
           onClick={handleClickShieldCheck}
         >
-          <img src={ShieldCheck} alt="Shield Check" className="w-6 h-6" />
+          <img src={ShieldCheck} alt="Shield Check" />
         </button>
         <button
           type="button"

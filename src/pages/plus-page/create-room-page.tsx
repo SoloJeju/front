@@ -107,6 +107,14 @@ const CreateRoomPage = () => {
     }
   };
 
+  const handleNavigateToSearch = () => {
+    navigate('/search-box', {
+      state: {
+        from: location.pathname,
+        formData: { title, description, contentId, spotName, maxMembers, selectedDate, selectedTime, selectedGender },
+      },
+    });
+  };
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
@@ -127,8 +135,8 @@ const CreateRoomPage = () => {
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>
             <div
-              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2"
-              onClick={() => navigate('/search', { state: { from: location.pathname } })}
+              className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
+              onClick={handleNavigateToSearch}
             >
               <input
                 type="text"
@@ -188,7 +196,6 @@ const CreateRoomPage = () => {
           <div>
             <div className="flex flex-row items-center justify-between pb-1">
               <label className="text-black text-base font-medium leading-none">성별</label>
-              <span className="text-xs text-[#B4B4B4]">선택</span>
             </div>
             <div className="flex items-center gap-2 mt-2">
               {genderOptions.map((option) => (
@@ -257,7 +264,6 @@ const CreateRoomPage = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
