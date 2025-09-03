@@ -1,15 +1,21 @@
 import { matchPath, Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import AlarmHeader from '../components/common/Headers/AlarmHeader';
+import BackHeader from '../components/common/Headers/BackHeader';
 
 const AppLayout = () => {
   const location = useLocation();
   const isHomePage = !!matchPath({ path: '/', end: true }, location.pathname);
+  const isCommunityPage = !!matchPath(
+    { path: '/community', end: true },
+    location.pathname
+  );
 
   return (
     <div className="flex justify-center min-h-screen">
       <div className="w-full min-h-screen max-w-[480px] flex flex-col justify-between bg-[#FFFFFD]">
         {isHomePage && <AlarmHeader showLogo={true} />}
+        {isCommunityPage && <BackHeader title="커뮤니티" />}
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>
