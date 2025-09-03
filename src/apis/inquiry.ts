@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { authAxios, publicAxios } from './axios';
 import type {
   CreateInquiryRequest,
   InquiryResponse,
@@ -7,20 +7,13 @@ import type {
 } from '../types/inquiry';
 import type { CommonResponse } from '../types/common';
 
-// 토큰을 헤더에 포함하는 함수
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('accessToken');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 // 1:1 문의 등록
 export const createInquiry = async (
   inquiryData: CreateInquiryRequest
 ): Promise<CommonResponse<InquiryResponse>> => {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/inquiries`,
-    inquiryData,
-    { headers: getAuthHeaders() }
+  const { data } = await authAxios.post(
+    '/api/inquiries',
+    inquiryData
   );
   return data;
 };
@@ -40,26 +33,24 @@ export const getMyInquiries = async (
     params.append('status', status);
   }
 
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/inquiries/my?${params}`,
-    { headers: getAuthHeaders() }
+  const { data } = await authAxios.get(
+    `/api/inquiries/my?${params}`
   );
   return data;
 };
 
 // 문의 상세 조회
 export const getInquiryDetail = async (id: number): Promise<CommonResponse<InquiryResponse>> => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/inquiries/${id}`,
-    { headers: getAuthHeaders() }
+  const { data } = await authAxios.get(
+    `/api/inquiries/${id}`
   );
   return data;
 };
 
 // 문의 카테고리 목록
 export const getInquiryCategories = async (): Promise<CommonResponse<InquiryCategoriesResponse>> => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/inquiries/categories`
+  const { data } = await publicAxios.get(
+    '/api/inquiries/categories'
   );
   return data;
 };
