@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import QuestionIcon from '../../assets/question.svg?react';
 import MapIcon from '../../assets/mapPin.svg?react';
@@ -13,6 +14,7 @@ import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
 
 export default function SearchDetailPage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
@@ -32,7 +34,9 @@ export default function SearchDetailPage() {
   return (
     <div>
       <div className="flex px-4 py-3 justify-between items-center border-b border-neutral-200">
-        <button className="p-1 -ml-1">
+        <button 
+          className="p-1 -ml-1"
+          onClick={() => navigate('/search')}>
           <BackIcon className="w-6 h-6" />
         </button>
         <div className="text-[#262626] font-[Pretendard] text-[18px] font-semibold leading-[26px] tracking-[-0.45px]">
