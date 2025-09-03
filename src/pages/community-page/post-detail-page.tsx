@@ -70,6 +70,18 @@ export default function PostDetailPage() {
     };
   });
 
+  const handleModifyPostDetail = () => {
+    navigate(`/community/new-post`, {
+      state: {
+        postId: postDetail?.postId,
+        title: postDetail?.title,
+        content: postDetail?.content,
+        category: postDetail?.postCategory,
+        images: postDetail?.images,
+      },
+    });
+  };
+
   const clickDeleteComment = () => {
     if (isDeleteCommentId) {
       deleteComment(isDeleteCommentId);
@@ -125,7 +137,7 @@ export default function PostDetailPage() {
               gender={postDetail.genderRestriction}
               ref={modalBg}
               onDelete={() => setIsDeletePostDetail(true)}
-              onModify={() => console.log('수정페이지 이동')}
+              onModify={handleModifyPostDetail}
               onReport={() => {
                 navigate(`/report?targetPostId=${postDetail.postId}`);
               }}

@@ -1,4 +1,3 @@
-import React from 'react';
 import Question from '/src/assets/question.svg?react';
 import With from '/src/assets/with.svg?react';
 import Tip from '/src/assets/tip.svg?react';
@@ -206,4 +205,4 @@ const PostDetailCard = ({
   );
 };
 
-export default React.memo(PostDetailCard);
+export default PostDetailCard;
