@@ -6,6 +6,22 @@ interface KakaoMapProps {
   initialLevel?: number;
 }
 
+// Kakao Maps API 타입 선언
+declare global {
+  interface Window {
+    kakao: {
+      maps: {
+        Map: new (container: HTMLElement, options: any) => any;
+        LatLng: new (lat: number, lng: number) => any;
+        Marker: new (options: any) => any;
+        MarkerImage: new (src: string, size: any) => any;
+        Size: new (width: number, height: number) => any;
+        load: (callback: () => void) => void;
+      };
+    };
+  }
+}
+
 const KakaoMap = ({
   initialLat = 33.499621, // 제주 시청 위도(기본)
   initialLng = 126.531188, // 제주 시청 경도
@@ -16,7 +32,7 @@ const KakaoMap = ({
   useEffect(() => {
     const kakaoLoad = () => {
       if (!mapRef.current) return;
-      const kakao = (window as any).kakao;
+      const kakao = window.kakao;
       const map = new kakao.maps.Map(mapRef.current, {
         center: new kakao.maps.LatLng(initialLat, initialLng),
         level: initialLevel,
@@ -55,17 +71,17 @@ const KakaoMap = ({
       }
     };
 
-    if (!(window as any).kakao) {
+    if (!window.kakao) {
       const script = document.createElement("script");
       script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=2e874be546fe58cb5e5fa439db51cb7c&autoload=false`;
       script.async = true;
       document.head.appendChild(script);
 
       script.onload = () => {
-        (window as any).kakao.maps.load(kakaoLoad);
+        window.kakao.maps.load(kakaoLoad);
       };
     } else {
-      (window as any).kakao.maps.load(kakaoLoad);
+      window.kakao.maps.load(kakaoLoad);
     }
   }, [initialLat, initialLng, initialLevel]);
 
