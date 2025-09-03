@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  type RouteObject,
+} from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import PublicLayout from './layouts/public-layout';
@@ -41,69 +45,84 @@ import PrivacyPolicy from './pages/my-page/PrivacyPolicy';
 import ReportPage from './pages/report-page';
 import MyReportsPage from './pages/report-page/my-reports';
 import ReportDetailPage from './pages/report-page/report-detail';
-import InquiryPage from './pages/inquiry-page';
-import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
 import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
 import SafetyCheckPage from './pages/safety-check-page';
 import StatsPage from './pages/safety-check-page/stats-page';
+import InquiryPage from './pages/inquiry-page';
+import MyInquiriesPage from './pages/inquiry-page/my-inquiries';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const publictRoutes: RouteObject[] = [
+  {
+    path: '/',
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'splash', element: <SplashPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <SignupPage /> },
+      { path: 'find-password', element: <FindPasswordPage /> },
+      { path: 'profile/create', element: <ProfileCreationPage /> },
+      { path: 'search', element: <SearchPage /> },
+      { path: 'search-map', element: <SearchMapPage /> },
+      { path: 'search-box', element: <SearchBoxPage /> },
+      { path: 'search-detail/:placeId', element: <SearchDetailPage /> },
+      { path: 'community', element: <CommunityPage /> },
+      { path: 'report/:id', element: <ReportDetailPage /> },
+      { path: 'inquiry/:id', element: <InquiryDetailPage /> },
+    ],
+  },
+];
+
+const protectedLayout: RouteObject[] = [
+  {
+    path: '/',
+    element: <ProtectedLayout />,
+    children: [
+      { path: 'alarm', element: <AlarmPage /> },
+      { path: 'write-review', element: <WriteReviewPage /> },
+      { path: 'plan', element: <PlanPage /> },
+      { path: 'plan/:planId', element: <PlanDetailPage /> },
+      { path: 'community/new-post', element: <PostWritePage /> },
+      { path: 'community/:postId', element: <PostDetailPage /> },
+      { path: 'create-room', element: <CreateRoomPage /> },
+      { path: 'room/:roomId', element: <RoomPage /> },
+      { path: 'chat-room/:roomId', element: <ChatRoomPage /> },
+      { path: 'profile/:userId', element: <UserProfilePage /> },
+      { path: 'cart', element: <CartPage /> },
+      { path: 'mypage', element: <MyPage /> },
+      { path: 'mypage/profile-edit', element: <ProfileEdit /> },
+      { path: 'mypage/posts', element: <MyPosts /> },
+      { path: 'mypage/plans', element: <MyPlans /> },
+      { path: 'mypage/rooms', element: <MyRooms /> },
+      { path: 'mypage/reviews', element: <MyReviews /> },
+      { path: 'mypage/bookmarks', element: <MyBookmarks /> },
+      { path: 'mypage/comments', element: <MyComments /> },
+      { path: 'mypage/language', element: <LanguageSettings /> },
+      { path: 'mypage/contact', element: <ContactUs /> },
+      { path: 'mypage/terms', element: <TermsOfService /> },
+      { path: 'mypage/privacy', element: <PrivacyPolicy /> },
+      { path: 'report', element: <ReportPage /> },
+      { path: 'report/my', element: <MyReportsPage /> },
+      { path: 'inquiry', element: <InquiryPage /> },
+      { path: 'inquiry/my', element: <MyInquiriesPage /> },
+      { path: 'safety-check/stats', element: <StatsPage /> },
+      { path: 'safety-check', element: <SafetyCheckPage /> },
+    ],
+  },
+];
+
+const router = createBrowserRouter([...publictRoutes, ...protectedLayout]);
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const queryClient = new QueryClient();
 
 function App() {
   return (
-    <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" reverseOrder={false} />
-      <Routes>
-        {/* 스플래시 페이지 */}
-        <Route path="/splash" element={<SplashPage />} />
-
-        <Route element={<ProtectedLayout />}>
-          <Route path="/write-review" element={<WriteReviewPage />} />
-          <Route path="/plan" element={<PlanPage />} />
-          <Route path="/plan/:planId" element={<PlanDetailPage />} />
-          <Route path="/create-room" element={<CreateRoomPage />} />
-          <Route path="community/new-post" element={<PostWritePage />} />
-          <Route path="/room/:roomId" element={<RoomPage />} />
-          <Route path="/chat-room/:roomId" element={<ChatRoomPage />} />
-          <Route path="/profile/:userId" element={<UserProfilePage />} />
-          <Route path="/alarm" element={<AlarmPage />} />
-          <Route path="/safety-check" element={<SafetyCheckPage />} />
-          <Route path="/safety-check/stats" element={<StatsPage />} />
-          <Route path="mypage" element={<MyPage />} />
-          <Route path="mypage/profile-edit" element={<ProfileEdit />} />
-          <Route path="/cart" element={<CartPage />} />
-        </Route>
-
-        <Route path="/" element={<PublicLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/find-password" element={<FindPasswordPage />} />
-          <Route path="/profile/create" element={<ProfileCreationPage />} />
-          <Route index element={<HomePage />} />
-          <Route path="search" element={<SearchPage />} />
-          <Route path="search-map" element={<SearchMapPage />} />
-          <Route path="search-box" element={<SearchBoxPage />} />
-          <Route path="search-detail/:placeId" element={<SearchDetailPage />} />
-          <Route path="community" element={<CommunityPage />} />
-          <Route path="community/:postId" element={<PostDetailPage />} />
-          <Route path="my" element={<MyPage />} />
-          <Route path="mypage/posts" element={<MyPosts />} />
-          <Route path="mypage/plans" element={<MyPlans />} />
-          <Route path="mypage/rooms" element={<MyRooms />} />
-          <Route path="mypage/reviews" element={<MyReviews />} />
-          <Route path="mypage/bookmarks" element={<MyBookmarks />} />
-          <Route path="mypage/comments" element={<MyComments />} />
-          <Route path="mypage/language" element={<LanguageSettings />} />
-          <Route path="mypage/contact" element={<ContactUs />} />
-          <Route path="mypage/terms" element={<TermsOfService />} />
-          <Route path="mypage/privacy" element={<PrivacyPolicy />} />
-          <Route path="/report" element={<ReportPage />} />
-          <Route path="/report/my" element={<MyReportsPage />} />
-          <Route path="/report/:id" element={<ReportDetailPage />} />
-          <Route path="/inquiry" element={<InquiryPage />} />
-          <Route path="/inquiry/my" element={<MyInquiriesPage />} />
-          <Route path="/inquiry/:id" element={<InquiryDetailPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <RouterProvider router={router}></RouterProvider>
+    </QueryClientProvider>
   );
 }
 
