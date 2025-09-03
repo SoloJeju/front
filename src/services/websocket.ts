@@ -1,4 +1,3 @@
-import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import type { Message } from '@stomp/stompjs';
 import type { WebSocketMessage, WebSocketChatMessage } from '../types/chat';
@@ -37,19 +36,16 @@ class WebSocketService {
     try {
       // STOMP 클라이언트 생성
       this.stompClient = new Client({
-        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_WS_URL}`),
+        brokerURL: `${import.meta.env.VITE_WS_URL}`,
         connectHeaders: {
-          'Authorization': `Bearer ${token}`,
-          'roomId': roomId.toString(),
-          'Content-Type': 'application/json'
-        },
-        debug: () => {
-          // 디버그 로그 비활성화
+          Authorization: `Bearer ${token}`,
+          roomId: roomId.toString(),
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000
+        heartbeatOutgoing: 4000,
       });
+
 
       // 연결 성공 시 콜백
       this.stompClient.onConnect = () => {
