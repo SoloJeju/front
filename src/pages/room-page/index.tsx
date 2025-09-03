@@ -93,47 +93,67 @@ export default function RoomPage() {
   };
 
   const handleJoinRoom = async () => {
-    if (!roomId || isJoining) return;
-    
-    setIsJoining(true);
-    
-    try {
-      const response = await chatApiService.joinChatRoom(Number(roomId));
-      
-      if (response.isSuccess) {
-        // 성공적으로 입장한 경우
-        console.log('채팅방 입장 성공:', response.result);
-        navigate(`/chat-room/${roomId}`);
-      } else {
-        // 이미 입장해있는 경우 (CHAT4004 에러)
-        if (response.code === 'CHAT4004') {
+  if (!roomId || isJoining) return;
+  setIsJoining(true);
+
+  try {
+    const response = await chatApiService.joinChatRoom(Number(roomId));
+
+    if (response.isSuccess) {
+      console.log('채팅방 입장 성공:', response.result);
+      navigate(`/chat-room/${roomId}`);
+    } else {
+      switch (response.code) {
+        case 'CHAT4002': // 이미 joinChat에 추가된 사용자
+        case 'CHAT4004': // 이미 참가한 채팅방
           console.log('이미 참가한 채팅방입니다. 메시지 페이지로 이동합니다.');
           navigate(`/chat-room/${roomId}`);
-        } else {
-          // 다른 에러인 경우
-          console.error('채팅방 입장 실패:', response.message);
+          break;
+        case 'CHAT4005': // 인원수 제한
+          alert('채팅방 최대 인원에 도달했습니다.');
+          break;
+        case 'CHAT4007': // 성별 제한 위반
+          alert('이 채팅방의 성별 제한에 맞지 않습니다.');
+          break;
+        case 'CHAT4009': // 종료된 방
+          alert('이미 종료된 채팅방입니다.');
+          break;
+        default:
           alert(response.message || '채팅방 입장에 실패했습니다.');
-        }
       }
-    } catch (error: unknown) {
-      console.error('채팅방 입장 API 오류:', error);
-      
-      // API 에러 응답에서 이미 참가한 경우 처리
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { code?: string } } };
-        if (apiError.response?.data?.code === 'CHAT4004') {
+    }
+  } catch (error: unknown) {
+    console.error('채팅방 입장 API 오류:', error);
+
+    if (error && typeof error === 'object' && 'response' in error) {
+      const apiError = error as { response?: { data?: { code?: string } } };
+      switch (apiError.response?.data?.code) {
+        case 'CHAT4002':
+        case 'CHAT4004':
           console.log('이미 참가한 채팅방입니다. 메시지 페이지로 이동합니다.');
           navigate(`/chat-room/${roomId}`);
-        } else {
+          break;
+        case 'CHAT4005':
+          alert('채팅방 최대 인원에 도달했습니다.');
+          break;
+        case 'CHAT4007':
+          alert('이 채팅방의 성별 제한에 맞지 않습니다.');
+          break;
+        case 'CHAT4009':
+          alert('이미 종료된 채팅방입니다. 메시지를 작성할 수 없습니다.');
+            navigate(`/chat-room/${roomId}`, { state: { isCompleted: true } });
+          break;
+        default:
           alert('채팅방 입장 중 오류가 발생했습니다.');
-        }
-      } else {
-        alert('채팅방 입장 중 오류가 발생했습니다.');
       }
-    } finally {
-      setIsJoining(false);
+    } else {
+      alert('채팅방 입장 중 오류가 발생했습니다.');
     }
-  };
+  } finally {
+    setIsJoining(false);
+  }
+};
+
 
   if (isLoading || isMyChatRoomsPending) {
     return (
