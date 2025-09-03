@@ -1,45 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CategoryGroup from '../../components/common/Category/Category';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 import Write from '/src/assets/write.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-const mockData = [
-  {
-    id: 1,
-    type: '궁금해요',
-    title: '혼자 성산일출봉 가도 괜찮을까요?',
-    content:
-      '저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??',
-    commentNumber: 3,
-    time: '3분 전',
-    writer: '감귤',
-    image: '/src/assets/ex-place.png',
-  },
-  {
-    id: 2,
-    type: '혼행꿀팁',
-    title: '혼자 성산일출봉 가도 괜찮을까요?',
-    content:
-      '저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??',
-    commentNumber: 3,
-    time: '3분 전',
-    writer: null,
-    image: null,
-  },
-  {
-    id: 3,
-    type: '혼행꿀팁',
-    title: '혼자 성산일출봉 가도 괜찮을까요?',
-    content:
-      '저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??저 혼자 성산일출봉 가려는데 혼자 가는 사람도 많나요? 괜찮을지 모르겠네요 분위기 어떰??',
-    commentNumber: 3,
-    time: '3분 전',
-    writer: null,
-    image: null,
-  },
-];
+import useGetInfinitePostList from '../../hooks/community/useGetInfinitePostList';
+import { useInView } from 'react-intersection-observer';
+import { filterCategoryKoToEn } from '../../utils/filterCategory';
 
 export default function CommunityPage() {
   const navigate = useNavigate();
@@ -47,44 +14,65 @@ export default function CommunityPage() {
   const category = location.state?.category;
   const [selected, setSelected] = useState(category ? category : '전체');
 
-  const filteredData =
-    selected === '전체'
-      ? mockData
-      : mockData.filter((data) => data.type === selected);
+  const { data, isFetching, hasNextPage, isPending, isError, fetchNextPage } =
+    useGetInfinitePostList(filterCategoryKoToEn(selected));
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
   const handleNewPost = () => {
     navigate('/community/new-post');
   };
 
+  if (isPending) {
+    // loading ui
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Erorr</div>;
+  }
+
   return (
     <>
       <CategoryGroup selected={selected} setSelected={setSelected} />
 
-      {/* 무한스크롤 처리 */}
-      {filteredData.length !== 0 ? (
-        <div className="flex flex-col gap-2 mt-15 pb-10">
-          {filteredData.map((data) => (
-            <PostCard
-              key={data.id}
-              id={data.id}
-              type={data.type}
-              title={data.title}
-              content={data.content}
-              commentNumber={data.commentNumber}
-              time={data.time}
-              writer={data.writer}
-              image={data.image}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col justify-center items-center h-full">
-          <img src={PostNone} className="w-20 h-20" />
-          <p className="font-[pretendard] font-medium text-[#B4B4B4]">
-            게시글이 존재하지 않습니다
-          </p>
-        </div>
-      )}
+      <div className="pt-15 h-full pb-10">
+        {data?.pages.every((page) => page.result.content.length === 0) ? (
+          <div className="flex flex-col justify-center items-center h-full">
+            <img src={PostNone} className="w-20 h-20" />
+            <p className="font-[pretendard] font-medium text-[#B4B4B4]">
+              게시글이 존재하지 않습니다
+            </p>
+          </div>
+        ) : (
+          data?.pages.flatMap((page) =>
+            page.result.content.map((post) => (
+              <div className="pt-3" key={post.postId}>
+                <PostCard
+                  id={post.postId}
+                  type={post.postCategory}
+                  title={post.title}
+                  content={post.content}
+                  commentNumber={post.commentCount}
+                  time={post.createdAt}
+                  writer={post.authorNickname}
+                  image={post.thumbnailUrl}
+                />
+              </div>
+            ))
+          )
+        )}
+      </div>
+
+      <div ref={ref}></div>
 
       <div className="flex justify-end">
         <button
