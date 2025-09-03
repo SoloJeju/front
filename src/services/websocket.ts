@@ -1,4 +1,3 @@
-import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import type { Message } from '@stomp/stompjs';
 import type { WebSocketMessage, WebSocketChatMessage } from '../types/chat';
