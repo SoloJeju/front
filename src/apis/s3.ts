@@ -28,10 +28,9 @@ export const uploadImageToS3 = async (file: File): Promise<CommonResponse<{ imag
 
 // S3 이미지 삭제
 export const deleteImageFromS3 = async (imageName: string): Promise<CommonResponse<string>> => {
-  const { data } = await axios.post(
+  const { data } = await axios.delete(
     `${import.meta.env.VITE_API_URL}/api/image/delete`,
-    { imageName },
-    { headers: getAuthHeaders() }
+    { headers: getAuthHeaders(), data: { imageName } }
   );
   return data;
 };
