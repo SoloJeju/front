@@ -22,7 +22,7 @@ const SearchPage = () => {
           </button>
         </div>
 
-        <PlaceList />
+        <PlaceList/>
       </div>
       <div className="flex justify-end">
         <button
