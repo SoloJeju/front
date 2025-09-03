@@ -4,14 +4,15 @@ import Clock from '../../../assets/clock.svg?react';
 import { useNavigate } from 'react-router-dom';
 
 type RoomCardProps = {
-  id: number;
+  id: number | undefined;
   isEnd: boolean; // true: 모집완료, false: 모집중
-  title: string;
-  location: string;
-  date: Date | string;
-  pre: number;
-  all: number;
-  imageUrl?: string;
+  title: string | undefined;
+  location: string | undefined;
+  date: Date | string | undefined;
+  pre: number | undefined;
+  all: number | undefined;
+  imageUrl?: string | undefined;
+  iamgeName?: string | undefined;
   gender?: string | null;
   hasUnreadMessages?: boolean;
   unreadCount?: number; // 읽지 않은 메시지 개수
@@ -27,6 +28,7 @@ const RoomCard = ({
   pre,
   all,
   imageUrl,
+  iamgeName,
   gender,
   hasUnreadMessages,
   from = 'mypage', // 기본값은 마이페이지
@@ -116,7 +118,7 @@ const RoomCard = ({
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt="thumbnail"
+            alt={iamgeName}
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

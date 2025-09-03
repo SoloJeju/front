@@ -4,6 +4,7 @@ import Tip from '/src/assets/tip.svg?react';
 import Challenge from '/src/assets/challenge.svg?react';
 import Comment from '/src/assets/comment.svg';
 import { useNavigate } from 'react-router-dom';
+import { filterCategoryEntoKo } from '../../utils/filterCategory';
 
 interface PostCardProps {
   id: number;
@@ -11,7 +12,7 @@ interface PostCardProps {
   title: string;
   content: string;
   commentNumber: number;
-  time: string;
+  time: Date | string;
   writer: string | null;
   image: string | null;
 }
@@ -47,14 +48,14 @@ const PostCard = ({
 
   return (
     <div
-      className="flex items-center px-5 py-4 border border-[#FFCEAA] rounded-xl select-none"
+      className="flex justify-between items-center px-5 py-4 border border-[#FFCEAA] rounded-xl select-none"
       onClick={handleNavigate}
     >
       <div className="flex flex-col gap-2">
         <h2 className="flex gap-1.5">
-          {typeIcon(type)}
+          {typeIcon(filterCategoryEntoKo(type) || '')}
           <p className="font-[pretendard] font-medium text-sm text-[#F78938]">
-            {type}
+            {filterCategoryEntoKo(type)}
           </p>
         </h2>
         <h3 className="font-[pretendard] font-semibold text-black">{title}</h3>
@@ -73,7 +74,7 @@ const PostCard = ({
             </span>
           </div>
           <time className='font-[pretendard] font-normal text-xs text-[#666666] after:content-["|"] after:pl-1 after:text-[#666666]'>
-            {time}
+            {new Date(time).toLocaleDateString()}
           </time>
           <span
             aria-label="작성자"
@@ -85,7 +86,7 @@ const PostCard = ({
       </div>
 
       {image && (
-        <img src={image} alt="ex-place" className="w-25 h-25 rounded-xl" />
+        <img src={image} alt={title} className="w-25 h-25 rounded-xl" />
       )}
     </div>
   );
