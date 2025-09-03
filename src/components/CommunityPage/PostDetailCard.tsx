@@ -156,11 +156,13 @@ const PostDetailCard = ({
         <p className="font-[pretendard] font-medium text-[#262626] break-keep">
           {content}
         </p>
-        {images
-          ? images.map((img) => (
+        {images ? (
+          <div className="pt-2 flex flex-col gap-2">
+            {images.map((img) => (
               <img src={img.imageUrl} alt={`${img.imageName}`} />
-            ))
-          : null}
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {chatRoomId && (
