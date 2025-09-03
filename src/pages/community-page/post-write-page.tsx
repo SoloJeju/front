@@ -16,6 +16,7 @@ import { queryClient } from '../../App';
 
 export default function PostWritePage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const prevTitle = location?.state?.title;
   const prevContent = location?.state?.content;
@@ -23,7 +24,6 @@ export default function PostWritePage() {
   const prevImages = location?.state?.images;
   const postId = location?.state?.postId;
 
-  const navigate = useNavigate();
   const [selected, setSelected] = useState(
     prevCategory
       ? (filterCategoryEntoKo(prevCategory) ?? '궁금해요')
@@ -149,7 +149,8 @@ export default function PostWritePage() {
       };
 
       await patchPost({ postId: Number(postId), body: postData });
-      // 수정 후 게시글 상세 정보 재요청
+
+      // 수정 후 게시글 상세 정보 캐싱 업데이트
       queryClient.invalidateQueries({
         queryKey: ['postDetail', Number(postId)],
       });
@@ -246,7 +247,7 @@ export default function PostWritePage() {
         <button
           type="button"
           className="fixed bottom-1 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[480px] h-[54px] py-4 bg-[#F78938] font-[pretendard] font-semibold text-white text-base rounded-[10px] cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
-          disabled={!title.trim() || !content.trim()}
+          disabled={!title.trim() || !content.trim() || isUploading}
           onClick={prevTitle ? handleModifyPost : handleCreatePost}
         >
           {isUploading ? '업로드 중...' : prevTitle ? '수정 완료' : '작성 완료'}
