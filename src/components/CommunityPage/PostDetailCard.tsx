@@ -158,8 +158,8 @@ const PostDetailCard = ({
         </p>
         {images ? (
           <div className="pt-2 flex flex-col gap-2">
-            {images.map((img) => (
-              <img src={img.imageUrl} alt={`${img.imageName}`} />
+            {images.map((img, idx) => (
+              <img src={img.imageUrl} alt={`${img.imageName}`} key={idx} />
             ))}
           </div>
         ) : null}
