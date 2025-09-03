@@ -10,6 +10,8 @@ import useGetInfiniteCommentList from '../../hooks/community/useGetInfiniteComme
 import { useInView } from 'react-intersection-observer';
 import useCreateComment from '../../hooks/community/useCreateComment';
 import useDeleteComment from '../../hooks/community/useDeleteComment';
+import { deletePost } from '../../apis/post';
+import toast from 'react-hot-toast';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -80,6 +82,17 @@ export default function PostDetailPage() {
         images: postDetail?.images,
       },
     });
+  };
+
+  const handleDeletePostDetail = async () => {
+    try {
+      await deletePost(Number(postId));
+      toast.success('게시글이 삭제되었습니다!');
+      navigate(`/community`);
+    } catch (e) {
+      console.error(e);
+      toast.error('게시글 삭제 실패! 잠시 후 다시 시도해주세용...');
+    }
   };
 
   const clickDeleteComment = () => {
@@ -156,7 +169,7 @@ export default function PostDetailPage() {
               },
               {
                 text: '확인',
-                onClick: () => console.log('삭제 실행'),
+                onClick: handleDeletePostDetail,
                 variant: 'orange',
               },
             ]}
