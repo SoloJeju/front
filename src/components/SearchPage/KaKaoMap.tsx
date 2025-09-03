@@ -1,58 +1,75 @@
-{/*import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from "react";
 
-declare global {
-  interface Window {
-    kakao: any;
-  }
+interface KakaoMapProps {
+  initialLat?: number;
+  initialLng?: number;
+  initialLevel?: number;
 }
 
-const KakaoMap: React.FC = () => {
+const KakaoMap = ({
+  initialLat = 33.499621, // 제주 시청 위도(기본)
+  initialLng = 126.531188, // 제주 시청 경도
+  initialLevel = 3,
+}: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
-  const [status, setStatus] = useState('로딩 중...');
 
-  const defaultCoords = { lat: 33.5000, lng: 126.5312 }; // 일단은 제주 시청으로 기본 위치 설정
-
-  // 지도 초기화
   useEffect(() => {
-    const initMap = () => {
-      if (!window.kakao || !window.kakao.maps || !mapRef.current) {
-        setStatus('카카오 지도 초기화 실패');
-        return;
+    const kakaoLoad = () => {
+      if (!mapRef.current) return;
+      const kakao = (window as any).kakao;
+      const map = new kakao.maps.Map(mapRef.current, {
+        center: new kakao.maps.LatLng(initialLat, initialLng),
+        level: initialLevel,
+      });
+
+      const createMarker = (lat: number, lng: number) => {
+        const markerImage = new kakao.maps.MarkerImage(
+          "/MapPin.png", // public 폴더 절대 경로
+          new kakao.maps.Size(40, 40)
+        );
+
+        const marker = new kakao.maps.Marker({
+          position: new kakao.maps.LatLng(lat, lng),
+          image: markerImage,
+        });
+
+        marker.setMap(map);
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const myLat = pos.coords.latitude;
+            const myLng = pos.coords.longitude;
+            createMarker(myLat, myLng);
+            map.setCenter(new kakao.maps.LatLng(myLat, myLng));
+          },
+          () => {
+            createMarker(initialLat, initialLng);
+            map.setCenter(new kakao.maps.LatLng(initialLat, initialLng));
+          }
+        );
+      } else {
+        createMarker(initialLat, initialLng);
+        map.setCenter(new kakao.maps.LatLng(initialLat, initialLng));
       }
-
-      const map = new window.kakao.maps.Map(mapRef.current, {
-        center: new window.kakao.maps.LatLng(defaultCoords.lat, defaultCoords.lng),
-        level: 5,
-      });
-      mapInstanceRef.current = map;
-
-      // 기본 마커 (제주 시청)
-      const defaultMarker = new window.kakao.maps.Marker({
-        map,
-        position: new window.kakao.maps.LatLng(defaultCoords.lat, defaultCoords.lng),
-        title: '제주 시청',
-      });
-      markersRef.current.push(defaultMarker);
-
-      setStatus('지도 초기화 완료');
     };
 
-    if (window.kakao && window.kakao.maps) {
-      window.kakao.maps.load(initMap);
-    }
-  }, []);
+    if (!(window as any).kakao) {
+      const script = document.createElement("script");
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=2e874be546fe58cb5e5fa439db51cb7c&autoload=false`;
+      script.async = true;
+      document.head.appendChild(script);
 
-  return (
-    <div className="relative w-[393px] h-[507px] flex-shrink-0 rounded-t-[12px] border-t border-[#F78938] overflow-hidden">
-      <div ref={mapRef} className="w-full h-full" />
-      <div className="absolute top-2 left-2 bg-white/80 px-2 py-1 text-xs">
-        {status}
-      </div>
-    </div>
-  );
+      script.onload = () => {
+        (window as any).kakao.maps.load(kakaoLoad);
+      };
+    } else {
+      (window as any).kakao.maps.load(kakaoLoad);
+    }
+  }, [initialLat, initialLng, initialLevel]);
+
+  return <div ref={mapRef} className="w-full h-full relative z-0" />;
 };
 
 export default KakaoMap;
-*/}
