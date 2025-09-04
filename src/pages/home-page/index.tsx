@@ -27,7 +27,7 @@ export default function HomePage() {
 
   const {
     data: myInfo,
-    isPending: isPendingMyInfo,
+    isLoading: isLoadingMyInfo,
     isError: isErrorMyInfo,
   } = useGetMyInfo();
   const userType = myInfo?.result.userType;
@@ -128,7 +128,7 @@ export default function HomePage() {
     isPendingTodayRecommendedSpots ||
     isPendinLastestReviews ||
     isPendingRecommendedChatRooms ||
-    isPendingMyInfo
+    isLoadingMyInfo
   ) {
     // loading ui
     return <div>Loading...</div>;
