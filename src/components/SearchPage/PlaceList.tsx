@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const mockPlaces = [
   {
+    id: 1,
     imageUrl: ExampleImage,
     title: '가람돌솥밥',
     location: '제주특별자치도 서귀포시 중문관광로 332',
@@ -11,6 +12,7 @@ const mockPlaces = [
     comment: '1인 좌석/테이블이 잘 되어 있었어요!',
   },
   {
+    id: 2,
     imageUrl: ExampleImage,
     title: '가람돌솥밥',
     location: '제주특별자치도 서귀포시 중문관광로 332',
@@ -18,6 +20,7 @@ const mockPlaces = [
     comment: '1인 좌석/테이블이 잘 되어 있었어요!',
   },
   {
+    id: 3,
     imageUrl: ExampleImage,
     title: '가람돌솥밥',
     location: '제주특별자치도 서귀포시 중문관광로 332',
@@ -25,6 +28,7 @@ const mockPlaces = [
     comment: '1인 좌석/테이블이 잘 되어 있었어요!',
   },
   {
+    id: 4,
     imageUrl: ExampleImage,
     title: '가람돌솥밥',
     location: '제주특별자치도 서귀포시 중문관광로 332',
@@ -32,6 +36,7 @@ const mockPlaces = [
     comment: '1인 좌석/테이블이 잘 되어 있었어요!',
   },
   {
+    id: 5,
     imageUrl: ExampleImage,
     title: '가람돌솥밥',
     location: '제주특별자치도 서귀포시 중문관광로 332',
