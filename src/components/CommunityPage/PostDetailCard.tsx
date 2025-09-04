@@ -1,4 +1,3 @@
-import React from 'react';
 import Question from '/src/assets/question.svg?react';
 import With from '/src/assets/with.svg?react';
 import Tip from '/src/assets/tip.svg?react';
@@ -7,22 +6,39 @@ import More from '/src/assets/more.svg';
 import BasicProfile from '/src/assets/basicProfile.png';
 import Comment from '/src/assets/comment.svg';
 import Script from '/src/assets/script.svg';
+import FilledScript from '/src/assets/script-filled.svg';
 import MoreButton from './MoreButton';
 import { useNavigate } from 'react-router-dom';
+import { filterCategoryEntoKo } from '../../utils/filterCategory';
+import useUpdateScrap from '../../hooks/community/useUpdateScrap';
+import RoomCard from '../common/RoomCard/RoomCard';
 
 interface PostDetailCardProps {
   id: number;
   type: string;
   title: string;
-  writer: string | null;
-  time: string;
+  authorId: number;
+  author: string | null;
+  authorImage: string;
+  time: Date;
   content: string;
-  image: string | null;
+  images: { imageUrl: string; imageName: string }[];
   commentNumber: number;
   scriptNumber: number;
   onClick: () => void;
   isOpenMore: boolean;
   isMine: boolean;
+  isScraped: boolean;
+  chatRoomId?: number;
+  isEnd?: string;
+  chatRoomTitle?: string;
+  location?: string;
+  date?: Date;
+  pre?: number;
+  all?: number;
+  chatRoomImage?: string;
+  chatRoomImageName?: string;
+  gender?: string;
   ref: React.RefObject<HTMLDivElement | null>;
   onDelete: () => void;
   onModify: () => void;
@@ -30,17 +46,31 @@ interface PostDetailCardProps {
 }
 
 const PostDetailCard = ({
+  id,
   type,
   title,
-  writer,
+  authorId,
+  author,
+  authorImage,
   time,
   content,
-  image,
+  images,
   commentNumber,
   scriptNumber,
   onClick,
   isOpenMore,
   isMine,
+  isScraped,
+  chatRoomId,
+  chatRoomTitle,
+  isEnd,
+  location,
+  date,
+  pre,
+  all,
+  chatRoomImage,
+  chatRoomImageName,
+  gender,
   ref,
   onDelete,
   onModify,
@@ -60,20 +90,24 @@ const PostDetailCard = ({
   };
 
   const navigate = useNavigate();
-  // ex authorId
-  const authorId = 1;
 
-  const handleProfileDetail = (id: number) => {
-    navigate(`/profile/${id}`);
+  const handleProfileDetail = () => {
+    navigate(`/profile/${authorId}`);
+  };
+
+  const { mutate: updateScrap } = useUpdateScrap();
+
+  const handleScrap = () => {
+    updateScrap(id);
   };
 
   return (
     <div className="flex flex-col gap-3 p-5 border border-[#FFCEAA] rounded-xl relative">
       <div className="flex justify-between">
         <div className="flex gap-1.5">
-          {typeIcon(type)}
+          {typeIcon(filterCategoryEntoKo(type) || '')}
           <span className="font-[pretendard] font-medium text-sm text-[#F78938]">
-            {type}
+            {filterCategoryEntoKo(type)}
           </span>
         </div>
         <button type="button" onClick={() => onClick?.()}>
@@ -84,6 +118,7 @@ const PostDetailCard = ({
         {isOpenMore && (
           <MoreButton
             isMine={isMine}
+            isComment={false}
             ref={ref}
             onDelete={() => onDelete?.()}
             onModify={() => onModify?.()}
@@ -99,20 +134,20 @@ const PostDetailCard = ({
       <div className="flex justify-between items-center">
         <div
           className="flex gap-2 items-center cursor-pointer"
-          onClick={() => handleProfileDetail(authorId)}
+          onClick={handleProfileDetail}
         >
           <img
-            src={BasicProfile}
-            alt={writer ? writer : '익명'}
+            src={authorImage ?? BasicProfile}
+            alt={author ? author : '익명'}
             className="w-6 h-6"
           />
           <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D]">
-            {writer ? writer : '익명'}
+            {author ? author : '익명'}
           </span>
         </div>
 
         <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-          {time}
+          {new Date(time).toLocaleDateString()}
         </time>
       </div>
 
@@ -120,8 +155,29 @@ const PostDetailCard = ({
         <p className="font-[pretendard] font-medium text-[#262626] break-keep">
           {content}
         </p>
-        {image ? <img src={image} alt={`${title}의 이미지`} /> : null}
+        {images ? (
+          <div className="pt-2 flex flex-col gap-2">
+            {images.map((img, idx) => (
+              <img src={img.imageUrl} alt={`${img.imageName}`} key={idx} />
+            ))}
+          </div>
+        ) : null}
       </div>
+
+      {chatRoomId && (
+        <RoomCard
+          id={chatRoomId}
+          isEnd={isEnd === '모집중' ? false : true}
+          title={chatRoomTitle}
+          location={location}
+          date={date}
+          pre={pre}
+          all={all}
+          imageUrl={chatRoomImage}
+          iamgeName={chatRoomImageName}
+          gender={gender}
+        />
+      )}
 
       <div className="flex justify-end gap-1">
         <div className="flex gap-1 items-center">
@@ -130,15 +186,23 @@ const PostDetailCard = ({
             {commentNumber}
           </span>
         </div>
-        <div className="flex gap-1 items-center">
-          <img src={Script} alt="스크립 수" className="w-6 h-6" />
+        <button
+          type="button"
+          className="flex gap-1 items-center cursor-pointer"
+          onClick={handleScrap}
+        >
+          <img
+            src={isScraped ? FilledScript : Script}
+            alt="스크립 수"
+            className="w-6 h-6"
+          />
           <span className="font-[pretendard] font-medium text-xs text-[#F78938]">
             {scriptNumber}
           </span>
-        </div>
+        </button>
       </div>
     </div>
   );
 };
 
-export default React.memo(PostDetailCard);
+export default PostDetailCard;

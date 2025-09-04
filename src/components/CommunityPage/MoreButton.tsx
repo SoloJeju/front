@@ -1,5 +1,6 @@
 interface MoreButtonProps {
   isMine: boolean;
+  isComment: boolean;
   ref: React.RefObject<HTMLDivElement | null>;
   onModify?: () => void;
   onDelete?: () => void;
@@ -8,6 +9,7 @@ interface MoreButtonProps {
 
 const MoreButton = ({
   isMine,
+  isComment,
   ref,
   onModify,
   onDelete,
@@ -20,13 +22,15 @@ const MoreButton = ({
           className="flex flex-col gap-4 px-4 py-5 bg-[#FFFFFD] rounded-xl shadow-md z-50"
           ref={ref}
         >
-          <button
-            type="button"
-            className="font-[pretendard] font-normal text-[#666666]"
-            onClick={() => onModify?.()}
-          >
-            수정하기
-          </button>
+          {!isComment && (
+            <button
+              type="button"
+              className="font-[pretendard] font-normal text-[#666666]"
+              onClick={() => onModify?.()}
+            >
+              수정하기
+            </button>
+          )}
           <button
             type="button"
             className="font-[pretendard] font-normal text-[#666666]"

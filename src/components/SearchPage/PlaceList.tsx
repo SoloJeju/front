@@ -1,50 +1,23 @@
 import PlaceCard from './PlaceCard';
-import ExampleImage from '../../assets/exampleImage.png';
+import type { PlaceCardListProps } from '../../types/tourist';
 
-
-const mockPlaces = [
-  {
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  }
-];
-
-const PlaceCardList = () => {
+const PlaceCardList = ({ spots, onCardClick }: PlaceCardListProps) => {
   return (
-    <div className="flex flex-col gap-2">
-      {mockPlaces.map((place, idx) => (
-        <PlaceCard key={idx} {...place} />
+    <div className="flex flex-col">
+      {spots.map((spot) => (
+        <PlaceCard
+          key={spot.contentid}
+          contentid={spot.contentid}
+          contenttypeid={spot.contenttypeid}
+          onClick={onCardClick}
+          imageUrl={spot.firstimage}
+          title={spot.title}
+          location={spot.addr1}
+          tel={spot.tel}
+          comment={spot.reviewTags}
+          hasCompanionRoom={spot.hasCompanionRoom}
+          difficulty={spot.difficulty}
+        />
       ))}
     </div>
   );
