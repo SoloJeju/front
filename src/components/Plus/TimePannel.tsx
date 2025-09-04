@@ -16,10 +16,10 @@ const TimePicker: React.FC<TimePickerProps> = ({ onSelect, onClose = () => {} })
   const [selectedMinute, setSelectedMinute] = useState(0);
 
   const handleConfirm = () => {
-    const formattedTime = `${selectedAmPm} ${String(selectedHour).padStart(
-      2,
-      "0"
-    )}:${String(selectedMinute).padStart(2, "0")}`;
+    let hours24 = selectedHour;
+    if (selectedAmPm === "오후" && hours24 < 12) hours24 += 12;
+    if (selectedAmPm === "오전" && hours24 === 12) hours24 = 0;
+    const formattedTime = `${String(hours24).padStart(2, "0")}:${String(selectedMinute).padStart(2, "0")}`;
     onSelect(formattedTime);
   };
 

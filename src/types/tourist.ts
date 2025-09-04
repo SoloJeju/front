@@ -19,6 +19,7 @@ export type TouristSpot = {
   mapx: string;
   mapy: string;
   hasCompanionRoom: boolean;
+  companionRoomCount: number;
   difficulty: string;
   reviewTags: string | null;
   averageRating: number | null;

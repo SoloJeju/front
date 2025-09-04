@@ -1,14 +1,18 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getTouristSearch } from '../../apis/tourist';
 import type { TouristSpot } from '../../types/tourist';
 import SearchIcon from '../../assets/search-magnifying-glass.svg?react';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import PlaceList from '../../components/SearchPage/PlaceList';
+import { useCreateRoomStore } from '../../stores/createroom-store';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setFormData } = useCreateRoomStore();
+  
   const [searchHistory, setSearchHistory] = useState<string[]>([
     '돌솥밥',
     '고등어 덮밥',
@@ -36,15 +40,16 @@ const SearchBoxPage = () => {
     try {
       const response = await getTouristSearch(searchInput);
       if (response.isSuccess) {
-        const processedSpots: TouristSpot[] = response.result.spots.map(spot => ({
-          contentid: String(spot.contentId),
-          contenttypeid: String(spot.contentTypeId),
+        const processedSpots: TouristSpot[] = response.result.list.map(spot => ({
+          contentid: String(spot.contentid),
+          contenttypeid: String(spot.contenttypeid),
           title: spot.title,
           addr1: spot.addr1 ?? '', 
           firstimage: spot.firstimage,
-          hasCompanionRoom: (spot.openCompanionRoomCount ?? 0) > 0,
+          hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
+          companionRoomCount: spot.companionRoomCount ?? 0,
           difficulty: spot.difficulty,
-          reviewTags: spot.reviewTags ?? null,
+          reviewTags: spot.reviewTags ? JSON.parse(spot.reviewTags) : null,
           mapx: '',
           mapy: '',
           averageRating: null,
@@ -54,15 +59,24 @@ const SearchBoxPage = () => {
         setSearchResults([]);
       }
     } catch (error) {
-      console.error('검색 실패:', error);
       setSearchResults([]);
     }
-    
     setIsAfterSearch(true);
   };
 
   const handleCardClick = (id: string) => {
-    navigate(`/search-detail/${id}`);
+    const spot = searchResults.find(s => s.contentid === id);
+    if (!spot) return;
+
+    const from = location.state?.from;
+    const returnPages = ['/create-room', '/write-review', '/plan'];
+
+    if (returnPages.includes(from)) {
+      setFormData({ contentId: Number(spot.contentid), spotName: spot.title });
+      navigate(from);
+    } else {
+      navigate(`/search-detail/${spot.contentid}`);
+    }
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
