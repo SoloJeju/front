@@ -3,7 +3,7 @@ import Modal from '../components/common/Modal';
 
 type ModalStep = 'initial' | 'success' | 'failure' | 'none';
 interface UseReceiptModalProps {
-  onFinalize: () => void;
+  onFinalize: (receiptVerified: boolean) => void;
 }
 
 export const useReceiptModal = ({ onFinalize }: UseReceiptModalProps) => {
@@ -26,15 +26,16 @@ export const useReceiptModal = ({ onFinalize }: UseReceiptModalProps) => {
     setModalStep('none');
   }, []);
 
-  const handleFinalize = useCallback(() => {
-    onFinalize();
-    closeModal();
-  }, [onFinalize, closeModal]);
+  const handleFinalize = useCallback(
+    (receiptVerified: boolean) => {
+      onFinalize(receiptVerified);
+      closeModal();
+    }, [onFinalize, closeModal],
+  );
 
   const startReceiptFlow = useCallback(() => {
     setModalStep('initial');
   }, []);
-  
   const ModalComponent = (() => {
     switch (modalStep) {
       case 'initial':
@@ -44,7 +45,7 @@ export const useReceiptModal = ({ onFinalize }: UseReceiptModalProps) => {
             onClose={closeModal}
             buttons={[
               { text: '인증하기', onClick: attemptVerification, variant: 'orange' },
-              { text: '리뷰만 등록하기', onClick: handleFinalize, variant: 'orange' } 
+              { text: '리뷰만 등록하기', onClick: () => handleFinalize(false), variant: 'orange' },
             ]}
           >
             <p className="text-sm text-gray-600">
@@ -57,8 +58,8 @@ export const useReceiptModal = ({ onFinalize }: UseReceiptModalProps) => {
         return (
           <Modal
             title="영수증 인증 성공!"
-            onClose={handleFinalize}
-            buttons={[{ text: '확인', onClick: handleFinalize, variant: 'orange' }]}
+            onClose={() => handleFinalize(true)}
+            buttons={[{ text: '확인', onClick: () => handleFinalize(true), variant: 'orange' }]}
           >
             <p className="text-sm text-gray-600">포인트가 적립되었습니다.</p>
           </Modal>
@@ -70,7 +71,7 @@ export const useReceiptModal = ({ onFinalize }: UseReceiptModalProps) => {
             onClose={closeModal}
             buttons={[
               { text: '다시 시도하기', onClick: attemptVerification, variant: 'orange' },
-              { text: '리뷰만 등록하기', onClick: handleFinalize, variant: 'orange' } 
+              { text: '리뷰만 등록하기', onClick: () => handleFinalize(false), variant: 'orange' },
             ]}
           >
             <div className="text-sm text-gray-600 text-left">
