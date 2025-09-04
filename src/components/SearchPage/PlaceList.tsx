@@ -1,70 +1,23 @@
 import PlaceCard from './PlaceCard';
-import ExampleImage from '../../assets/exampleImage.png';
-import { useNavigate, useLocation } from "react-router-dom";
+import type { PlaceCardListProps } from '../../types/tourist';
 
-const mockPlaces = [
-  {
-    id: 1,
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    id: 2,
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    id: 3,
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    id: 4,
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  },
-  {
-    id: 5,
-    imageUrl: ExampleImage,
-    title: '가람돌솥밥',
-    location: '제주특별자치도 서귀포시 중문관광로 332',
-    tel: '064-738-1299',
-    comment: '1인 좌석/테이블이 잘 되어 있었어요!',
-  }
-];
-
-const PlaceCardList = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleClick = (place: any) => {
-    if (location.state?.from) {
-      navigate(location.state.from, {
-        state: { selectedPlace: { id: place.id, name: place.title } }, 
-      });
-    } else {
-      navigate(`/search-detail/${place.id}`);
-    }
-  };
-
+const PlaceCardList = ({ spots, onCardClick }: PlaceCardListProps) => {
   return (
-    <div className="flex flex-col gap-2">
-      {mockPlaces.map((place, idx) => (
-        <div key={idx} onClick={() => handleClick(place)}>
-          <PlaceCard {...place} />
-        </div>
+    <div className="flex flex-col">
+      {spots.map((spot) => (
+        <PlaceCard
+          key={spot.contentid}
+          contentid={spot.contentid}
+          contenttypeid={spot.contenttypeid}
+          onClick={onCardClick}
+          imageUrl={spot.firstimage}
+          title={spot.title}
+          location={spot.addr1}
+          tel={spot.tel}
+          comment={spot.reviewTags}
+          hasCompanionRoom={spot.hasCompanionRoom}
+          difficulty={spot.difficulty}
+        />
       ))}
     </div>
   );
