@@ -92,6 +92,7 @@ const WriteReviewPage = () => {
   };
 
   const { startReceiptFlow, ModalComponent } = useReceiptModal({
+    contentId,
     onFinalize: (receiptVerified: boolean) => {
       handleSubmit(receiptVerified);
     },
