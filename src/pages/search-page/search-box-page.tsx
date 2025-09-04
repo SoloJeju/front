@@ -58,7 +58,7 @@ const SearchBoxPage = () => {
       } else {
         setSearchResults([]);
       }
-    } catch (error) {
+    } catch {
       setSearchResults([]);
     }
     setIsAfterSearch(true);
