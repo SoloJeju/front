@@ -18,7 +18,6 @@ export type TouristSpot = {
   firstimage: string | null;
   mapx: string;
   mapy: string;
-  hasCompanionRoom: boolean;
   companionRoomCount: number;
   difficulty: string;
   reviewTags: string | null;
@@ -39,7 +38,6 @@ export type SearchTouristSpot = {
   firstimage: string | null;
   difficulty: string;
   openCompanionRoomCount?: number;
-  hasCompanionRoom: boolean;
   reviewTags?: string | null;
   tel?: string;
 };
@@ -50,7 +48,8 @@ export type PlaceCardProps = {
   imageUrl?: string | null;
   title: string;
   location: string;
-  hasCompanionRoom?: boolean;
+  companionRoomCount:number;
+  openCompanionRoomCount?:number;
   difficulty?: string;
   onClick: (id: string) => void;
   tel?: string;
