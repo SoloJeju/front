@@ -7,12 +7,14 @@ import BackIcon from '../../assets/beforeArrow.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import { useCreateRoomStore } from '../../stores/createroom-store';
+import { useWriteReviewStore } from '../../stores/writereview-store';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setFormData } = useCreateRoomStore();
-  
+  const from = location.state?.from;
+  const createRoomStore = useCreateRoomStore();
+  const writeReviewStore = useWriteReviewStore();
   const [searchHistory, setSearchHistory] = useState<string[]>([
     '돌솥밥',
     '고등어 덮밥',
@@ -25,7 +27,6 @@ const SearchBoxPage = () => {
   ]);
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
-
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
 
   const removeHistoryItem = (item: string) => {
@@ -40,11 +41,11 @@ const SearchBoxPage = () => {
     try {
       const response = await getTouristSearch(searchInput);
       if (response.isSuccess) {
-        const processedSpots: TouristSpot[] = response.result.list.map(spot => ({
+        const processedSpots: TouristSpot[] = response.result.list.map((spot) => ({
           contentid: String(spot.contentid),
           contenttypeid: String(spot.contenttypeid),
           title: spot.title,
-          addr1: spot.addr1 ?? '', 
+          addr1: spot.addr1 ?? '',
           firstimage: spot.firstimage,
           hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
           companionRoomCount: spot.companionRoomCount ?? 0,
@@ -65,14 +66,24 @@ const SearchBoxPage = () => {
   };
 
   const handleCardClick = (id: string) => {
-    const spot = searchResults.find(s => s.contentid === id);
+    const spot = searchResults.find((s) => s.contentid === id);
     if (!spot) return;
 
-    const from = location.state?.from;
     const returnPages = ['/create-room', '/write-review', '/plan'];
 
     if (returnPages.includes(from)) {
-      setFormData({ contentId: Number(spot.contentid), spotName: spot.title });
+      if (from === '/create-room') {
+        createRoomStore.setFormData({
+          contentId: Number(spot.contentid),
+          spotName: spot.title,
+        });
+      } else if (from === '/write-review') {
+        writeReviewStore.setFormData({
+          contentId: Number(spot.contentid),
+          spotName: spot.title,
+          contentTypeId: Number(spot.contenttypeid),
+        });
+      }
       navigate(from);
     } else {
       navigate(`/search-detail/${spot.contentid}`);
@@ -124,7 +135,7 @@ const SearchBoxPage = () => {
           <div className="mt-5">
             <p className="text-black text-base font-semibold mb-4">최근 검색어</p>
             <ul className="flex flex-col gap-3">
-            {searchHistory.map((item, index) => (
+              {searchHistory.map((item, index) => (
               <li
                 key={index}
                 className="flex items-center justify-between pb-1"
