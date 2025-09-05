@@ -4,11 +4,9 @@ import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { login } from '../../apis/auth';
 import toast from 'react-hot-toast';
-import useFCM from '../../hooks/alarm/useFCM';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { updateToken } = useFCM();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +33,6 @@ const LoginPage = () => {
         localStorage.setItem('refreshToken', response.result.refreshToken);
 
         toast.success('로그인되었습니다!');
-        await updateToken(); // 로그인 직후 토큰 발급
         navigate('/'); // 홈페이지로 이동
       } else {
         toast.error(response.message || '로그인에 실패했습니다.');
