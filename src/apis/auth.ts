@@ -18,8 +18,7 @@ import type {
 
 // 로그인 API
 export const login = async (
-  requestData: LoginRequest
-): Promise<CommonResponse<LoginResponse>> => {
+requestData: LoginRequest): Promise<CommonResponse<LoginResponse>> => {
   const { data } = await publicAxios.post<CommonResponse<LoginResponse>>(
     '/api/auth/login',
     requestData

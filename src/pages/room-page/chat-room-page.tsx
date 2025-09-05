@@ -9,8 +9,10 @@ import type { ChatMessage, WebSocketChatMessage } from '../../types/chat';
 import type { MyChatRoom } from '../../types/home';
 import { useQueryClient } from '@tanstack/react-query';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
+import { useLocation } from 'react-router-dom';
 
 export default function ChatRoomPage() {
+  
   const { roomId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -26,7 +28,16 @@ export default function ChatRoomPage() {
   const [hasNext, setHasNext] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true); // 초기 로딩 상태 추가
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
 
+const location = useLocation();
+const isCompletedFromState = location.state?.isCompleted || false;
+
+useEffect(() => {
+  if (isCompletedFromState) {
+    setIsCompleted(true);
+  }
+}, [isCompletedFromState]);
   const {
     data: myChatRooms,
   } = useGetMyChatRooms();
@@ -89,7 +100,13 @@ export default function ChatRoomPage() {
       return;
     }
 
+    console.log("ROOMID: ",roomId);
+    if (!roomId) {
+  console.error("roomId가 비어있음, WebSocket 연결 불가");
+      return;
+    }
     websocketService.connect(Number(roomId), token);
+
     
     // WebSocket 콜백 등록
     websocketService.onConnect(() => {
@@ -126,7 +143,11 @@ export default function ChatRoomPage() {
           isMine: false
         };
         
-        setMessages(prev => [...prev, newChatMessage]);
+       setMessages(prev => {
+      const combined = [...prev, newChatMessage];
+      // id 중복 제거
+      return Array.from(new Map(combined.map(m => [m.id, m])).values());
+    });
         
         // 다른 사람의 메시지가 왔을 때는 자동 스크롤하지 않음 (사용자가 스크롤 위치를 유지할 수 있도록)
       } else if (data.type === 'ENTER') {
@@ -176,6 +197,7 @@ export default function ChatRoomPage() {
 
   // 입장 메시지 전송
   const sendEnterMessage = useCallback(() => {
+     if (!newMessage.trim() || !isConnected || isCompleted) return;
     if (isConnected) {
       websocketService.sendMessage({
         type: 'ENTER',
@@ -196,7 +218,12 @@ export default function ChatRoomPage() {
       }
       
       // 1-3. 읽음 처리 API 호출 (중요!)
+       setTimeout(async () => {
       await markMessagesAsRead();
+      if (isConnected) {
+        sendEnterMessage();
+      }
+    }, 300); // scrollToBottom 실행 후 약간 지연
       
       // 1-4. 입장 메시지 전송 (WebSocket 연결 후)
       if (isConnected) {
@@ -215,7 +242,7 @@ export default function ChatRoomPage() {
     return () => {
       websocketService.disconnect();
     };
-  }, [roomId, enterChatRoom]); // roomId와 enterChatRoom을 의존성으로 설정
+  }, [roomId]); // roomId와 enterChatRoom을 의존성으로 설정
 
   // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
   const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -536,7 +563,7 @@ export default function ChatRoomPage() {
               onChange={setNewMessage}
               onSubmit={handleSubmit}
               onKeyPress={handleKeyPress}
-              disabled={!isConnected}
+               disabled={!isConnected || isCompleted}
             />
           </div>
         </div>
