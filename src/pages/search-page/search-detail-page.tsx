@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import QuestionIcon from '../../assets/question.svg?react';
 import MapIcon from '../../assets/mapPin.svg?react';
@@ -6,21 +6,36 @@ import ClockIcon from '../../assets/clock.svg?react';
 import WebIcon from '../../assets/web.svg?react';
 import TelIcon from '../../assets/tel.svg?react';
 import InfoIcon from '../../assets/info.svg?react';
-import ExampleImage from '../../assets/exampleImage.png';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Cart from '../../assets/cartIcon.svg';
 import { addToCart } from '../../apis/cart';
+import toast from 'react-hot-toast';
+import { getTouristDetail } from '../../apis/tourist';
+import type { BasicSpotDetail, IntroSoptDetail } from '../../types/tourist';
+import { filterSpotType } from '../../utils/filterSpotType';
+import useGetInfiniteSpotImages from '../../hooks/tourist/useGetInfiniteSpotImages';
+import { useInView } from 'react-intersection-observer';
+
+interface SpotDetail {
+  basic: BasicSpotDetail;
+  intro: IntroSoptDetail;
+  info: [];
+  reviewTags: string[];
+  difficulty: string;
+  hasCompanionRoom: boolean;
+}
 
 export default function SearchDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
+  const contentTypeId = Number(location.state?.contentTypeId);
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
-   const contentId = Number(params.placeId) || location.state?.placeId || null;
+  const contentId = Number(params.placeId) || location.state?.placeId || null;
 
   const tabs = [
     { label: '홈' },
@@ -30,8 +45,44 @@ export default function SearchDetailPage() {
   ];
 
   const [showAllReviews, setShowAllReviews] = useState(false);
-
   const [showPopup, setShowPopup] = useState(false);
+  const [spotDetailData, setSpotDetailData] = useState<SpotDetail | null>(null);
+
+  useEffect(() => {
+    const fetchSpotDetailData = async () => {
+      try {
+        const res = await getTouristDetail(contentId, contentTypeId);
+
+        if (res.isSuccess) {
+          setSpotDetailData(res.result);
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error('관광지 정보 로딩 실패! 잠시 후 다시 시도해주세용...');
+      }
+    };
+
+    fetchSpotDetailData();
+  }, [contentId, contentTypeId]);
+
+  const {
+    data: spotImages,
+    isPending: isPendingImages,
+    isError: isErrorImages,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetInfiniteSpotImages(contentId);
+
+  const { ref: imageRef, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
   const handleAddCart = async () => {
     if (!contentId) {
@@ -39,7 +90,7 @@ export default function SearchDetailPage() {
       return;
     }
     try {
-        const response = await addToCart(contentId);
+      const response = await addToCart(contentId);
       if (response.isSuccess) {
         navigate('/cart');
       } else {
@@ -51,31 +102,41 @@ export default function SearchDetailPage() {
     }
   };
 
+  if (isPendingImages) {
+    // loading ui
+    return <div>Loading...</div>;
+  }
+
+  if (isErrorImages) {
+    return <div>Error!</div>;
+  }
+
   return (
     <div>
       <div className="flex px-4 py-3 justify-between items-center border-b border-neutral-200">
-        <button 
-          className="p-1 -ml-1"
-          onClick={() => navigate('/search')}>
+        <button className="p-1 -ml-1" onClick={() => navigate('/search')}>
           <BackIcon className="w-6 h-6" />
         </button>
         <div className="text-[#262626] font-[Pretendard] text-[18px] font-semibold leading-[26px] tracking-[-0.45px]">
-          가람돌솥밥
+          {spotDetailData?.basic.title}
         </div>
         <div className="w-7" />
       </div>
 
       <div className="relative w-full h-[240px] flex-shrink-0">
         <img
-          src={ExampleImage}
-          alt="place-hero"
+          src={
+            spotDetailData?.basic.firstimage ??
+            spotDetailData?.basic.firstimage2
+          }
+          alt={spotDetailData?.basic.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-        <button 
+        <button
           className="absolute top-3 right-3 p-1 bg-black/40 rounded-full"
-          onClick={() => setShowPopup(prev => !prev)}
+          onClick={() => setShowPopup((prev) => !prev)}
         >
           <QuestionIcon className="w-6 h-6 text-white" />
         </button>
@@ -87,24 +148,28 @@ export default function SearchDetailPage() {
               해당 장소가 보이지 않나요?
             </p>
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
-              1:1 문의하기(폐업/오류 신고)    
+              1:1 문의하기(폐업/오류 신고)
             </p>
           </div>
         )}
 
-
         <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6">
+          <p
+            className={`w-fit px-0.5 py-1 font-[pretendard] font-bold text-[10px] rounded-sm   ${spotDetailData?.difficulty === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : spotDetailData?.difficulty === 'NORMAL' ? 'text-[#FFC32A] bg-[#FFEE8C]' : spotDetailData?.difficulty === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
+          >
+            {spotDetailData?.difficulty}
+          </p>
           <div className="flex items-center gap-2">
             <h1 className="text-white font-Pretendard text-[20px] font-semibold leading-[22px]">
-              가람돌솥밥 돌솥이야 뭐하니 밥먹는
+              {spotDetailData?.basic.title}
             </h1>
             <span className="text-[#F5F5F5] text-[12px] font-medium leading-[14px] tracking-[-0.24px]">
-              음식점
+              {filterSpotType(spotDetailData?.basic.contenttypeid || '')}
             </span>
           </div>
           {/* 주소 */}
           <p className="text-white font-Pretendard text-[14px] font-medium leading-[16px] tracking-[-0.28px]">
-            제주특별자치도 서귀포시 중문관광로 332
+            {spotDetailData?.basic.addr1 || spotDetailData?.basic.addr2}
           </p>
         </div>
       </div>
@@ -142,65 +207,77 @@ export default function SearchDetailPage() {
             <div className="flex items-center gap-2">
               <MapIcon className="w-4 h-4" />
               <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                제주특별자치도 서귀포시 중문관광로 332
+                {spotDetailData?.basic.addr1 ||
+                  spotDetailData?.basic.addr2 ||
+                  '--'}
               </p>
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <ClockIcon className="w-4 h-4" />
                 <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  화요일~금요일 09:00~19:00
+                  오픈: {spotDetailData?.intro.opentimefood || '--'}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 flex-shrink-0" />
                 <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  토요일~월요일 09:00~21:00
+                  휴일: {spotDetailData?.intro.restdatefood || '--'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <WebIcon className="w-4 h-4" />
               <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                https://instagram.com/whisky_sehwa
+                {spotDetailData?.basic.homepage || '--'}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <TelIcon className="w-4 h-4" />
-              <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                064-738-1200
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <InfoIcon className="w-4 h-4" />
-              <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                주차 가능
-              </p>
-            </div>
+            {spotDetailData?.basic.tel && (
+              <div className="flex items-center gap-2">
+                <TelIcon className="w-4 h-4" />
+                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+                  {spotDetailData?.basic.tel}
+                </p>
+              </div>
+            )}
+            {spotDetailData?.intro.parkingfood && (
+              <div className="flex items-center gap-2">
+                <InfoIcon className="w-4 h-4" />
+                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+                  주차 {spotDetailData?.intro.parkingfood}
+                </p>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === '사진' && (
-          <div className="columns-2 gap-2">
-            {Array.from({ length: 12 }).map((_, i) => {
-              const heights = ['h-40', 'h-48', 'h-60'];
-              const heightClass =
-                heights[Math.floor(Math.random() * heights.length)];
+          <>
+            <div className="columns-2 gap-2">
+              {spotImages.pages.flatMap((page) => {
+                const spotImage = page.result.images ?? [];
+                const heights = ['h-40', 'h-48', 'h-60'];
+                return spotImage?.map((img, idx) => {
+                  const heightClass =
+                    heights[Math.floor(Math.random() * heights.length)];
+                  return (
+                    <div
+                      key={idx}
+                      className={`mb-2 rounded-lg overflow-hidden ${heightClass}`}
+                    >
+                      <img
+                        src={img.imageUrl}
+                        alt={img.imageName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  );
+                });
+              })}
+            </div>
 
-              return (
-                <div
-                  key={i}
-                  className={`mb-2 rounded-lg overflow-hidden ${heightClass}`}
-                >
-                  <img
-                    src={ExampleImage}
-                    alt={`photo-${i}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              );
-            })}
-          </div>
+            <div ref={imageRef}></div>
+          </>
         )}
 
         {activeTab === '리뷰' && (
@@ -216,17 +293,17 @@ export default function SearchDetailPage() {
             >
               리뷰 쓰기
             </button>*/}
-            <ReviewStats/>
+            <ReviewStats />
 
             {!showAllReviews && (
-            <button
-              className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
+              <button
+                className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
                         text-center text-[#F78938] font-[Pretendard] text-[16px] 
                         not-italic font-medium leading-[18px] tracking-[-0.32px]"
-              onClick={() => setShowAllReviews(true)}
-            >
-              + 더보기
-            </button>
+                onClick={() => setShowAllReviews(true)}
+              >
+                + 더보기
+              </button>
             )}
 
             {showAllReviews && <ReviewList />}
@@ -254,13 +331,13 @@ export default function SearchDetailPage() {
         )}
       </div>
       <div className="flex justify-end">
-              <button
-                type="button"
-                className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
-                onClick={handleAddCart}
-              >
-                <img src={Cart} alt="장소 담기" />
-              </button>
+        <button
+          type="button"
+          className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+          onClick={handleAddCart}
+        >
+          <img src={Cart} alt="장소 담기" />
+        </button>
       </div>
     </div>
   );
