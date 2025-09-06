@@ -18,18 +18,17 @@ interface ChatModalProps {
 }
 
 const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
-  
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(null);
+  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    data: myChatRooms,
-    isPending: isRoomDetailPending,
-  } = useGetMyChatRooms();
+  const { data: myChatRooms, isPending: isRoomDetailPending } =
+    useGetMyChatRooms();
 
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
@@ -40,12 +39,11 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await chatApiService.getChatRoomUsers(Number(roomId));
-      
+
       if (response.isSuccess) {
         setUsersData(response.result);
-      
       } else {
         setError(response.message || '사용자 목록을 불러오는데 실패했습니다.');
       }
@@ -78,7 +76,10 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
 
   if (isLoading || isRoomDetailPending) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+      <div
+        className="fixed inset-0 w-full h-full bg-black/20"
+        onClick={handleOutsideClick}
+      >
         <div
           className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
           ref={ref}
@@ -93,13 +94,18 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
 
   if (error || !room) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+      <div
+        className="fixed inset-0 w-full h-full bg-black/20"
+        onClick={handleOutsideClick}
+      >
         <div
           className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
           ref={ref}
         >
           <div className="flex flex-col items-center justify-center h-full gap-4">
-            <p className="text-red-500 text-center">정보를 불러오는데 실패했습니다.</p>
+            <p className="text-red-500 text-center">
+              정보를 불러오는데 실패했습니다.
+            </p>
             <button
               onClick={loadChatRoomUsers}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -117,7 +123,10 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+    <div
+      className="fixed inset-0 w-full h-full bg-black/20"
+      onClick={handleOutsideClick}
+    >
       <div
         className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15 overflow-y-auto"
         ref={ref}
@@ -145,7 +154,8 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
             aria-label={`총 ${usersData.totalMembers}명 참여자`}
           >
             <img src={People} />
-            {usersData.totalMembers} / {room.maxMembers || room.maxParticipants || 0}
+            {usersData.totalMembers} /{' '}
+            {room.maxMembers || room.maxParticipants || 0}
           </span>
         </p>
 

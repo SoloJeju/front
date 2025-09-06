@@ -31,10 +31,12 @@ const WriteReviewPage = () => {
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   const [moments, setMoments] = useState<ReviewTag[]>([]);
   const [selectedMoments, setSelectedMoments] = useState<number[]>([]);
   const [text, setText] = useState('');
   const [difficulty, setDifficulty] = useState<'EASY' | 'NORMAL' | 'HARD' | null>(null);
+
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [rating, setRating] = useState<number>(0);
 
@@ -49,7 +51,7 @@ const WriteReviewPage = () => {
       const imageNames: string[] = [];
 
       if (selectedImages.length > 0) {
-        const uploadPromises = selectedImages.map(imageFile => uploadImage(imageFile));
+        const uploadPromises = selectedImages.map((imageFile) => uploadImage(imageFile));
         const uploadResults = await Promise.all(uploadPromises);
 
         for (const result of uploadResults) {
@@ -65,15 +67,15 @@ const WriteReviewPage = () => {
       }
 
       const payload = {
-        contentId: contentId,
-        text: text,
-        difficulty: difficulty,
+        contentId,
+        text,
+        difficulty,
         tagCodes: selectedMoments,
         visitDate: dayjs(selectedDate).format('YYYY-MM-DD'),
         receipt: receiptVerified,
-        rating: rating,
-        imageUrls: imageUrls,
-        imageNames: imageNames,
+        rating,
+        imageUrls,
+        imageNames,
       };
 
       const response = await createReview(payload);
@@ -117,17 +119,17 @@ const WriteReviewPage = () => {
 
   const toggleMoment = (code: number) => {
     if (selectedMoments.includes(code)) {
-      setSelectedMoments(prev => prev.filter(c => c !== code));
+      setSelectedMoments((prev) => prev.filter((c) => c !== code));
     } else {
       if (selectedMoments.length >= 3) return;
-      setSelectedMoments(prev => [...prev, code]);
+      setSelectedMoments((prev) => [...prev, code]);
     }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setSelectedImages(prev => [...prev, ...files]);
+      setSelectedImages((prev) => [...prev, ...files]);
     }
   };
 
@@ -159,6 +161,7 @@ const WriteReviewPage = () => {
               <MapIcon />
             </div>
           </div>
+
           <div>
             <label className="text-black text-base font-medium leading-none">날짜</label>
             <div
@@ -175,11 +178,17 @@ const WriteReviewPage = () => {
               <CalendarIcon />
             </div>
           </div>
+
           <div>
             <label className="text-black text-base font-medium leading-none">별점</label>
             <div className="flex flex-row gap-2 mt-3 items-center justify-center">
-              {[1, 2, 3, 4, 5].map(star => (
-                <button key={star} type="button" onClick={() => setRating(star)} className="focus:outline-none">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className="focus:outline-none"
+                >
                   {star <= rating ? (
                     <StarIcon className="w-10 h-10 text-[#FFD700]" />
                   ) : (
@@ -189,8 +198,11 @@ const WriteReviewPage = () => {
               ))}
             </div>
           </div>
+
           <div>
-            <label className="text-black text-base font-medium leading-none">혼놀 난이도는 어땠나요?</label>
+            <label className="text-black text-base font-medium leading-none">
+              혼놀 난이도는 어땠나요?
+            </label>
             <div className="flex flex-row justify-between items-center px-8 mt-4 gap-4">
               <button type="button" onClick={() => setDifficulty('EASY')} className="flex flex-col items-center">
                 {difficulty === 'EASY' ? <Easy /> : <NoEasy />}
@@ -212,13 +224,14 @@ const WriteReviewPage = () => {
               </button>
             </div>
           </div>
+
           <div>
             <div className="flex flex-row items-center justify-between pb-1">
               <label className="text-black text-base font-medium leading-none">기억에 남는 순간을 골라주세요</label>
               <span className="text-xs text-[#B4B4B4]">최대 3개</span>
             </div>
             <div className="flex flex-col gap-2 mt-5">
-              {moments.map(moment => {
+              {moments.map((moment) => {
                 const isSelected = selectedMoments.includes(moment.code);
                 return (
                   <button
@@ -237,6 +250,7 @@ const WriteReviewPage = () => {
               })}
             </div>
           </div>
+
           <div>
             <div className="flex flex-row items-center justify-between">
               <label className="text-black text-base font-medium leading-none">리뷰 작성</label>
@@ -246,7 +260,7 @@ const WriteReviewPage = () => {
                 placeholder="리뷰를 작성해주세요!"
                 rows={5}
                 value={text}
-                onChange={e => setText(e.target.value)}
+                onChange={(e) => setText(e.target.value)}
                 className="w-full mt-2 border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none font-medium"
               />
               <label className="absolute bottom-4 left-4 cursor-pointer">
@@ -255,6 +269,7 @@ const WriteReviewPage = () => {
               </label>
             </div>
           </div>
+
           {selectedImages.length > 0 && (
             <div className="mt-4 overflow-x-auto">
               <div className="flex gap-2 w-max">
@@ -267,7 +282,7 @@ const WriteReviewPage = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== idx))}
+                      onClick={() => setSelectedImages((prev) => prev.filter((_, i) => i !== idx))}
                       className="absolute top-[-8px] right-[-8px] bg-white rounded-full p-1 shadow-md"
                     >
                       <CloseIcon className="w-4 h-4 text-gray-500" />
@@ -277,6 +292,7 @@ const WriteReviewPage = () => {
               </div>
             </div>
           )}
+
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-white">
             <div className="max-w-[480px] mx-auto px-4 py-3">
               <button
@@ -289,6 +305,7 @@ const WriteReviewPage = () => {
             </div>
           </div>
         </div>
+
         {isCalendarOpen && (
           <div
             className="fixed inset-0 z-50 flex justify-center items-end bg-black/20"
@@ -296,12 +313,13 @@ const WriteReviewPage = () => {
           >
             <div
               className="w-full max-w-[480px] bg-white rounded-t-2xl animate-slide-up"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <Calendar onSelect={handleDateSelect} mode="single" />
             </div>
           </div>
         )}
+
         {ModalComponent}
       </div>
     </div>
@@ -309,3 +327,4 @@ const WriteReviewPage = () => {
 };
 
 export default WriteReviewPage;
+

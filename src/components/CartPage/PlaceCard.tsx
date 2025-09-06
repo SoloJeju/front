@@ -1,8 +1,16 @@
-import type { PlaceCardProps } from "../../types/cart";
-import { useNavigate } from "react-router-dom";
-import WithIcon from "../../assets/with.svg?react";
+import type { PlaceCardProps } from '../../types/cart';
+import { useNavigate } from 'react-router-dom';
+import WithIcon from '../../assets/with.svg?react';
 
-const PlaceCard = ({ cartId, firstImage, name, address, isEditMode, isSelected, onSelectToggle}: PlaceCardProps) => {
+const PlaceCard = ({
+  cartId,
+  firstImage,
+  name,
+  address,
+  isEditMode,
+  isSelected,
+  onSelectToggle,
+}: PlaceCardProps) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -15,9 +23,10 @@ const PlaceCard = ({ cartId, firstImage, name, address, isEditMode, isSelected, 
   return (
     <div
       onClick={handleCardClick}
-      className={`flex w-full h-[92px] items-center relative z-0 cursor-pointer font-[Pretendard] ${ isEditMode && isSelected ? "bg-orange-50" : "bg-[#FFFFFD]"
+      className={`flex w-full h-[92px] items-center relative z-0 cursor-pointer font-[Pretendard] ${
+        isEditMode && isSelected ? 'bg-orange-50' : 'bg-[#FFFFFD]'
       }`}
-      style={{ borderBottom: "1px solid #F78938" }}
+      style={{ borderBottom: '1px solid #F78938' }}
     >
       <div className="relative w-[108px] h-[80px] shrink-0 -translate-y-1">
         {firstImage ? (
@@ -38,7 +47,7 @@ const PlaceCard = ({ cartId, firstImage, name, address, isEditMode, isSelected, 
         </div>
         <div className="flex flex-col gap-1">
           <div className="text-[12px] leading-[14px] font-normal text-black">
-            {address ?? ""}
+            {address ?? ''}
           </div>
         </div>
       </div>

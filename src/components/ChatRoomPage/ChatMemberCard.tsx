@@ -9,7 +9,13 @@ interface ChatMemberCardProps {
   isActive?: boolean;
 }
 
-const ChatMemberCard = ({ profileUrl, name, id, isMine = false, isActive = true }: ChatMemberCardProps) => {
+const ChatMemberCard = ({
+  profileUrl,
+  name,
+  id,
+  isMine = false,
+  isActive = true,
+}: ChatMemberCardProps) => {
   const navigate = useNavigate();
 
   const handleProfileDetail = () => {
