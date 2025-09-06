@@ -32,7 +32,6 @@ import SplashPage from './pages/SplashPage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
-import ProfileCreationPage from './pages/profile/ProfileCreationPage';
 import KakaoCallbackPage from './pages/auth/KakaoCallbackPage';
 
 import AlarmPage from './pages/alarm-page';
@@ -73,7 +72,6 @@ const publicRoutes: RouteObject[] = [
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'find-password', element: <FindPasswordPage /> },
-      { path: 'profile/create', element: <ProfileCreationPage /> },
 
       { path: 'search', element: <SearchPage /> },
       { path: 'search-map', element: <SearchMapPage /> },

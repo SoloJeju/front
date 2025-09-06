@@ -7,12 +7,71 @@ import kakaoLogo from '../../assets/kakao.svg';
 import { useLogin } from '../../hooks/auth/useLogin';
 import useFCM from '../../hooks/alarm/useFCM';
 
+// 아이토글
+function EyeAdornment({
+  shown,
+  onToggle,
+}: {
+  shown: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={onToggle}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onToggle()}
+      aria-label={shown ? '비밀번호 숨기기' : '비밀번호 보기'}
+      className="
+        flex items-center justify-center
+        w-7 h-7 -mr-1 cursor-pointer select-none rounded
+        opacity-60 hover:opacity-100 focus:opacity-100
+        transition duration-150 active:scale-95
+      "
+      title={shown ? '비밀번호 숨기기' : '비밀번호 보기'}
+    >
+      {shown ? (
+        // 눈 뜬 아이콘
+        <svg
+          viewBox="0 0 24 24"
+          className="block h-[18px] w-[18px]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      ) : (
+        // 눈 감은(슬래시) 아이콘
+        <svg
+          viewBox="0 0 24 24"
+          className="block h-[18px] w-[18px]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 3l18 18" />
+          <path d="M10.58 10.58A3 3 0 0012 15a3 3 0 002.12-.88" />
+          <path d="M9.9 4.6A10.7 10.7 0 0112 4c6 0 10 6 10 8 0 1.36-.69 2.92-1.82 4.28M6.1 6.1A10.7 10.7 0 002 12c0 2 4 8 10 8 1.35 0 2.64-.27 3.82-.74" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
 const LoginPage = () => {
   const { updateToken } = useFCM();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPwd, setShowPwd] = useState(false);
 
-  // 훅(useLogin) 내부에서 navigate/toast 처리. FCM만 성공 후 추가로 실행
   const { executeLogin, isLoggingIn } = useLogin({
     onAfterSuccess: async () => {
       await updateToken();
@@ -43,10 +102,16 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
-            type="password"
+            type={showPwd ? 'text' : 'password'}
             placeholder="비밀번호 입력"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            endAdornment={
+              <EyeAdornment
+                shown={showPwd}
+                onToggle={() => setShowPwd((v) => !v)}
+              />
+            }
           />
           <div className="pt-8">
             <Button type="submit" disabled={!isFormValid || isLoggingIn}>

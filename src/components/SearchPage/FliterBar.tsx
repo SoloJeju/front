@@ -80,7 +80,10 @@ const FilterBar = () => {
         {defaultCategories.map((category, index) => {
           const IconComponent = category.icon;
           return (
-            <button  key={category.label + index} onClick={() => setSelectedCategory(category.label)}>
+            <button
+              key={category.label + index}
+              onClick={() => setSelectedCategory(category.label)}
+            >
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
                 style={{ color: selectedCategory === category.label ? '#FFF7D1' : '#FFFFFD' }}
@@ -95,8 +98,6 @@ const FilterBar = () => {
           );
         })}
       </div>
-
-
     </div>
   );
 };

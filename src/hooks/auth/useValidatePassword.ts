@@ -11,7 +11,7 @@ export const useValidatePassword = () => {
   } = useMutation({
     mutationFn: validatePassword,
     onSuccess: (data) => {
-      toast.success(data.result.message || '사용 가능한 비밀번호입니다.');
+      toast.success(data.result || '사용 가능한 비밀번호입니다.');
     },
     onError: (error) => {
       console.error('비밀번호 유효성 검사 실패:', error); 

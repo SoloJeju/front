@@ -1,4 +1,4 @@
-// 5개의 모든 질문을 처리하는 재사용 가능한 질문 화면
+// 회원가입 5단계 - 5개의 모든 질문을 처리하는 재사용 가능한 질문 화면
 import Button from '../../common/Button';
 
 interface QuestionStepProps {
@@ -41,7 +41,7 @@ export default function QuestionStep({
           {question}
         </h2>
 
-        {/* 선택지 버튼 (디자인 디테일 수정) */}
+        {/* 선택지 버튼 */}
         <div className="space-y-4">
           {options.map((option) => (
             <button
@@ -65,7 +65,6 @@ export default function QuestionStep({
         </div>
       </div>
 
-      {/* 하단 버튼 */}
       <div className="pt-12">
         <Button
           size="large"

@@ -4,10 +4,18 @@ export type LoginRequest = {
   password: string;
 };
 
-// 이메일/비밀번호 회원가입 요청 
+// 회원가입 요청 
 export type SignupRequest = {
   email: string;
+  name: string;
   password: string;
+  gender: 'MALE' | 'FEMALE';  
+  birthDate: string; // 'YYYY-MM-DD'
+  nickName: string;                       
+  userType: string;                         
+  imageName?: string;                        
+  imageUrl?: string;                       
+  bio?: string; 
 };
 
 // 비밀번호 변경 요청
@@ -15,6 +23,11 @@ export type ChangePasswordRequest = {
   email: string;
   password: string;
 };
+
+// 비밀번호 유효성 확인 요청
+export type ValidatePasswordRequest = {
+ password: string;
+}
 
 // 이메일 인증코드 전송 요청 
 export type SendEmailCodeRequest = {
@@ -24,7 +37,7 @@ export type SendEmailCodeRequest = {
 // 이메일 인증코드 확인 요청 
 export type CheckEmailCodeRequest = {
   email: string;
-  code: number;
+  number: number;
 };
 
 // 이메일 중복 확인 요청 
@@ -58,9 +71,11 @@ export type LoginResponse = {
 
 // 회원가입 응답
 export type SignupResponse = {
-  id: number;
   name: string;
+  id: number;
   role: 'ADMIN' | 'USER';
+  bio : string | null;
+  userType : string;
 };
 
 // 카카오 프로필 생성 응답

@@ -1,174 +1,123 @@
+// 회원가입 최종 컨트롤 페이지
 import { useState, useEffect } from 'react';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-import { useSignup } from '../../hooks/auth/useSignup';
+import { useProfileStore } from '../../stores/profile-store';
+import EmailStep from '../../components/Signup/steps/EmailStep';
+import PasswordStep from '../../components/Signup/steps/PasswordStep';
+import ProfileInfoStep from '../../components/Signup/steps/ProfileInfoStep';
+import IntroStep from '../../components/Signup/steps/IntroStep';
+import QuestionStep from '../../components/Signup/steps/QuestionStep';
+import ResultStep from '../../components/Signup/steps/ResultStep';
+
+const questions = [
+  {
+    question: '여행 중\n 가장 기대되는 순간은?',
+    options: [
+      '숨은 맛집을 발견했을 때',
+      '아무도 없는 풍경을 마주할 때',
+      '혼자만의 커피 타임',
+      '즉흥적으로 어딘가 떠날 때',
+    ],
+    actionKey: 'setQ1',
+    valueKey: 'q1_expect',
+  },
+  {
+    question: '혼자 여행할 때,\n 나는 보통?',
+    options: [
+      '계획을 꽉 채운다',
+      '루트만 정하고 느긋하게 움직인다',
+      '발 닿는 대로 간다',
+      '어딘가 한곳에 오래 머문다',
+    ],
+    actionKey: 'setQ2',
+    valueKey: 'q2_habit',
+  },
+  {
+    question: '여행에서\n 가장 피하고 싶은 것은?',
+    options: [
+      '북적거림과 시끌벅적한 분위기',
+      '무계획의 불안함',
+      '혼자 있는 눈치',
+      '길 찾기 어려움',
+    ],
+    actionKey: 'setQ3',
+    valueKey: 'q3_avoid',
+  },
+  {
+    question: '혼자 여행할 때\n 주로 어떤 기분이 드나요?',
+    options: [
+      '혼자만의 시간이 편안하고 좋다',
+      '괜히 두근거리고 설렌다',
+      '주변 시선이 가끔 불편하다',
+      '자유롭게 움직일 수 있어 좋다',
+      '사진 찍거나 기록하는 걸 좋아한다',
+    ],
+    actionKey: 'setQ4',
+    valueKey: 'q4_feeling',
+  },
+  {
+    question: '혼자 여행에서\n 가장 필요하다고 느끼는건?',
+    options: [
+      '창 밖을 바라보며 멍 때릴 때',
+      '낯선 골목을 걷는 순간',
+      '마음에 드는 사진을 찍을 때',
+      '그날의 계획을 정리할 때',
+    ],
+    actionKey: 'setQ5',
+    valueKey: 'q5_necessity',
+  },
+];
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [authCode, setAuthCode] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
-  const [timer, setTimer] = useState(180);
-  const [passwordError, setPasswordError] = useState(false);
-
-  const {
-    sendCode,
-    isSendingCode,
-    verifyCode,
-    isVerifyingCode,
-    executeSignup,
-    isSigningUp,
-  } = useSignup();
-
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isPasswordFormValid = password && passwordCheck && !passwordError;
+  const [currentStep, setCurrentStep] = useState(1);
+  const store = useProfileStore();
 
   useEffect(() => {
-    if (!isCodeSent) return;
-    const interval = setInterval(() => {
-      setTimer((t) => {
-        if (t <= 1) {
-          clearInterval(interval);
-          setIsCodeSent(false);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isCodeSent]);
+    store.reset();
+  }, []);
 
-  useEffect(() => {
-    setPasswordError(passwordCheck !== '' && password !== passwordCheck);
-  }, [password, passwordCheck]);
+  const nextStep = () => setCurrentStep((prev) => prev + 1);
 
-  const handleSendCode = () => {
-    if (!isEmailValid) return;
-    sendCode(
-      { email },
-      {
-        onSuccess: () => {
-          setTimer(180);
-          setIsCodeSent(true);
-        },
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <EmailStep onNext={nextStep} />;
+      case 2:
+        return <PasswordStep onNext={nextStep} />;
+      case 3:
+        return <ProfileInfoStep onNext={nextStep} />;
+      case 4:
+        return <IntroStep onNext={nextStep} />;
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9: {
+        const questionIndex = currentStep - 5;
+
+        const q = questions[questionIndex];
+        const onSelect = store[q.actionKey as keyof typeof store] as (
+          value: string
+        ) => void;
+        const selectedValue = store[q.valueKey as keyof typeof store] as string;
+
+        return (
+          <QuestionStep
+            question={q.question}
+            options={q.options}
+            selectedValue={selectedValue}
+            onSelect={onSelect}
+            onNext={nextStep}
+            step={questionIndex + 1}
+            totalSteps={questions.length}
+          />
+        );
       }
-    );
-  };
-
-  const handleVerifyCode = () => {
-    verifyCode(
-      { email, code: Number(authCode) },
-      {
-        onSuccess: () => setIsVerified(true),
-        onError: () => setIsVerified(false),
-      }
-    );
-  };
-
-  const handleSignup = () => {
-    if (!isPasswordFormValid || !isVerified) {
-      alert('이메일 인증과 비밀번호 확인이 필요합니다.');
-      return;
+      case 10:
+        return <ResultStep />;
+      default:
+        return <EmailStep onNext={nextStep} />;
     }
-    executeSignup({ email, password });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleVerifyCode();
-  };
-
-  // Step 1: 이메일 인증
-  if (!isVerified)
-    return (
-      <div className="px-6 pt-10 pb-6 bg-white min-h-screen">
-        <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
-        <div className="flex flex-col space-y-4">
-          <Input
-            type="email"
-            placeholder="이메일 주소"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            endAdornment={
-              <Button
-                size="small"
-                disabled={!isEmailValid || isSendingCode}
-                onClick={handleSendCode}
-              >
-                {isCodeSent ? '재전송' : '인증'}
-              </Button>
-            }
-          />
-          {isCodeSent && (
-            <p className="mt-1 text-sm text-[#F78938]">
-              이메일이 전송되었습니다. 이메일을 확인해 주세요.
-            </p>
-          )}
-          <Input
-            type="text"
-            placeholder="인증번호"
-            value={authCode}
-            onChange={(e) => setAuthCode(e.target.value)}
-            onKeyDown={handleKeyDown}
-            endAdornment={
-              isCodeSent &&
-              timer > 0 && (
-                <span className="ml-4 text-[#B4B4B4]">
-                  {`${Math.floor(timer / 60)}:${String(timer % 60).padStart(
-                    2,
-                    '0'
-                  )}`}
-                </span>
-              )
-            }
-          />
-        </div>
-        <div className="mt-8">
-          <Button
-            onClick={handleVerifyCode}
-            disabled={!authCode || isVerifyingCode}
-          >
-            인증하기
-          </Button>
-        </div>
-      </div>
-    );
-
-  // Step 2: 비밀번호 입력
-  return (
-    <div className="px-6 pt-15 pb-6 bg-white min-h-screen">
-      <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
-      <div className="flex flex-col space-y-4">
-        <Input
-          type="password"
-          placeholder="비밀번호 입력"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div>
-          <Input
-            type="password"
-            placeholder="비밀번호 확인"
-            value={passwordCheck}
-            onChange={(e) => setPasswordCheck(e.target.value)}
-            error={passwordError}
-          />
-          {passwordError && (
-            <p className="mt-1 text-xs text-red-500">
-              비밀번호가 일치하지 않습니다.
-            </p>
-          )}
-        </div>
-      </div>
-      <div className="mt-8">
-        <Button
-          onClick={handleSignup}
-          disabled={!isPasswordFormValid || isSigningUp}
-        >
-          프로필 생성하러 가기
-        </Button>
-      </div>
-    </div>
-  );
+  return <div className="max-w-app mx-auto">{renderStep()}</div>;
 }

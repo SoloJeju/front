@@ -8,13 +8,9 @@ export default function KakaoCallbackPage() {
 
   useEffect(() => {
     const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken'); // refreshToken도 있다면 함께 처리
 
     if (accessToken) {
       localStorage.setItem('accessToken', accessToken);
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
 
       toast.success('카카오 로그인되었습니다.');
       navigate('/');

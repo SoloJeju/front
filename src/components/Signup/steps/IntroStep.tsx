@@ -1,4 +1,4 @@
-// 여행 성향 질문 시작을 알리는 인트로 화면
+// 회원가입 4단계 - 여행 성향 질문 시작을 알리는 인트로 화면
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
 import questionLogo from '../../../assets/question-logo.svg';
