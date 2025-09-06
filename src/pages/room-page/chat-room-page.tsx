@@ -194,7 +194,7 @@ export default function ChatRoomPage() {
         roomId: Number(roomId),
       });
     }
-  }, [isConnected, roomId]);
+  }, [isConnected, roomId, newMessage, isCompleted]);
 
   // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
   const enterChatRoom = useCallback(async () => {
@@ -238,7 +238,7 @@ export default function ChatRoomPage() {
     return () => {
       websocketService.disconnect();
     };
-  }, [roomId]); // roomId와 enterChatRoom을 의존성으로 설정
+  }, [roomId, enterChatRoom]); // roomId와 enterChatRoom을 의존성으로 설정
 
   // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
   const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {

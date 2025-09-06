@@ -1,6 +1,6 @@
 // 회원가입 최종 컨트롤 페이지
 import { useState, useEffect } from 'react';
-import { useProfileStore } from '../../stores/profile-store';
+import { useProfileStore, type ProfileState } from '../../stores/profile-store';
 import EmailStep from '../../components/Signup/steps/EmailStep';
 import PasswordStep from '../../components/Signup/steps/PasswordStep';
 import ProfileInfoStep from '../../components/Signup/steps/ProfileInfoStep';
@@ -8,7 +8,20 @@ import IntroStep from '../../components/Signup/steps/IntroStep';
 import QuestionStep from '../../components/Signup/steps/QuestionStep';
 import ResultStep from '../../components/Signup/steps/ResultStep';
 
-const questions = [
+interface QuestionConfig {
+  question: string;
+  options: string[];
+  actionKey: keyof Pick<
+    ProfileState,
+    'setQ1' | 'setQ2' | 'setQ3' | 'setQ4' | 'setQ5'
+  >;
+  valueKey: keyof Pick<
+    ProfileState,
+    'q1_expect' | 'q2_habit' | 'q3_avoid' | 'q4_feeling' | 'q5_necessity'
+  >;
+}
+
+const questions: QuestionConfig[] = [
   {
     question: '여행 중\n 가장 기대되는 순간은?',
     options: [
@@ -73,7 +86,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     store.reset();
-  }, []);
+  }, [store.reset]);
 
   const nextStep = () => setCurrentStep((prev) => prev + 1);
 
@@ -93,12 +106,10 @@ export default function SignupPage() {
       case 8:
       case 9: {
         const questionIndex = currentStep - 5;
-
         const q = questions[questionIndex];
-        const onSelect = store[q.actionKey as keyof typeof store] as (
-          value: string
-        ) => void;
-        const selectedValue = store[q.valueKey as keyof typeof store] as string;
+
+        const onSelect = store[q.actionKey];
+        const selectedValue = store[q.valueKey];
 
         return (
           <QuestionStep

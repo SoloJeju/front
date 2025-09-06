@@ -1,6 +1,7 @@
 // 회원가입 6단계 - 모든 답변을 종합해서 보여주는 최종 결과 화면
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   userTypeImages,
   userTypeDescriptions,
@@ -9,41 +10,43 @@ import {
 } from '../../../constants/userTypeImages';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
-import toast from 'react-hot-toast';
 
-function isUserType(v: unknown): v is UserType {
-  return typeof v === 'string' && v in userTypeImages;
+function isUserType(value: unknown): value is UserType {
+  return typeof value === 'string' && value in userTypeImages;
 }
 
 export default function ResultStep() {
   const navigate = useNavigate();
 
   const nickName = useProfileStore((s) => s.nickName);
-  const rawUserType = useProfileStore((s) => s.userType);
+  const userType = useProfileStore((s) => s.userType);
   const calculateUserType = useProfileStore((s) => s.calculateUserType);
 
-  const [hydrated, setHydrated] = useState<boolean>(() => {
-    const api = (useProfileStore as any).persist;
-    return !!api?.hasHydrated?.();
-  });
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
-    const api = (useProfileStore as any).persist;
-    const unsub = api?.onFinishHydration?.(() => setHydrated(true));
-    return () => unsub?.();
+    setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-    if (!rawUserType) calculateUserType();
-  }, [hydrated, rawUserType, calculateUserType]);
+    if (isMounted && !userType) {
+      calculateUserType();
+    }
+  }, [isMounted, userType, calculateUserType]);
 
-  if (!hydrated) return null;
+  if (!isMounted) {
+    return null;
+  }
 
-  const userType = isUserType(rawUserType) ? rawUserType : undefined;
-  const resultImage = userType ? userTypeImages[userType] : defaultUserImage;
-  const resultName = userType ? `${userType} 여행자` : '유형 분석 중...';
-  const resultDescription = userType
-    ? userTypeDescriptions[userType]
+  const validUserType = isUserType(userType) ? userType : undefined;
+  const resultImage = validUserType
+    ? userTypeImages[validUserType]
+    : defaultUserImage;
+  const resultName = validUserType
+    ? `${validUserType} 여행자`
+    : '유형 분석 중...';
+  const resultDescription = validUserType
+    ? userTypeDescriptions[validUserType]
     : '당신의 성향을 분석하고 있어요!';
 
   const handleStart = () => {
@@ -76,9 +79,9 @@ export default function ResultStep() {
           onClick={handleStart}
           className="w-full py-3 rounded-[10px] text-white bg-primary"
           variant="primary"
-          disabled={!userType}
+          disabled={!validUserType}
         >
-          {userType ? '시작하기' : '분석 중...'}
+          {validUserType ? '시작하기' : '분석 중...'}
         </Button>
       </div>
     </div>
