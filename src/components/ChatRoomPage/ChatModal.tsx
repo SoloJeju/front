@@ -11,14 +11,14 @@ import type { ChatRoomUsersResponse } from '../../types/chat';
 import type { MyChatRoom } from '../../types/home';
 
 interface ChatModalProps {
-  ref: React.RefObject<HTMLDivElement | null>;
+  panelRef: React.RefObject<HTMLDivElement | null>;
   roomId: string | undefined;
   onLeaveRoom: () => void;
   onClose?: () => void;
 }
 
-const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
-  
+const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
+
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,10 +78,10 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
 
   if (isLoading || isRoomDetailPending) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+      <div className="fixed inset-0 w-full h-full bg-black/20  z-[1000]" onClick={handleOutsideClick}>
         <div
-          className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
-          ref={ref}
+          className="fixed right-0 top-0 h-full w-[88vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001]"
+          ref={panelRef}
         >
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500">정보를 불러오는 중...</p>
@@ -93,10 +93,10 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
 
   if (error || !room) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+      <div className="fixed inset-0 w-full h-full bg-black/40 z-[1000]" onClick={handleOutsideClick}>
         <div
-          className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15"
-          ref={ref}
+          className="fixed right-0 top-0 h-full w-[88vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001] px-5 pt-15"
+          ref={panelRef}
         >
           <div className="flex flex-col items-center justify-center h-full gap-4">
             <p className="text-red-500 text-center">정보를 불러오는데 실패했습니다.</p>
@@ -117,27 +117,27 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black/20" onClick={handleOutsideClick}>
+    <div className="fixed inset-0 w-full h-full bg-black/40 z-[1000]" onClick={handleOutsideClick}>
       <div
-        className="fixed right-0 z-100 w-[75%] h-full flex flex-col gap-5 bg-[#FFFFFD] px-5 pt-15 overflow-y-auto"
-        ref={ref}
-      >
+          className="fixed right-0 top-0 h-full w-[80vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001] px-5 pt-15 flex flex-col"
+          ref={panelRef}
+        >
         {/* 채팅방 이름을 맨 위에 배치 */}
-        <h1 className="font-[pretendard] font-semibold text-[22px] text-black">
+        <h1 className="font-[pretendard] font-semibold text-[22px] text-black mb-2">
           {room.title}
         </h1>
 
         {/* 동행방 글 다시 보러가기 버튼 */}
         <button
           type="button"
-          className="flex items-center gap-2 font-[pretendard] font-medium text-sm text-[#F78938] cursor-pointer"
+          className="flex items-center gap-2 font-[pretendard] font-medium text-sm text-[#F78938] cursor-pointer mb-3"
           onClick={handleGoToRoomDetail}
         >
           동행방 글 다시 보러가기 <img src={MoreArrow} className="w-3 h-3" />
         </button>
 
-        <p className="flex gap-3">
-          <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D]">
+        <p className="flex gap-3 items-center mb-4">
+          <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D] ">
             참여자
           </span>
           <span
@@ -149,27 +149,35 @@ const ChatModal = ({ ref, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
           </span>
         </p>
 
-        {usersData.users?.map((user) => (
-          <ChatMemberCard
-            key={user.userId}
-            profileUrl={user.profileImage || '/src/assets/basicProfile.png'}
-            name={user.username}
-            id={user.userId}
-            isMine={user.mine}
-            isActive={user.active}
-          />
-        ))}
+        <div className="space-y-3 max-h-[300px] overflow-y-auto mb-4">
+          {usersData.users?.map((user) => (
+            <ChatMemberCard
+              key={user.userId}
+              profileUrl={user.profileImage || '/src/assets/basicProfile.png'}
+              name={user.username}
+              id={user.userId}
+              isMine={user.mine}
+              isActive={user.active}
+            />
+          ))}
+        </div>
 
-        <div className="flex-1"></div>
+        {/* 남은 공간을 채우는 영역 */}
+        <div className="flex-1 overflow-y-auto"></div>
 
-        <button
-          type="button"
-          className="flex gap-2 justify-end py-4 font-[pretendard] font-normal text-sm text-[#5D5D5D] border-t border-[#FFCEAA]"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <img src={Exit} />방 나가기
-        </button>
+        {/* 하단 고정 버튼 */}
+        <div className="w-full border-t border-[#FFCEAA]">
+          <button
+            type="button"
+            className="flex gap-2 justify-end w-full pr-4 py-4 font-[pretendard] font-normal text-sm text-[#5D5D5D]"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <img src={Exit} />
+            방 나가기
+          </button>
+        </div>
       </div>
+
 
       {isModalOpen && (
         <Modal

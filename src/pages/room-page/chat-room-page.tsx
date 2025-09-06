@@ -10,6 +10,8 @@ import type { MyChatRoom } from '../../types/home';
 import { useQueryClient } from '@tanstack/react-query';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import { useLocation } from 'react-router-dom';
+import ModalPortal from '../../components/ChatRoomPage/ModalPortal';
+
 
 export default function ChatRoomPage() {
   
@@ -281,15 +283,10 @@ useEffect(() => {
       // 1-3. 읽음 처리 API 호출 (중요!)
        setTimeout(async () => {
       await markMessagesAsRead();
-      if (isConnected) {
-        sendEnterMessage();
-      }
+      
     }, 300); // scrollToBottom 실행 후 약간 지연
       
-      // 1-4. 입장 메시지 전송 (WebSocket 연결 후)
-      if (isConnected) {
-        sendEnterMessage();
-      }
+     
     } catch (error) {
       console.error('채팅방 입장 중 오류:', error);
     }
@@ -701,7 +698,6 @@ const loadMoreMessages = async () => {
               onChange={setNewMessage}
               onSubmit={handleSubmit}
               onKeyPress={handleKeyPress}
-              onFocus={() => setTimeout(() => scrollToBottom(false), 50)}
               disabled={!isConnected || isCompleted}
             />
           </div>
@@ -710,15 +706,16 @@ const loadMoreMessages = async () => {
 
 
         {isModalOpen && (
-          <div className="fixed top-0 right-0 w-2/3 h-full z-50">
+          <ModalPortal>
             <ChatModal
-              ref={modalBg}
+              panelRef={modalBg}          // ← 이름 바뀜 (아래 2번 참고)
               roomId={roomId}
               onLeaveRoom={leaveRoom}
               onClose={() => setIsModalOpen(false)}
             />
-          </div>
+          </ModalPortal>
         )}
+
       </div>
     </div>
   );
