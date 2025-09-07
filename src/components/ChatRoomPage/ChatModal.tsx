@@ -21,22 +21,23 @@ interface ChatModalProps {
   onDeleteRoom?: () => void;
 }
 
+
 const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose, onDeleteRoom }: ChatModalProps) => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient(); // React Query 클라이언트
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(null);
+  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 const [isCompleting, setIsCompleting] = useState(false);
 
-  const {
-    data: myChatRooms,
-    isPending: isRoomDetailPending,
-  } = useGetMyChatRooms();
+  const { data: myChatRooms, isPending: isRoomDetailPending } =
+    useGetMyChatRooms();
 
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
@@ -47,12 +48,11 @@ const [isCompleting, setIsCompleting] = useState(false);
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await chatApiService.getChatRoomUsers(Number(roomId));
-      
+
       if (response.isSuccess) {
         setUsersData(response.result);
-      
       } else {
         setError(response.message || '사용자 목록을 불러오는데 실패했습니다.');
       }
@@ -136,7 +136,11 @@ const [isCompleting, setIsCompleting] = useState(false);
 
   if (isLoading || isRoomDetailPending) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/20  z-[1000]" onClick={handleOutsideClick}>
+      <div
+        className="fixed inset-0 w-full h-full bg-black/20"
+        onClick={handleOutsideClick}
+      >
+
         <div
           className="fixed right-0 top-0 h-full w-[88vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001]"
           ref={panelRef}
@@ -151,7 +155,10 @@ const [isCompleting, setIsCompleting] = useState(false);
 
   if (error || !room) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-black/40 z-[1000]" onClick={handleOutsideClick}>
+      <div
+        className="fixed inset-0 w-full h-full bg-black/20"
+        onClick={handleOutsideClick}
+      >
         <div
           className="fixed right-0 top-0 h-full w-[88vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001] px-5 pt-5"
           ref={panelRef}
@@ -207,7 +214,8 @@ const [isCompleting, setIsCompleting] = useState(false);
             aria-label={`총 ${usersData.totalMembers}명 참여자`}
           >
             <img src={People} />
-            {usersData.totalMembers} / {room.maxMembers || room.maxParticipants || 0}
+            {usersData.totalMembers} /{' '}
+            {room.maxMembers || room.maxParticipants || 0}
           </span>
         </p>
 

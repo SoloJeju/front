@@ -11,7 +11,9 @@ interface ChatMemberCardProps {
   isOwner?: boolean; 
 }
 
+
 const ChatMemberCard = ({ profileUrl, name, id, isMine = false, isActive = true, isOwner = false }: ChatMemberCardProps) => {
+
   const navigate = useNavigate();
 
   const handleProfileDetail = () => {

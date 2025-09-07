@@ -14,7 +14,6 @@ import ModalPortal from '../../components/ChatRoomPage/ModalPortal';
 
 
 export default function ChatRoomPage() {
-  
   const { roomId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -39,8 +38,8 @@ export default function ChatRoomPage() {
 
 const [kb, setKb] = useState(0);
 
-const location = useLocation();
-const isCompletedFromState = location.state?.isCompleted || false;
+  const location = useLocation();
+  const isCompletedFromState = location.state?.isCompleted || false;
 
 
 // 모바일 키보드 높이 감지 (작은 변동 무시)
@@ -83,7 +82,6 @@ useEffect(() => {
     try {
       const response = await chatApiService.markMessagesAsRead(Number(roomId));
       if (response.isSuccess) {
-        
         // 미확인 메시지 상태와 동행방 목록 캐시 무효화
         queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
         queryClient.invalidateQueries({ queryKey: ['myChatRooms'] });
@@ -100,6 +98,7 @@ useEffect(() => {
       setIsLoading(true);
       const response = await chatApiService.getChatRoomMessages(Number(roomId), undefined, 20);
 
+
       if (response.isSuccess) {
         // 시간 오름차순 정렬(보장)
         const sorted = [...response.result.messages].sort(
@@ -108,8 +107,10 @@ useEffect(() => {
         setMessages(sorted);
         setHasNext(response.result.hasNext);
 
+
         // ✅ 초기에는 바로 맨 아래로 (부드럽지 않게 'auto'가 깔끔)
         requestAnimationFrame(() => scrollToBottom(false));
+
       } else {
         setError(response.message || '메시지를 불러오는데 실패했습니다.');
       }
@@ -134,35 +135,28 @@ useEffect(() => {
       return;
     }
 
-    console.log("ROOMID: ",roomId);
+    console.log('ROOMID: ', roomId);
     if (!roomId) {
-  console.error("roomId가 비어있음, WebSocket 연결 불가");
+      console.error('roomId가 비어있음, WebSocket 연결 불가');
       return;
     }
     websocketService.connect(Number(roomId), token);
 
-    
     // WebSocket 콜백 등록
     websocketService.onConnect(() => {
-     
       setIsConnected(true);
       setError('');
     });
-    
+
     websocketService.onMessage((data: WebSocketChatMessage) => {
-     
-      
-    
       // 현재 사용자 정보 가져오기
       const currentUserId = localStorage.getItem('userId');
-      
-     
+
       // 내가 보낸 메시지는 WebSocket으로 받지 않음 (이미 UI에 추가했으므로)
       if (data.senderId === Number(currentUserId)) {
-       
         return;
       }
-      
+
       if (data.type === 'TALK') {
         const newChatMessage: ChatMessage = {
           id: data.id,
@@ -174,15 +168,15 @@ useEffect(() => {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: false
+          isMine: false,
         };
-        
-       setMessages(prev => {
-      const combined = [...prev, newChatMessage];
-      // id 중복 제거
-      return Array.from(new Map(combined.map(m => [m.id, m])).values());
-    });
-        
+
+        setMessages((prev) => {
+          const combined = [...prev, newChatMessage];
+          // id 중복 제거
+          return Array.from(new Map(combined.map((m) => [m.id, m])).values());
+        });
+
         // 다른 사람의 메시지가 왔을 때는 자동 스크롤하지 않음 (사용자가 스크롤 위치를 유지할 수 있도록)
       } else if (data.type === 'ENTER') {
         const enterMessage: ChatMessage = {
@@ -195,10 +189,10 @@ useEffect(() => {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: false
+          isMine: false,
         };
-        
-        setMessages(prev => [...prev, enterMessage]);
+
+        setMessages((prev) => [...prev, enterMessage]);
       } else if (data.type === 'EXIT') {
         const exitMessage: ChatMessage = {
           id: data.id,
@@ -210,18 +204,18 @@ useEffect(() => {
           senderId: data.senderId || 0,
           senderProfileImage: data.senderProfileImage,
           image: data.image,
-          isMine: false
+          isMine: false,
         };
-        
-        setMessages(prev => [...prev, exitMessage]);
+
+        setMessages((prev) => [...prev, exitMessage]);
       }
     });
-    
+
     websocketService.onDisconnect(() => {
       setIsConnected(false);
       setError('WebSocket 연결이 종료되었습니다.');
     });
-    
+
     websocketService.onError((error: Event) => {
       console.error('WebSocket 오류:', error);
       setIsConnected(false);
@@ -231,37 +225,43 @@ useEffect(() => {
 
   // 입장 메시지 전송
   const sendEnterMessage = useCallback(() => {
-     if (!newMessage.trim() || !isConnected || isCompleted) return;
+    if (!newMessage.trim() || !isConnected || isCompleted) return;
     if (isConnected) {
       websocketService.sendMessage({
         type: 'ENTER',
-        roomId: Number(roomId)
+        roomId: Number(roomId),
       });
     }
-  }, [isConnected, roomId]);
+  }, [isConnected, roomId, newMessage, isCompleted]);
 
   // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
   const enterChatRoom = useCallback(async () => {
     try {
       // 1-1. 기존 메시지 조회
       await loadMessages();
-      
+
       // 1-2. WebSocket 구독 시작
       if (!isConnected) {
         connectWebSocket();
       }
-      
+
       // 1-3. 읽음 처리 API 호출 (중요!)
        setTimeout(async () => {
       await markMessagesAsRead();
       
     }, 300); // scrollToBottom 실행 후 약간 지연
       
-     
+
     } catch (error) {
       console.error('채팅방 입장 중 오류:', error);
     }
-  }, [isConnected, loadMessages, connectWebSocket, markMessagesAsRead, sendEnterMessage]);
+  }, [
+    isConnected,
+    loadMessages,
+    connectWebSocket,
+    markMessagesAsRead,
+    sendEnterMessage,
+  ]);
 
   useEffect(() => {
     if (roomId) {
@@ -271,12 +271,12 @@ useEffect(() => {
     return () => {
       websocketService.disconnect();
     };
-  }, [roomId]); // roomId와 enterChatRoom을 의존성으로 설정
+  }, [roomId, enterChatRoom]); // roomId와 enterChatRoom을 의존성으로 설정
 
   // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
   const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
-    
+
     // 스크롤이 하단에 가까워지면 읽음 처리
    const isNearBottom = () => {
       if (!listRef.current) return false;
@@ -288,12 +288,11 @@ useEffect(() => {
        markMessagesAsRead();
     }
 
-    
+  
     // 무한 스크롤 로직 - 스크롤이 맨 위에 가까워지면 이전 메시지 로드
     const isNearTop = target.scrollTop < 100; // 감지 범위를 늘림
-    
+
     if (isNearTop && hasNext && !isLoadingMore) {
-    
       loadMoreMessages();
     }
   };
@@ -302,7 +301,7 @@ useEffect(() => {
   useEffect(() => {
     if (messages.length > 0 && !isLoading && !isLoadingMore && isInitialLoad) {
       // 초기 로딩이 완료되었을 때만 스크롤을 맨 아래로 이동
-    
+
       setTimeout(() => {
         scrollToBottom();
         setIsInitialLoad(false); // 초기 로딩 완료 표시
@@ -312,6 +311,7 @@ useEffect(() => {
 
   // 스크롤 이벤트 핸들러 (읽음 처리 포함)
   const handleScroll = handleMessageScroll;
+
 
 const loadMoreMessages = async () => {
   if (isLoadingMore || !hasNext) return;
@@ -326,6 +326,7 @@ const loadMoreMessages = async () => {
 
     const oldestMessageTime = messages[0]?.sendAt;
     if (!oldestMessageTime) {
+
       setIsLoadingMore(false);
       return;
     }
@@ -367,15 +368,17 @@ const loadMoreMessages = async () => {
 
   const sendMessage = () => {
     if (!newMessage.trim() || !isConnected) return;
-    
+
     const messageData = {
       type: 'TALK' as const,
       roomId: Number(roomId),
-      content: newMessage.trim()
+      content: newMessage.trim(),
     };
-    
+
     // 내가 보낸 메시지를 즉시 UI에 추가
-    const currentUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const currentUserInfo = JSON.parse(
+      localStorage.getItem('userInfo') || '{}'
+    );
     const myMessage: ChatMessage = {
       id: Date.now().toString(), // 임시 ID
       content: newMessage.trim(),
@@ -386,17 +389,17 @@ const loadMoreMessages = async () => {
       senderId: currentUserInfo.userId || 0,
       senderProfileImage: currentUserInfo.profileImage,
       image: null,
-      isMine: true
+      isMine: true,
     };
-    
-    setMessages(prev => [...prev, myMessage]);
+
+    setMessages((prev) => [...prev, myMessage]);
     setNewMessage('');
-    
+
     // 내가 메시지를 보낼 때는 항상 스크롤을 맨 아래로 이동
     setTimeout(() => {
       scrollToBottom();
     }, 100);
-    
+
     // WebSocket으로 메시지 전송
     websocketService.sendMessage(messageData);
   };
@@ -431,7 +434,7 @@ const loadMoreMessages = async () => {
     const minutes = date.getMinutes();
     const period = hours >= 12 ? '오후' : '오전';
     const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-    
+
     return `${period} ${displayHours}:${minutes.toString().padStart(2, '0')}`;
   };
 
@@ -441,17 +444,20 @@ const loadMoreMessages = async () => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    
+
     return `${year}년 ${month}월 ${day}일`;
   };
 
   // 날짜 구분선이 필요한지 확인하는 함수
-  const shouldShowDateDivider = (currentMessage: ChatMessage, previousMessage: ChatMessage | null) => {
+  const shouldShowDateDivider = (
+    currentMessage: ChatMessage,
+    previousMessage: ChatMessage | null
+  ) => {
     if (!previousMessage) return true; // 첫 번째 메시지는 항상 날짜 표시
-    
+
     const currentDate = new Date(currentMessage.sendAt).toDateString();
     const previousDate = new Date(previousMessage.sendAt).toDateString();
-    
+
     return currentDate !== previousDate;
   };
 
@@ -526,6 +532,7 @@ const loadMoreMessages = async () => {
           />
         </div>
         </div>
+
 
         {/* 3) 메시지 영역: 유일한 세로 스크롤러 */}
         <div

@@ -191,6 +191,7 @@ export default function RoomPage() {
           onClick={handleJoinRoom}
         >
           {isJoining ? '입장 중...' : '동행방 입장하기'}
+
         </button>
       </div>
     </div>

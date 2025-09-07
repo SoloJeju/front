@@ -52,26 +52,30 @@ const RoomCard = ({
           <div className="w-2 h-2 bg-red-500 rounded-full"></div>
         </div>
       )}
-      
+
       <div className="flex flex-col justify-between p-4 w-2/3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
             <div
               className={`text-xs font-medium font-['Pretendard'] leading-3 ${
-                isEnd ? 'text-[#666666]' : hasUnreadMessages ? 'text-[#F78938] font-bold' : 'text-[#F78938]'
+                isEnd
+                  ? 'text-[#666666]'
+                  : hasUnreadMessages
+                    ? 'text-[#F78938] font-bold'
+                    : 'text-[#F78938]'
               }`}
             >
               {isEnd ? '모집완료' : '모집중'}
             </div>
             <div
               className={`px-1 py-0.5 rounded-sm text-xs font-medium font-['Pretendard'] ${
-                gender === 'MALE' 
-                  ? hasUnreadMessages 
-                    ? 'bg-[#BBE7FF] text-[#3E7EFF] font-bold' 
+                gender === 'MALE'
+                  ? hasUnreadMessages
+                    ? 'bg-[#BBE7FF] text-[#3E7EFF] font-bold'
                     : 'bg-[#BBE7FF] text-[#3E7EFF]'
-                  : gender === 'FEMALE' 
-                    ? hasUnreadMessages 
-                      ? 'bg-[#FFCFCF] text-[#FF3E3E] font-bold' 
+                  : gender === 'FEMALE'
+                    ? hasUnreadMessages
+                      ? 'bg-[#FFCFCF] text-[#FF3E3E] font-bold'
                       : 'bg-[#FFCFCF] text-[#FF3E3E]'
                     : ''
               }`}
@@ -80,11 +84,13 @@ const RoomCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2 pb-2">
-            <div className={`text-base font-['Pretendard'] leading-tight tracking-tight ${
-              hasUnreadMessages 
-                ? 'text-black font-bold' 
-                : 'text-black font-semibold'
-            }`}>
+            <div
+              className={`text-base font-['Pretendard'] leading-tight tracking-tight ${
+                hasUnreadMessages
+                  ? 'text-black font-bold'
+                  : 'text-black font-semibold'
+              }`}
+            >
               {title}
             </div>
           </div>
@@ -92,21 +98,33 @@ const RoomCard = ({
         <div className="flex flex-col justify-center gap-1 text-[#666666] text-xs font-normal font-['Pretendard']">
           <div className="inline-flex items-center gap-1">
             <Map />
-            <span className={hasUnreadMessages ? 'text-black font-medium' : 'text-[#666666]'}>
+            <span
+              className={
+                hasUnreadMessages ? 'text-black font-medium' : 'text-[#666666]'
+              }
+            >
               {location}
             </span>
           </div>
           <div className="inline-flex items-center gap-1 pb-1">
             <Clock />
-            <span className={hasUnreadMessages ? 'text-red-600 font-medium' : 'text-[#666666]'}>
+            <span
+              className={
+                hasUnreadMessages
+                  ? 'text-red-600 font-medium'
+                  : 'text-[#666666]'
+              }
+            >
               {date ? new Date(date).toLocaleDateString() : ''}
             </span>
           </div>
           <div className="inline-flex items-center gap-1 text-[#F78938]">
             <WithIcon className="w-3.5 h-3.5" />
-            <div className={`text-xs font-medium font-['Pretendard'] ${
-              hasUnreadMessages ? 'font-bold' : 'font-medium'
-            }`}>
+            <div
+              className={`text-xs font-medium font-['Pretendard'] ${
+                hasUnreadMessages ? 'font-bold' : 'font-medium'
+              }`}
+            >
               {pre}명/{all}명
             </div>
           </div>

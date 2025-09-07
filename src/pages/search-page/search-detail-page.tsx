@@ -20,7 +20,7 @@ export default function SearchDetailPage() {
   const params = useParams();
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
-   const contentId = Number(params.placeId) || location.state?.placeId || null;
+  const contentId = Number(params.placeId) || location.state?.placeId || null;
 
   const tabs = [
     { label: '홈' },
@@ -39,7 +39,7 @@ export default function SearchDetailPage() {
       return;
     }
     try {
-        const response = await addToCart(contentId);
+      const response = await addToCart(contentId);
       if (response.isSuccess) {
         navigate('/cart');
       } else {
@@ -73,9 +73,9 @@ export default function SearchDetailPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-        <button 
+        <button
           className="absolute top-3 right-3 p-1 bg-black/40 rounded-full"
-          onClick={() => setShowPopup(prev => !prev)}
+          onClick={() => setShowPopup((prev) => !prev)}
         >
           <QuestionIcon className="w-6 h-6 text-white" />
         </button>
@@ -87,11 +87,10 @@ export default function SearchDetailPage() {
               해당 장소가 보이지 않나요?
             </p>
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
-              1:1 문의하기(폐업/오류 신고)    
+              1:1 문의하기(폐업/오류 신고)
             </p>
           </div>
         )}
-
 
         <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6">
           <div className="flex items-center gap-2">
@@ -216,17 +215,17 @@ export default function SearchDetailPage() {
             >
               리뷰 쓰기
             </button>*/}
-            <ReviewStats/>
+            <ReviewStats />
 
             {!showAllReviews && (
-            <button
-              className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
+              <button
+                className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
                         text-center text-[#F78938] font-[Pretendard] text-[16px] 
                         not-italic font-medium leading-[18px] tracking-[-0.32px]"
-              onClick={() => setShowAllReviews(true)}
-            >
-              + 더보기
-            </button>
+                onClick={() => setShowAllReviews(true)}
+              >
+                + 더보기
+              </button>
             )}
 
             {showAllReviews && <ReviewList />}
@@ -254,13 +253,13 @@ export default function SearchDetailPage() {
         )}
       </div>
       <div className="flex justify-end">
-              <button
-                type="button"
-                className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
-                onClick={handleAddCart}
-              >
-                <img src={Cart} alt="장소 담기" />
-              </button>
+        <button
+          type="button"
+          className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
+          onClick={handleAddCart}
+        >
+          <img src={Cart} alt="장소 담기" />
+        </button>
       </div>
     </div>
   );
