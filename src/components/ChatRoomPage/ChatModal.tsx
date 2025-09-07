@@ -9,17 +9,22 @@ import chatApiService from '../../services/chat';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import type { ChatRoomUsersResponse } from '../../types/chat';
 import type { MyChatRoom } from '../../types/home';
+import { useQueryClient } from '@tanstack/react-query';
+import { createPortal } from 'react-dom';
+
 
 interface ChatModalProps {
   panelRef: React.RefObject<HTMLDivElement | null>;
   roomId: string | undefined;
   onLeaveRoom: () => void;
   onClose?: () => void;
+  onDeleteRoom?: () => void;
 }
 
-const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) => {
+const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose, onDeleteRoom }: ChatModalProps) => {
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); // React Query 클라이언트
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(null);
@@ -56,6 +61,26 @@ const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) =
       setIsLoading(false);
     }
   }, [roomId]);
+
+   const handleDeleteRoom = useCallback(async () => {
+    if (!roomId) return;
+    try {
+      const res = await chatApiService.deleteChatRoom(Number(roomId));
+      if (res.isSuccess) {
+        // 내 채팅방 목록/상세 등 쿼리 무효화
+        await queryClient.invalidateQueries(); // 키 모르면 전체 무효화
+        // 상위에서 별도 처리 원하면 콜백 호출
+        onDeleteRoom?.();
+        // 기본 동작: 방 목록/이전 페이지로 이동
+        navigate(-1);
+      } else {
+        alert(res.message || '채팅방 삭제에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('채팅방 삭제 중 오류가 발생했습니다.');
+    }
+  }, [roomId, queryClient, navigate, onDeleteRoom]);
 
   useEffect(() => {
     if (roomId) {
@@ -116,6 +141,9 @@ const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) =
     return null;
   }
 
+  const me = usersData.users?.find(u => u.mine);
+  const amOwner = !!me?.owner;
+
   return (
     <div className="fixed inset-0 w-full h-full bg-black/40 z-[1000]" onClick={handleOutsideClick}>
       <div
@@ -158,6 +186,7 @@ const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) =
               id={user.userId}
               isMine={user.mine}
               isActive={user.active}
+              isOwner={user.owner}   
             />
           ))}
         </div>
@@ -173,33 +202,47 @@ const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose }: ChatModalProps) =
             onClick={() => setIsModalOpen(true)}
           >
             <img src={Exit} />
-            방 나가기
+             {amOwner ? '방 삭제' : '방 나가기'}
           </button>
         </div>
       </div>
 
 
-      {isModalOpen && (
-        <Modal
-          title="동행방을 정말로 나가시겠어요?"
-          children={<p>대화 내용은 복구할 수 없습니다.</p>}
-          buttons={[
-            {
-              text: '취소',
-              onClick: () => setIsModalOpen(false),
-              variant: 'gray',
+      {isModalOpen &&
+  createPortal(
+    <div className="fixed inset-0 z-[9999]">
+      <Modal
+        title={amOwner ? '동행방을 삭제하시겠어요?' : '동행방을 나가시겠어요?'}
+        children={
+          <p>{amOwner ? '삭제 시 대화 내용이 영구히 삭제됩니다.' : '대화 내용은 복구할 수 없습니다.'}</p>
+        }
+        buttons={[
+          { text: '취소', onClick: () => setIsModalOpen(false), variant: 'gray' },
+          {
+            text: '확인',
+            onClick: () => {
+              setIsModalOpen(false);
+              if (amOwner) {
+                handleDeleteRoom();
+              } else {
+                onLeaveRoom();
+              }
             },
-            {
-              text: '확인',
-              onClick: onLeaveRoom,
-              variant: 'orange',
-            },
-          ]}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+            variant: 'orange',
+          },
+        ]}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>,
+    document.body
+  )
+}
+
+
     </div>
   );
+
+
 };
 
 export default ChatModal;

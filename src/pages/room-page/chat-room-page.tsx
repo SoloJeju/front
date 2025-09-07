@@ -69,9 +69,6 @@ useEffect(() => {
   }
 }, [kb]);
 
-// 실제로 사용할 "총 상단 오프셋"
-const TOP_TOTAL = TOP_OFFSET + headerH; // 🔴 추가 100 + BackHeader 높이
-
 // 모바일 키보드 높이 감지 (작은 변동 무시)
 useEffect(() => {
   const vv = (window as any).visualViewport;

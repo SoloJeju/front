@@ -73,6 +73,12 @@ class ChatApiService {
     const response = await authAxios.post(`/api/chatrooms/${roomId}/read`);
     return response.data;
   }
+
+  // 채팅방 삭제
+  async deleteChatRoom(roomId: number): Promise<SimpleResponse> {
+    const response = await authAxios.delete(`/api/chatrooms/${roomId}`);
+    return response.data;
+  }
 }
 
 export default new ChatApiService();

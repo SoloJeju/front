@@ -103,6 +103,7 @@ export interface ChatRoomUser {
   joinedAt: string;
   active: boolean;
   mine: boolean;
+   owner: boolean;  
 }
 
 // 채팅방 사용자 목록 응답
