@@ -11,15 +11,21 @@ import TimePicker from '../../components/Plus/Plan/TimeRangePicker';
 import MemoEditorModal from '../../components/Plus/Plan/MemoModal';
 import PlusCircleIcon from '../../assets/EASY.svg?react';
 
-import { getPlanDetail, updatePlan } from '../../apis/plan';
+import { getPlanDetail, updatePlan, deletePlan } from '../../apis/plan';
 import { usePlanStore } from '../../stores/plan-store';
 import type { PlanDetailResponse } from '../../types/plan';
 import type { TouristSpot } from '../../types/tourist';
+import Modal from '../../components/common/Modal';
 
 dayjs.locale('ko');
 
 type DayDetail = PlanDetailResponse['result']['days'][0];
 type SpotDetail = DayDetail['spots'][0];
+type ModalButton = {
+  text: string;
+  onClick: () => void;
+  variant?: 'gray' | 'orange';
+};
 
 const PlanDetailPage = () => {
   const { planId } = useParams<{ planId: string }>();
@@ -49,6 +55,8 @@ const PlanDetailPage = () => {
   const [activeTab, setActiveTab] = useState('전체');
   const [editingSpot, setEditingSpot] = useState<{ dayIndex: number; spot: SpotDetail } | null>(null);
   const [modal, setModal] = useState<'calendar' | 'time' | 'memo' | null>(null);
+  const [isPlanDeleteModalOpen, setIsPlanDeleteModalOpen] = useState(false);
+
 
   useEffect(() => {
     if (planId) getPlanDetail(Number(planId)).then((res) => setPlan(res.result));
@@ -125,6 +133,23 @@ const PlanDetailPage = () => {
       alert('저장에 실패했습니다.');
     }
   };
+  const handlePlanDelete = () => {
+    setIsPlanDeleteModalOpen(true);
+  };
+
+  const executePlanDelete = async () => {
+    if (!planId) return;
+    try {
+      await deletePlan(Number(planId));
+      alert('일정이 삭제되었습니다.');
+      navigate(-1);
+    } catch (error) {
+      console.error('Failed to delete plan:', error);
+      alert('일정 삭제에 실패했습니다.');
+    } finally {
+      setIsPlanDeleteModalOpen(false);
+    }
+  };
 
   const handleCancel = () => {
     if (planId) getPlanDetail(Number(planId)).then((res) => setPlan(res.result));
@@ -164,11 +189,14 @@ const PlanDetailPage = () => {
     activeTab === '전체'
       ? Array.from({ length: totalDays }, (_, i) => getDayByIndex(i + 1))
       : [getDayByIndex(Number(activeTab.replace('일차', '')))];
-
+  const planDeleteButtons: ModalButton[] = [
+    { text: '취소', onClick: () => setIsPlanDeleteModalOpen(false), variant: 'gray' },
+    { text: '삭제', onClick: executePlanDelete, variant: 'orange' },
+  ];
   return (
     <div className="flex justify-center bg-gray-50 min-h-screen font-['Pretendard']">
       <div className="w-full max-w-[480px] bg-white pb-24">
-        <BackHeader title="일정 보기" />
+        <BackHeader title="일정 보기" rightContent={<button onClick={handlePlanDelete} className="px-5 py-2 bg-orange-100/70 rounded-[20px] inline-flex justify-center items-center justify-start text-[#F78937] text-sm font-medium leading-none">삭제</button>} />
         <main className="px-4">
           <div className="mt-4 mb-4">
             <input
@@ -332,6 +360,17 @@ const PlanDetailPage = () => {
             )}
           </div>
         </div>
+      )}
+      {isPlanDeleteModalOpen && (
+        <Modal
+          title="정말 이 일정을 삭제하시겠습니까?"
+          onClose={() => setIsPlanDeleteModalOpen(false)}
+          buttons={planDeleteButtons}
+        >
+          <p className="text-gray-600">
+            삭제된 일정은 복구할 수 없습니다.
+          </p>
+        </Modal>
       )}
     </div>
   );

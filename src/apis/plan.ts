@@ -22,3 +22,8 @@ export const updatePlan = async (planId: number, data: CreatePlanRequest) => {
   const res = await authAxios.patch(`/api/plans/${planId}`, data);
   return res.data;
 };
+
+export const deletePlan = async (planId: number) => {
+  const res = await authAxios.delete(`/api/plans/${planId}`);
+  return res.data;
+};
