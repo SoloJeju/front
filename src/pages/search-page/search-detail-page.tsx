@@ -19,6 +19,7 @@ import { filterSpotType } from '../../utils/filterSpotType';
 import useGetInfiniteSpotImages from '../../hooks/tourist/useGetInfiniteSpotImages';
 import { useInView } from 'react-intersection-observer';
 import useGetInfiniteReveiws from '../../hooks/tourist/useGetInfiniteReveiws';
+import useGetChatRooms from '../../hooks/tourist/useGetChatRooms';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -113,6 +114,12 @@ export default function SearchDetailPage() {
     }
   }, [reviewInView, isFetchingReviews, hasNextReviews, fetchNextReviews]);
 
+  const {
+    data: chatRooms,
+    isPending: isPendingChatRooms,
+    isError: isErrorChatRooms,
+  } = useGetChatRooms(contentId);
+
   const handleAddCart = async () => {
     if (!contentId) {
       alert('유효한 장소 ID가 없습니다.');
@@ -131,12 +138,17 @@ export default function SearchDetailPage() {
     }
   };
 
-  if (isLoadingDetailData || isPendingImages || isPendingReviews) {
+  if (
+    isLoadingDetailData ||
+    isPendingImages ||
+    isPendingReviews ||
+    isPendingChatRooms
+  ) {
     // loading ui
     return <div>Loading...</div>;
   }
 
-  if (isErrorImages || isErrorReviews) {
+  if (isErrorImages || isErrorReviews || isErrorChatRooms) {
     return <div>Error!</div>;
   }
 
@@ -313,7 +325,10 @@ export default function SearchDetailPage() {
           <div className="flex flex-col items-start w-full flex-shrink-0">
             <div className="w-full pb-6 border-b-8 border-[#F5F5F5]">
               <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-                <span className="text-[#F78938]">가람돌솥밥</span> 다녀오셨다면,
+                <span className="text-[#F78938]">
+                  {spotDetailData?.basic.title}
+                </span>{' '}
+                다녀오셨다면,
               </h2>
               <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
                 짧은 리뷰로 여행의 기억을 남겨보세요!
@@ -361,21 +376,23 @@ export default function SearchDetailPage() {
 
         {activeTab === '동행방' && (
           <div className="mt-1">
-            {/*<h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-              아직 동행방이 없어요.
-            </h2>
-            <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-             지금 첫 번째 동행방을 만들어보세요!
-            </h2>
-            <button
-              className="mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
-            >
-              새 동행방 개설하기
-            </button>*/}
-            <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
-              지금 열려있는 동행방
-            </p>
-            <RoomCardList />
+            <div className="pb-6">
+              <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
+                지금 열려있는 동행방
+              </p>
+              <RoomCardList chatRooms={chatRooms} />
+            </div>
+            <div className="w-full pt-6 pb-3 border-t-8 border-[#F5F5F5]">
+              <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+                원하시는 동행방이 없나요?
+              </h2>
+              <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+                새로운 동행방을 만들어보세요!
+              </h2>
+              <button className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]">
+                새 동행방 개설하기
+              </button>
+            </div>
           </div>
         )}
       </div>
