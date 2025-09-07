@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import { useLocation } from 'react-router-dom';
 import ModalPortal from '../../components/ChatRoomPage/ModalPortal';
+import { debounce } from 'lodash';
 
 
 export default function ChatRoomPage() {
@@ -223,79 +224,52 @@ useEffect(() => {
     });
   }, [roomId, isConnected]);
 
-  // 입장 메시지 전송
-  const sendEnterMessage = useCallback(() => {
-    if (!newMessage.trim() || !isConnected || isCompleted) return;
-    if (isConnected) {
-      websocketService.sendMessage({
-        type: 'ENTER',
-        roomId: Number(roomId),
-      });
-    }
-  }, [isConnected, roomId, newMessage, isCompleted]);
+  // 채팅방 입장 시퀀스
+const enterChatRoom = useCallback(async () => {
+  if (!roomId) return;
+  await loadMessages();
+  connectWebSocket();
+  setTimeout(markMessagesAsRead, 300);
+}, [roomId]); 
 
-  // 채팅방 입장 시퀀스 (가이드 4.1에 따라 구현)
-  const enterChatRoom = useCallback(async () => {
-    try {
-      // 1-1. 기존 메시지 조회
-      await loadMessages();
 
-      // 1-2. WebSocket 구독 시작
-      if (!isConnected) {
-        connectWebSocket();
-      }
+useEffect(() => {
+  if (roomId) {
+    enterChatRoom();
+  }
+  return () => {
+    websocketService.disconnect();
+  };
+}, [roomId]);  
 
-      // 1-3. 읽음 처리 API 호출 (중요!)
-       setTimeout(async () => {
-      await markMessagesAsRead();
-      
-    }, 300); // scrollToBottom 실행 후 약간 지연
-      
 
-    } catch (error) {
-      console.error('채팅방 입장 중 오류:', error);
-    }
-  }, [
-    isConnected,
-    loadMessages,
-    connectWebSocket,
-    markMessagesAsRead,
-    sendEnterMessage,
-  ]);
-
-  useEffect(() => {
-    if (roomId) {
-      enterChatRoom();
-    }
-
-    return () => {
-      websocketService.disconnect();
-    };
-  }, [roomId, enterChatRoom]); // roomId와 enterChatRoom을 의존성으로 설정
+const debouncedMarkMessagesAsRead = useCallback(
+  debounce(() => {
+    markMessagesAsRead();
+  }, 500), // 0.5초 내 여러 번 스크롤해도 1번만 실행
+  [markMessagesAsRead]
+)
 
   // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
-  const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
+const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  const target = e.target as HTMLDivElement;
 
-    // 스크롤이 하단에 가까워지면 읽음 처리
-   const isNearBottom = () => {
-      if (!listRef.current) return false;
-      const el = listRef.current;
-      return el.scrollHeight - el.scrollTop - el.clientHeight < 120; // 임계값
-    };
-
-    if (isNearBottom()) {
-       markMessagesAsRead();
-    }
-
-  
-    // 무한 스크롤 로직 - 스크롤이 맨 위에 가까워지면 이전 메시지 로드
-    const isNearTop = target.scrollTop < 100; // 감지 범위를 늘림
-
-    if (isNearTop && hasNext && !isLoadingMore) {
-      loadMoreMessages();
-    }
+  const isNearBottom = () => {
+    if (!listRef.current) return false;
+    const el = listRef.current;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
   };
+
+  if (isNearBottom()) {
+    debouncedMarkMessagesAsRead();
+  }
+
+  const isNearTop = target.scrollTop < 100;
+  if (isNearTop && hasNext && !isLoadingMore) {
+    loadMoreMessages();
+  }
+};
+
 
   // 초기 로딩 완료 시에만 스크롤을 맨 아래로 이동
   useEffect(() => {
@@ -523,7 +497,7 @@ const loadMoreMessages = async () => {
 
         {/* 헤더 - 고정 */} 
         <div className="flex-shrink-0 bg-white border-b border-gray-200 sticky top-0 z-90"
-          style={{  paddingTop: `${HEADER_H}px`}}> 
+          style={{  paddingTop: `0px`}}> 
           <div className="mx-auto w-full max-w-[480px]">
           <BackHeader
             title={headerTitle}
