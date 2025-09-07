@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
-import Header from '../../components/common/Headers/BackHeader';
 import Calendar from '../../components/Plus/CalendarPannel';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import PlusCircleIcon from '../../assets/EASY.svg?react';
@@ -154,7 +153,6 @@ const PlanPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-24">
-        <Header title="계획 짜기" />
         <div className="flex flex-col gap-6 p-4 font-['Pretendard']">
           <div>
             <label className="text-black text-base font-medium leading-none">여행 제목</label>

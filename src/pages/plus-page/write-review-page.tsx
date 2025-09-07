@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/common/Headers/BackHeader';
 import CalendarIcon from '../../assets/calendar.svg?react';
 import MapIcon from '../../assets/map.svg?react';
 import Easy from '../../assets/EASY.svg?react';
@@ -143,7 +142,6 @@ const WriteReviewPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-24">
-        <Header title="리뷰 작성" />
         <div className="flex flex-col gap-6 pt-3 font-['Pretendard'] px-4">
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>

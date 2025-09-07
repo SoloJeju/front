@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { createRoom } from '../../apis/room';
 import type { CreateRoomPayload } from '../../types/room';
-import Header from '../../components/common/Headers/BackHeader';
 import Calendar from '../../components/Plus/CalendarPannel';
 import TimePicker from '../../components/Plus/TimePannel';
 import MinusIcon from '../../assets/minusIcon.svg?react';
@@ -124,7 +123,6 @@ const CreateRoomPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-10">
-        <Header title="동행방 개설" />
         <div className="flex flex-col gap-6 pt-3 font-['Pretendard']">
           <div>
             <label className="text-black text-base font-medium leading-none">
