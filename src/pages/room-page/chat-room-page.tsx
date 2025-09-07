@@ -35,39 +35,13 @@ export default function ChatRoomPage() {
   const topSentinelRef = useRef<HTMLDivElement>(null);
   const HEADER_H = 56;   // BackHeader 실제 높이에 맞춰 조정 (예: 56~64)
   const INPUT_BAR_H = 64;
-  const TOP_OFFSET = 100;
-  const headerRef = useRef<HTMLDivElement | null>(null);
-const [headerH, setHeaderH] = useState(56); // BackHeader 실제 높이 측정값
+
 
 const [kb, setKb] = useState(0);
 
 const location = useLocation();
 const isCompletedFromState = location.state?.isCompleted || false;
 
-useEffect(() => {
-  // BackHeader 실제 렌더 높이 측정
-  const measure = () => {
-    if (headerRef.current) {
-      const h = headerRef.current.getBoundingClientRect().height;
-      setHeaderH(Math.round(h));
-    }
-  };
-  measure();
-  window.addEventListener('resize', measure);
-  window.addEventListener('orientationchange', measure);
-  return () => {
-    window.removeEventListener('resize', measure);
-    window.removeEventListener('orientationchange', measure);
-  };
-}, []);
-
-// kb(키보드 높이) 바뀔 때도 스크롤 영역 재계산을 위해 한번 더
-useEffect(() => {
-  if (headerRef.current) {
-    const h = headerRef.current.getBoundingClientRect().height;
-    setHeaderH(Math.round(h));
-  }
-}, [kb]);
 
 // 모바일 키보드 높이 감지 (작은 변동 무시)
 useEffect(() => {
@@ -543,7 +517,7 @@ const loadMoreMessages = async () => {
 
         {/* 헤더 - 고정 */} 
         <div className="flex-shrink-0 bg-white border-b border-gray-200 sticky top-0 z-90"
-          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}> 
+          style={{  paddingTop: `${HEADER_H}px`}}> 
           <div className="mx-auto w-full max-w-[480px]">
           <BackHeader
             title={headerTitle}
