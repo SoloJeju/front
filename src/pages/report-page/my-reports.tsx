@@ -17,7 +17,7 @@ const MyReportsPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await getMyReports(currentPage, 10, selectedStatus);
-      
+
       if (response.isSuccess) {
         setReports(response.result.reports);
         setTotalPages(response.result.pagination.totalPages);
@@ -39,15 +39,30 @@ const MyReportsPage: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      PENDING: { text: '접수됨', color: 'bg-[#FFF8F0] text-[#F78938] border-[#FFCEAA]' },
-      REVIEWED: { text: '검토완료', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-      ACTION_TAKEN: { text: '조치완료', color: 'bg-green-50 text-green-600 border-green-200' },
-      REJECTED: { text: '반려', color: 'bg-red-50 text-red-600 border-red-200' },
+      PENDING: {
+        text: '접수됨',
+        color: 'bg-[#FFF8F0] text-[#F78938] border-[#FFCEAA]',
+      },
+      REVIEWED: {
+        text: '검토완료',
+        color: 'bg-blue-50 text-blue-600 border-blue-200',
+      },
+      ACTION_TAKEN: {
+        text: '조치완료',
+        color: 'bg-green-50 text-green-600 border-green-200',
+      },
+      REJECTED: {
+        text: '반려',
+        color: 'bg-red-50 text-red-600 border-red-200',
+      },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.color}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${config.color}`}
+      >
         {config.text}
       </span>
     );
@@ -104,7 +119,9 @@ const MyReportsPage: React.FC = () => {
       <main className="mx-4 pb-12">
         {/* 상태 필터 */}
         <section className="mt-6 p-4 bg-[#FFF8F0] border border-[#FFCEAA] rounded-xl">
-          <h3 className="text-[#F78938] text-sm mb-3 font-medium">상태별 필터</h3>
+          <h3 className="text-[#F78938] text-sm mb-3 font-medium">
+            상태별 필터
+          </h3>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleStatusChange('')}
@@ -164,19 +181,36 @@ const MyReportsPage: React.FC = () => {
           {reports.length === 0 ? (
             <div className="p-8 text-center bg-[#FFF8F0] border border-[#FFCEAA] rounded-xl">
               <div className="text-[#B4B4B4] mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-16 h-16 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-[#262626] mb-2">신고 내역이 없습니다</h3>
+              <h3 className="text-lg font-medium text-[#262626] mb-2">
+                신고 내역이 없습니다
+              </h3>
               <p className="text-[#666666]">
-                {selectedStatus ? '해당 상태의 신고 내역이 없습니다.' : '아직 신고한 내역이 없습니다.'}
+                {selectedStatus
+                  ? '해당 상태의 신고 내역이 없습니다.'
+                  : '아직 신고한 내역이 없습니다.'}
               </p>
             </div>
           ) : (
             <div className="space-y-3">
               {reports.map((report) => (
-                <div key={report.reportId} className="p-4 border border-[#FFCEAA] rounded-xl bg-white">
+                <div
+                  key={report.reportId}
+                  className="p-4 border border-[#FFCEAA] rounded-xl bg-white"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-[#666666]">
@@ -185,14 +219,15 @@ const MyReportsPage: React.FC = () => {
                       {getStatusBadge(report.status)}
                     </div>
                   </div>
-                  <div 
+                  <div
                     className="text-sm text-[#262626] mb-2 cursor-pointer hover:text-[#F78938] transition-colors"
                     onClick={() => navigate(`/report/${report.reportId}`)}
                   >
                     신고 사유: {report.reasonName}
                   </div>
                   <div className="text-xs text-[#B4B4B4]">
-                    접수일: {new Date(report.createdAt).toLocaleDateString('ko-KR')}
+                    접수일:{' '}
+                    {new Date(report.createdAt).toLocaleDateString('ko-KR')}
                   </div>
                 </div>
               ))}
@@ -211,7 +246,7 @@ const MyReportsPage: React.FC = () => {
               >
                 이전
               </button>
-              
+
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum;
                 if (totalPages <= 5) {
@@ -223,7 +258,7 @@ const MyReportsPage: React.FC = () => {
                 } else {
                   pageNum = currentPage - 2 + i;
                 }
-                
+
                 return (
                   <button
                     key={pageNum}
@@ -238,7 +273,7 @@ const MyReportsPage: React.FC = () => {
                   </button>
                 );
               })}
-              
+
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}

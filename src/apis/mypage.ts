@@ -1,6 +1,8 @@
 import { authAxios } from './axios';
 import type { ResponseMyChatRoomsDto } from '../types/home';
+import type { UpdateProfileRequest, UpdateProfileResponse } from '../types/mypage';
 import type { ResponseMyInfoDto } from '../types/user';
+
 
 export const getMyChatRooms = async (
   cursor?: string,
@@ -34,5 +36,14 @@ export const getUnreadMessages = async (): Promise<{
 export const getMyInfo = async (): Promise<ResponseMyInfoDto> => {
   const { data } = await authAxios.get(`/api/mypage/profile`);
 
+  return data;
+};
+
+// 마이페이지 프로필
+export const updateMyProfile = async (body: UpdateProfileRequest) => {
+  const { data } = await authAxios.patch<UpdateProfileResponse>(
+    '/api/mypage/profile',
+    body
+  );
   return data;
 };

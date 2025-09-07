@@ -1,23 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
-import { useProfileStore } from '../../stores/profile-store';
+import { useProfileStore, initialState } from '../../stores/profile-store';
+import editIcon from '../../assets/edit-icon.svg';
+import toast from 'react-hot-toast';
+import { checkNickname as apiCheckNickname } from '../../apis/auth';
+import { updateMyProfile } from '../../apis/mypage';
 
 const MAX_BIO_LEN = 25;
-const DEFAULT_PROFILE = '/default-profile.svg';
 
 export default function ProfileEdit() {
-  const { nickname, setNickname, profileImage, setProfileImage, bio, setBio } =
+  const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
     useProfileStore();
 
   // 원래 닉네임: 변경 여부 판단용
-  const originalNickname = useRef(nickname);
+  const originalNickname = useRef(nickName);
 
-  const [isNicknameChecked, setIsNicknameChecked] = useState(true); // 초기에는 "변경 안 함" 상태이므로 통과
+  const [isNicknameChecked, setIsNicknameChecked] = useState(true); // 초기엔 '변경 안 함'이므로 통과
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [bioLen, setBioLen] = useState<number>(
     bio ? Math.min(bio.length, MAX_BIO_LEN) : 0
   );
+
+  const [isChecking, setIsChecking] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -51,17 +57,39 @@ export default function ProfileEdit() {
   // 닉네임 변경 시: 원래 값과 다르면 중복확인 다시 요구
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const next = e.target.value;
-    setNickname(next);
+    setNickName(next);
     setIsNicknameChecked(next === originalNickname.current);
   };
 
-  const handleCheckNickname = () => {
-    if (!nickname) return;
-    // TODO: 서버 중복확인 API 연동
-    setIsNicknameChecked(true);
+  // 닉네임 중복확인 API
+  const handleCheckNickname = async () => {
+    if (!nickName) return;
+    if (nickName === originalNickname.current) {
+      setIsNicknameChecked(true);
+      toast.success('현재 닉네임 그대로 사용합니다.');
+      return;
+    }
+
+    try {
+      setIsChecking(true);
+      const res = await apiCheckNickname({ nickName: nickName });
+      if (res.isSuccess) {
+        setIsNicknameChecked(true);
+        toast.success(res.result || '사용 가능한 닉네임입니다.');
+      } else {
+        setIsNicknameChecked(false);
+        toast.error(res.message || '사용할 수 없는 닉네임입니다.');
+      }
+    } catch (e) {
+      setIsNicknameChecked(false);
+      console.error('에러 발생:', e);
+      toast.error('닉네임 확인 중 오류가 발생했습니다.');
+    } finally {
+      setIsChecking(false);
+    }
   };
 
-  // 프로필 사진 업로드
+  // 프로필 사진 업로드(미리보기용 dataURL)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,7 +104,7 @@ export default function ProfileEdit() {
   };
 
   const handleResetToDefault = () => {
-    setProfileImage(DEFAULT_PROFILE);
+    setProfileImage(initialState.profileImage);
     if (fileInputRef.current) fileInputRef.current.value = '';
     closeProfileMenu();
   };
@@ -89,17 +117,82 @@ export default function ProfileEdit() {
     setBioLen(trimmed.length);
   };
 
-  // 저장 가능 조건: 닉네임 존재 + (닉네임 안 바꿈 || 중복확인 완료)
+  // 저장 가능 조건: 닉네임 존재 + (닉네임 안 바꿈 || 중복확인 완료) + 저장중 아님
   const canSave =
-    !!nickname && (nickname === originalNickname.current || isNicknameChecked);
+    !!nickName &&
+    (nickName === originalNickname.current || isNicknameChecked) &&
+    !isSaving;
 
-  const handleSave = () => {
+  // 저장: PATCH /api/mypage/profile
+  const handleSave = async () => {
     if (!canSave) {
       alert('닉네임 중복 확인을 완료해주세요.');
       return;
     }
-    alert('프로필이 수정되었습니다.');
-    // TODO: 서버 저장 로직
+
+    // 서버에 보낼 payload 구성 (변경된 것만)
+    const payload: {
+      nickName?: string;
+      imageName?: string;
+      imageUrl?: string;
+      bio?: string;
+    } = {};
+
+    // 닉네임 변경 시에만 포함
+    if (nickName !== originalNickname.current) {
+      payload.nickName = nickName;
+    }
+
+    // 이미지 정책
+    const isDefault = profileImage === initialState.profileImage;
+
+    if (isDefault) {
+      // 기본 이미지로 저장
+      payload.imageName = 'default-profile.svg';
+      payload.imageUrl = '';
+    } else if (/^https?:\/\//.test(profileImage)) {
+      // URL 이미지(예: 카카오 URL)
+      const fileNameFromUrl = profileImage.split('/').pop() || 'profile.jpg';
+      payload.imageName = fileNameFromUrl;
+      payload.imageUrl = profileImage;
+    } else if (profileImage.startsWith('data:image/')) {
+      // dataURL(로컬 업로드 미리보기) → 서버가 URL만 허용하면 업로드 API가 필요
+      // TODO: 이미지 업로드 API 연동 후, 업로드 URL을 imageUrl로 전달
+      toast('로컬 업로드 이미지는 아직 서버 저장을 지원하지 않습니다.', {
+        icon: 'ℹ️',
+      });
+    }
+
+    // bio(선택)
+    if (bio) payload.bio = bio.slice(0, MAX_BIO_LEN);
+
+    // 변경 없으면 리턴
+    if (
+      !payload.nickName &&
+      !payload.imageName &&
+      !payload.imageUrl &&
+      payload.bio === undefined
+    ) {
+      toast('변경사항이 없습니다.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const res = await updateMyProfile(payload);
+      if (res.isSuccess) {
+        toast.success('프로필이 수정되었습니다.');
+        // 닉네임 원본 갱신 + 버튼 상태 초기화
+        originalNickname.current = nickName;
+        setIsNicknameChecked(true);
+      } else {
+        toast.error(res.message || '수정에 실패했습니다.');
+      }
+    } catch {
+      toast.error('프로필 수정 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -138,11 +231,7 @@ export default function ProfileEdit() {
           className="absolute bottom-1 right-1 p-1 cursor-pointer"
           title="프로필 이미지 변경"
         >
-          <img
-            src="/edit-icon.svg"
-            alt="프로필 이미지 변경"
-            className="w-6 h-6"
-          />
+          <img src={editIcon} alt="프로필 이미지 변경" className="w-6 h-6" />
         </button>
 
         {/* 팝오버 */}
@@ -174,14 +263,14 @@ export default function ProfileEdit() {
             <button
               type="button"
               onClick={
-                profileImage !== DEFAULT_PROFILE
+                profileImage !== initialState.profileImage
                   ? handleResetToDefault
                   : undefined
               }
-              disabled={profileImage === DEFAULT_PROFILE}
+              disabled={profileImage === initialState.profileImage}
               role="menuitem"
               className={`w-full text-left px-4 py-3 outline-none ${
-                profileImage === DEFAULT_PROFILE
+                profileImage === initialState.profileImage
                   ? 'text-[#262626]/40 cursor-default'
                   : 'text-[#262626] focus:bg-gray-50 cursor-pointer'
               }`}
@@ -200,16 +289,21 @@ export default function ProfileEdit() {
             <Input
               type="text"
               placeholder="닉네임"
-              value={nickname}
+              value={nickName}
               onChange={handleNicknameChange}
               className="w-full border-none bg-transparent p-0 focus:ring-0 focus:outline-none"
             />
           </div>
-          <Button size="small" variant="primary" onClick={handleCheckNickname}>
-            중복확인
+          <Button
+            size="small"
+            variant="primary"
+            onClick={handleCheckNickname}
+            disabled={!nickName || isChecking}
+          >
+            {isChecking ? '확인중…' : '중복확인'}
           </Button>
         </div>
-        {nickname !== originalNickname.current && isNicknameChecked && (
+        {nickName !== originalNickname.current && isNicknameChecked && (
           <p className="mt-1 text-sm text-[#F78938]">
             사용 가능한 닉네임입니다.
           </p>
@@ -242,7 +336,7 @@ export default function ProfileEdit() {
         onClick={handleSave}
         disabled={!canSave}
       >
-        저장하기
+        {isSaving ? '저장 중…' : '저장하기'}
       </Button>
     </div>
   );

@@ -17,6 +17,8 @@ import ExBanner2 from '/src/assets/banner-ex2.png';
 import ExBanner3 from '/src/assets/banner-ex3.png';
 import ExBanner4 from '/src/assets/banner-ex4.png';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
+import useFCM from '../../hooks/alarm/useFCM';
+import { useEffect } from 'react';
 // import { useProfileStore } from '../../stores/profile-store';
 
 export default function HomePage() {
@@ -24,6 +26,13 @@ export default function HomePage() {
 
   const accessToken = localStorage.getItem('accessToken');
   const navigate = useNavigate();
+  const { updateToken } = useFCM();
+
+  useEffect(() => {
+    if (accessToken) {
+      updateToken();
+    }
+  }, [accessToken, updateToken]);
 
   const {
     data: myInfo,
@@ -296,7 +305,6 @@ export default function HomePage() {
                 all={room.maxParticipants}
                 imageUrl={room.spotImage}
                 gender={room.genderRestriction}
-                from="home"
               />
             ))}
           </div>

@@ -93,6 +93,7 @@ const PlanPage = () => {
       setDateRange({ start, end });
     }
     setIsCalendarOpen(false);
+    setIsCalendarOpen(false);
   };
 
   const handleCreatePlan = async () => {
@@ -167,10 +168,13 @@ const PlanPage = () => {
           </div>
 
           <div>
-            <label className="text-black text-base font-medium leading-none">날짜</label>
+            <label className="text-black text-base font-medium leading-none">
+              날짜
+            </label>
             <div
               className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 cursor-pointer"
-              onClick={() => setIsCalendarOpen(true)}>
+              onClick={() => setIsCalendarOpen(true)}
+            >
               <input
                 type="text"
                 placeholder="여행 날짜를 선택해주세요"
@@ -183,7 +187,9 @@ const PlanPage = () => {
           </div>
 
           <div>
-            <label className="text-black text-base font-medium leading-none">교통수단 선택</label>
+            <label className="text-black text-base font-medium leading-none">
+              교통수단 선택
+            </label>
             <div className="flex gap-4 mt-2 overflow-x-auto px-1 no-scrollbar">
               {transports.map((transport) => (
                 <button
@@ -229,7 +235,9 @@ const PlanPage = () => {
           )}
 
           <div>
-            <label className="text-black text-base font-medium leading-none">계획방식 선택</label>
+            <label className="text-black text-base font-medium leading-none">
+              계획방식 선택
+            </label>
             <div className="flex flex-col gap-2 mt-2">
               <button
                 type="button"
@@ -261,10 +269,12 @@ const PlanPage = () => {
       {isCalendarOpen && (
         <div
           className="fixed inset-0 z-50 flex justify-center items-end transition-opacity duration-300 ease-out bg-black/20"
-          onClick={() => setIsCalendarOpen(false)}>
+          onClick={() => setIsCalendarOpen(false)}
+        >
           <div
             className="w-full max-w-[480px] bg-white rounded-t-2xl transform transition-transform duration-300 ease-out translate-y-0 animate-slide-up"
-            onClick={(e) => e.stopPropagation()}>
+            onClick={(e) => e.stopPropagation()}
+          >
             <Calendar onSelect={handleDateSelect} />
           </div>
         </div>
