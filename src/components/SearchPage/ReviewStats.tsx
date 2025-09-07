@@ -49,7 +49,7 @@ export default function ReviewStats({
           </div>
         </div>
         <h4 className="mt-2 font-[Pretendard] text-[14px] font-not-italic leading-[20px] tracking-[-0.36px]">
-          73%의 혼놀인들이 EASY를 택했어요 🌱
+          {easy}%의 혼놀인들이 EASY를 택했어요 🌱
           <br />
           혼자여도 전혀 부담 없는 곳이에요!
         </h4>

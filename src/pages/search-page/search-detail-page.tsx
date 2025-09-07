@@ -322,10 +322,11 @@ export default function SearchDetailPage() {
                 리뷰 쓰기
               </button>
             </div>
-            {reviews.pages.flatMap((page) => {
+            {reviews.pages.flatMap((page, idx) => {
               const reviewStats = page.result.spotAgg;
               return (
                 <ReviewStats
+                  key={idx}
                   easy={reviewStats.easyPct}
                   meduim={reviewStats.mediumPct}
                   hard={reviewStats.hardPct}
@@ -347,10 +348,10 @@ export default function SearchDetailPage() {
 
             {showAllReviews && (
               <>
-                {reviews.pages.flatMap((page) => {
+                {reviews.pages.flatMap((page, idx) => {
                   const reivewList = page.result.reviews;
 
-                  return <ReviewList reviewList={reivewList} />;
+                  return <ReviewList key={idx} reviewList={reivewList} />;
                 })}
                 <div ref={reviewRef}></div>
               </>
