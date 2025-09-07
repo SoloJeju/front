@@ -13,7 +13,7 @@ export type DayPlan = {
 
 export type CreatePlanRequest = {
   title: string
-  transportType: string
+  transportType: 'CAR'|'BUS'|'TRAIN'|'TAXI'| 'BICYCLE'| 'WALK'
   startDate: string
   endDate: string
   days: DayPlan[]
@@ -21,7 +21,7 @@ export type CreatePlanRequest = {
 
 export type CreateAIPlanRequest = {
   title: string
-  transportType: string
+  transportType: 'CAR'|'BUS'|'TRAIN'|'TAXI'| 'BICYCLE'| 'WALK'
   startDate: string
   endDate: string
   contentIds: number[]
@@ -43,10 +43,11 @@ export type AIPlanResponse = {
   message: string
   result: {
     title: string
-    transportType: string
+    transportType: 'CAR'|'BUS'|'TRAIN'|'TAXI'| 'BICYCLE'| 'WALK'
     startDate: string
     endDate: string
     days: DayPlan[]
+    planId: number
   }
 }
 
@@ -57,7 +58,7 @@ export type PlanDetailResponse = {
   result: {
     planId: number
     title: string
-    transportType: string
+    transportType: 'CAR'|'BUS'|'TRAIN'|'TAXI'| 'BICYCLE'| 'WALK'
     startDate: string
     endDate: string
     ownerNickname: string
