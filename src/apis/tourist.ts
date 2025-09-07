@@ -40,11 +40,24 @@ export const getTouristGroups = async (
   return data;
 };
 
-export const getTouristReviews = async (
-  contentId: number
-): Promise<ResponseSpotReviewDto> => {
+export const getTouristReviews = async ({
+  contentId,
+  cursor,
+  size = 10,
+}: {
+  contentId: number;
+  cursor: string | undefined;
+  size?: number;
+}): Promise<ResponseSpotReviewDto> => {
   const { data } = await publicAxios.get(
-    `/api/tourist-spots/${contentId}/reviews`
+    `/api/tourist-spots/${contentId}/reviews`,
+    {
+      params: {
+        contentId,
+        cursor,
+        size,
+      },
+    }
   );
   return data;
 };

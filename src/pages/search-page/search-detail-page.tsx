@@ -18,6 +18,7 @@ import type { BasicSpotDetail, IntroSoptDetail } from '../../types/tourist';
 import { filterSpotType } from '../../utils/filterSpotType';
 import useGetInfiniteSpotImages from '../../hooks/tourist/useGetInfiniteSpotImages';
 import { useInView } from 'react-intersection-observer';
+import useGetInfiniteReveiws from '../../hooks/tourist/useGetInfiniteReveiws';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -47,9 +48,11 @@ export default function SearchDetailPage() {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [spotDetailData, setSpotDetailData] = useState<SpotDetail | null>(null);
+  const [isLoadingDetailData, setIsLoadingDetailData] = useState(false);
 
   useEffect(() => {
     const fetchSpotDetailData = async () => {
+      setIsLoadingDetailData(true);
       try {
         const res = await getTouristDetail(contentId, contentTypeId);
 
@@ -59,6 +62,8 @@ export default function SearchDetailPage() {
       } catch (e) {
         console.log(e);
         toast.error('관광지 정보 로딩 실패! 잠시 후 다시 시도해주세용...');
+      } finally {
+        setIsLoadingDetailData(false);
       }
     };
 
@@ -69,20 +74,44 @@ export default function SearchDetailPage() {
     data: spotImages,
     isPending: isPendingImages,
     isError: isErrorImages,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
+    isFetching: isFetchingSpotImages,
+    hasNextPage: hasNextSpotImages,
+    fetchNextPage: fetchNextSpotImages,
   } = useGetInfiniteSpotImages(contentId);
 
-  const { ref: imageRef, inView } = useInView({
+  const { ref: imageRef, inView: imageInView } = useInView({
     threshold: 0,
   });
 
   useEffect(() => {
-    if (inView && !isFetching && hasNextPage) {
-      fetchNextPage();
+    if (imageInView && !isFetchingSpotImages && hasNextSpotImages) {
+      fetchNextSpotImages();
     }
-  }, [inView, isFetching, hasNextPage, fetchNextPage]);
+  }, [
+    imageInView,
+    isFetchingSpotImages,
+    hasNextSpotImages,
+    fetchNextSpotImages,
+  ]);
+
+  const {
+    data: reviews,
+    isFetching: isFetchingReviews,
+    hasNextPage: hasNextReviews,
+    isPending: isPendingReviews,
+    isError: isErrorReviews,
+    fetchNextPage: fetchNextReviews,
+  } = useGetInfiniteReveiws(contentId);
+
+  const { ref: reviewRef, inView: reviewInView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (reviewInView && !isFetchingReviews && hasNextReviews) {
+      fetchNextReviews();
+    }
+  }, [reviewInView, isFetchingReviews, hasNextReviews, fetchNextReviews]);
 
   const handleAddCart = async () => {
     if (!contentId) {
@@ -102,12 +131,12 @@ export default function SearchDetailPage() {
     }
   };
 
-  if (isPendingImages) {
+  if (isLoadingDetailData || isPendingImages || isPendingReviews) {
     // loading ui
     return <div>Loading...</div>;
   }
 
-  if (isErrorImages) {
+  if (isErrorImages || isErrorReviews) {
     return <div>Error!</div>;
   }
 
@@ -282,18 +311,28 @@ export default function SearchDetailPage() {
 
         {activeTab === '리뷰' && (
           <div className="flex flex-col items-start w-full flex-shrink-0">
-            {/*<h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-              <span className="text-[#F78938]">가람돌솥밥</span> 다녀오셨다면,
-            </h2>
-            <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-              짧은 리뷰로 여행의 기억을 남겨보세요!
-            </h2>
-            <button
-              className="mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
-            >
-              리뷰 쓰기
-            </button>*/}
-            <ReviewStats />
+            <div className="w-full pb-6 border-b-8 border-[#F5F5F5]">
+              <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+                <span className="text-[#F78938]">가람돌솥밥</span> 다녀오셨다면,
+              </h2>
+              <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+                짧은 리뷰로 여행의 기억을 남겨보세요!
+              </h2>
+              <button className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]">
+                리뷰 쓰기
+              </button>
+            </div>
+            {reviews.pages.flatMap((page) => {
+              const reviewStats = page.result.spotAgg;
+              return (
+                <ReviewStats
+                  easy={reviewStats.easyPct}
+                  meduim={reviewStats.mediumPct}
+                  hard={reviewStats.hardPct}
+                  topTags={reviewStats.topTags}
+                />
+              );
+            })}
 
             {!showAllReviews && (
               <button
@@ -306,7 +345,16 @@ export default function SearchDetailPage() {
               </button>
             )}
 
-            {showAllReviews && <ReviewList />}
+            {showAllReviews && (
+              <>
+                {reviews.pages.flatMap((page) => {
+                  const reivewList = page.result.reviews;
+
+                  return <ReviewList reviewList={reivewList} />;
+                })}
+                <div ref={reviewRef}></div>
+              </>
+            )}
           </div>
         )}
 

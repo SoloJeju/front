@@ -1,4 +1,4 @@
-import type { CommonResponse } from './common';
+import type { CommonCursorResponse, CommonResponse } from './common';
 
 export type GetTouristSpotsParams = {
   page?: number;
@@ -103,7 +103,7 @@ export type SpotChatRoom = {
   roomId: number;
   title: string;
   description: string;
-  spotContentId: number;
+  isCompleted: boolean;
   spotName: string;
   spotImage: string;
   currentParticipants: number;
@@ -141,15 +141,12 @@ export type SpotReview = {
   text: string;
   difficulty: string;
   rating: number;
-  createdAt: string;
+  createdAt: Date;
 };
 
-export type ResponseSpotReviewDto = CommonResponse<{
+export type ResponseSpotReviewDto = CommonCursorResponse<{
   spotAgg: SpotAgg;
   reviews: SpotReview[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
 }>;
 
 // 관광지 사진 리스트
