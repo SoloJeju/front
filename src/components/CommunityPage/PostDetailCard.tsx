@@ -174,7 +174,7 @@ const PostDetailCard = ({
           pre={pre}
           all={all}
           imageUrl={chatRoomImage}
-          iamgeName={chatRoomImageName}
+          imageName={chatRoomImageName}
           gender={gender}
         />
       )}

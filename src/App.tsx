@@ -79,7 +79,6 @@ const publicRoutes: RouteObject[] = [
       { path: 'search-detail/:placeId', element: <SearchDetailPage /> },
 
       { path: 'community', element: <CommunityPage /> },
-      { path: 'community/:postId', element: <PostDetailPage /> },
 
       { path: 'report/:id', element: <ReportDetailPage /> },
       { path: 'inquiry/:id', element: <InquiryDetailPage /> },

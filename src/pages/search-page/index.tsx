@@ -41,8 +41,12 @@ const SearchPage = () => {
     return () => observer.disconnect();
   }, [loader, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
-  const handleCardClick = (id: string) => {
-    navigate(`/search-detail/${id}`);
+  const handleCardClick = (id: string, typeId: string) => {
+    navigate(`/search-detail/${id}`, {
+      state: {
+        contentTypeId: typeId,
+      },
+    });
   };
   // 로딩 스피너 만들어!!!!
   if (isLoading) return <div className="text-center p-4">로딩 중...</div>;

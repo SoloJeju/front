@@ -12,11 +12,11 @@ type RoomCardProps = {
   pre: number | undefined;
   all: number | undefined;
   imageUrl?: string | undefined;
-  iamgeName?: string | undefined;
+  imageName?: string | undefined;
   gender?: string | null;
   hasUnreadMessages?: boolean;
   unreadCount?: number; // 읽지 않은 메시지 개수
-  from?: 'home' | 'mypage'; // 어디서 왔는지 구분
+  from?: 'home' | 'mypage' | 'community'; // 어디서 왔는지 구분
 };
 
 const RoomCard = ({
@@ -28,7 +28,7 @@ const RoomCard = ({
   pre,
   all,
   imageUrl,
-  iamgeName,
+  imageName,
   gender,
   hasUnreadMessages
 }: RoomCardProps) => {
@@ -135,7 +135,7 @@ const RoomCard = ({
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt={iamgeName}
+            alt={imageName}
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

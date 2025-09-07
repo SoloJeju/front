@@ -67,10 +67,10 @@ function EyeAdornment({
 }
 
 const LoginPage = () => {
-  const { updateToken } = useFCM();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
+  const { updateToken } = useFCM();
 
   const { executeLogin, isLoggingIn } = useLogin({
     onAfterSuccess: async () => {
