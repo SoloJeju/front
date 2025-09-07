@@ -78,15 +78,13 @@ const [isCompleting, setIsCompleting] = useState(false);
       } else {
         alert(res.message || '채팅방 삭제에 실패했습니다.');
       }
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error(e);
-
-        const msg =
-          e?.response?.data?.message ||
-          '채팅방 삭제 중 알 수 없는 오류가 발생했습니다.';
-
+        const err = e as { response?: { data?: { message?: string } } };
+        const msg = err.response?.data?.message || '...';
         alert(msg);
       }
+
 
   }, [roomId, queryClient, navigate, onDeleteRoom]);
 
@@ -106,9 +104,10 @@ const [isCompleting, setIsCompleting] = useState(false);
       } else {
         alert(res.message || '모집 완료 처리에 실패했습니다.');
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      const msg = e?.response?.data?.message || '모집 완료 처리 중 알 수 없는 오류가 발생했습니다.';
+      const err = e as { response?: { data?: { message?: string } } };
+      const msg = err.response?.data?.message || '모집 완료 처리 중 알 수 없는 오류가 발생했습니다.';
       alert(msg);
     } finally {
       setIsCompleting(false);

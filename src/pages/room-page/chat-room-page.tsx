@@ -45,7 +45,7 @@ const [kb, setKb] = useState(0);
 
 // 모바일 키보드 높이 감지 (작은 변동 무시)
 useEffect(() => {
-  const vv = (window as any).visualViewport;
+  const vv = (window as Window & typeof globalThis & { visualViewport?: VisualViewport }).visualViewport;
   if (!vv) return;
 
   const onResize = () => {

@@ -82,9 +82,11 @@ export default function RoomPage() {
             alert(res.message || '채팅방 입장에 실패했습니다.');
         }
       }
-    } catch (error: any) {
-      console.error('채팅방 입장 API 오류:', error);
-      const code = error?.response?.data?.code as string | undefined;
+   } catch (error: unknown) {
+  console.error('채팅방 입장 API 오류:', error);
+  const err = error as { response?: { data?: { code?: string } } };
+  const code = err.response?.data?.code;
+
       switch (code) {
         case 'CHAT4002':
         case 'CHAT4004':
