@@ -5,6 +5,7 @@ import Button from '../../components/common/Button';
 import logoImage from '../../assets/logo-sernam.svg';
 import kakaoLogo from '../../assets/kakao.svg';
 import { useLogin } from '../../hooks/auth/useLogin';
+import useFCM from '../../hooks/alarm/useFCM';
 
 // 아이토글
 function EyeAdornment({
@@ -69,6 +70,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
+  const { updateToken } = useFCM();
 
   const { executeLogin, isLoggingIn } = useLogin({
     onAfterSuccess: async () => {
