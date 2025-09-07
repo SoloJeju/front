@@ -7,7 +7,8 @@ import type {
   ChatRoomUsersResponseWrapper,
   JoinChatRoomResponseWrapper,
   SimpleResponse,
-  MyChatRoomListResponse
+  MyChatRoomListResponse,
+  ChatRoomDetailResponse
 } from '../types/chat';
 
 class ChatApiService {
@@ -78,6 +79,15 @@ class ChatApiService {
   async deleteChatRoom(roomId: number): Promise<SimpleResponse> {
     const response = await authAxios.delete(`/api/chatrooms/${roomId}`);
     return response.data;
+  }
+
+
+  async completeChatRoom(roomId: number): Promise<SimpleResponse> {
+    return authAxios.patch(`/api/chatrooms/${roomId}/complete`).then(response => response.data);
+  }
+
+  async detailChatRoom(roomId: number): Promise<ChatRoomDetailResponse> {
+    return authAxios.get(`/api/chatrooms/${roomId}`).then(response => response.data);
   }
 }
 

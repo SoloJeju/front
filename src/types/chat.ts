@@ -70,6 +70,27 @@ export interface ChatRoomResponse {
   result: ChatRoom;
 }
 
+// 채팅방 상세조회 응답
+export interface ChatRoomDetailResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    chatRoomId: number;
+    title: string;
+    description: string;
+    joinDate: string;
+    currentMembers: number;
+    maxMembers: number | null;
+    isCompleted: boolean;
+    hasUnreadMessages: boolean | null;
+    genderRestriction: string;
+    touristSpotImage: string;
+    spotName: string;
+  }
+}
+
+
 // 채팅방 목록 응답
 export interface ChatRoomListResponse {
   isSuccess: boolean;
