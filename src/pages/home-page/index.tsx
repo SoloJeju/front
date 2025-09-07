@@ -305,7 +305,6 @@ export default function HomePage() {
                 all={room.maxParticipants}
                 imageUrl={room.spotImage}
                 gender={room.genderRestriction}
-                from="home"
               />
             ))}
           </div>

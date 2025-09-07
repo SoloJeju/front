@@ -34,7 +34,7 @@ const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { nickname, type, profileImage } = useProfileStore();
+  const { nickName, userType, profileImage } = useProfileStore();
   const { data: unreadMessagesData } = useUnreadMessages();
   const hasUnreadMessages = unreadMessagesData?.result;
 
@@ -59,33 +59,36 @@ const MyPage = () => {
 
       // 로그아웃 API 호출
       await logout();
-      
+
       // 로컬 스토리지 정리
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      
+
       // 프로필 스토어 초기화
       useProfileStore.getState().reset();
-      
+
       // 성공 메시지 표시
       toast.success('로그아웃되었습니다.');
-      
+
       // 로그인 페이지로 이동
       closeLogout();
       navigate('/login');
     } catch (error: unknown) {
       // API 호출 실패 시에도 로컬 정리 후 로그인 페이지로 이동
       console.error('로그아웃 API 실패, 로컬 정리 후 이동:', error);
-      
+
       // 사용자에게 구체적인 에러 메시지 표시
-      const errorMessage = error instanceof Error ? error.message : '로그아웃 중 오류가 발생했습니다.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '로그아웃 중 오류가 발생했습니다.';
       toast.error(errorMessage);
-      
+
       // 로컬 데이터 정리
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       useProfileStore.getState().reset();
-      
+
       closeLogout();
       navigate('/login');
     } finally {
@@ -136,10 +139,10 @@ const MyPage = () => {
             />
           </div>
           <span className="text-[13px] text-white/90 tracking-[-0.02em]">
-            {type || '감성 여유형 여행자'}
+            {userType || '감성 여유형 여행자'}
           </span>
           <h2 className="mt-0.5 text-[20px] font-semibold text-white">
-            {nickname || '홍길동'}
+            {nickName || '홍길동'}
           </h2>
         </div>
 
@@ -219,7 +222,7 @@ const MyPage = () => {
           </MenuItem>
         </section>
       </main>
-      
+
       <LogoutModal
         open={logoutOpen}
         onClose={closeLogout}
@@ -231,9 +234,6 @@ const MyPage = () => {
         onClose={closeDelete}
         onConfirm={handleDeleteConfirm}
       />
-
-
-
     </div>
   );
 };

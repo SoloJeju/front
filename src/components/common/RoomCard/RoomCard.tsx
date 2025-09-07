@@ -30,14 +30,13 @@ const RoomCard = ({
   imageUrl,
   imageName,
   gender,
-  hasUnreadMessages,
-  from = 'mypage', // 기본값은 마이페이지
+  hasUnreadMessages
 }: RoomCardProps) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
     // from 파라미터를 추가하여 어디서 왔는지 구분
-    navigate(`/room/${id}?from=${from}`);
+    navigate(`/room/${id}`);
   };
 
   return (
