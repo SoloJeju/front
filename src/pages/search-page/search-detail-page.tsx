@@ -333,9 +333,12 @@ export default function SearchDetailPage() {
               <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
                 짧은 리뷰로 여행의 기억을 남겨보세요!
               </h2>
-              <button className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]" onClick={() => {
-                navigate(`/write-review`)
-              }}>
+              <button
+                className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
+                onClick={() => {
+                  navigate(`/write-review`);
+                }}
+              >
                 리뷰 쓰기
               </button>
             </div>

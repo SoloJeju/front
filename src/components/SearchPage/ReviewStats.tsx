@@ -1,14 +1,4 @@
-// const difficultyData = {
-//   EASY: 73,
-//   NORMAL: 20,
-//   HARD: 7,
-// };
-
-// const pointsData = [
-//   { label: '직원이 친절해요', emoji: '😊', value: 80 },
-//   { label: '가성비가 좋아요', emoji: '💸', value: 65 },
-//   { label: '혼밥하기 좋아요', emoji: '🍚', value: 98 },
-// ];
+import { getReveiwText } from '../../utils/getReviewText';
 
 const colors = ['#FAA14B', '#F7C999', '#F78938'];
 
@@ -30,6 +20,8 @@ export default function ReviewStats({
   hard,
   topTags,
 }: ReviewStatsProps) {
+  const reviewText = getReveiwText({ easy, normal: meduim, hard });
+
   return (
     <div className="flex-col items-start w-full flex-shrink-0 pt-6">
       <div>
@@ -49,9 +41,9 @@ export default function ReviewStats({
           </div>
         </div>
         <h4 className="mt-2 font-[Pretendard] text-[14px] font-not-italic leading-[20px] tracking-[-0.36px]">
-          {easy}%의 혼놀인들이 EASY를 택했어요 🌱
+          {reviewText?.[0]}
           <br />
-          혼자여도 전혀 부담 없는 곳이에요!
+          {reviewText?.[1]}
         </h4>
       </div>
 
@@ -66,17 +58,15 @@ export default function ReviewStats({
               className="w-full h-[48px] flex-shrink-0 border border-gray-300 rounded-xl relative flex items-center"
             >
               <div
-                className="h-full bg-orange-500 flex items-center px-2 rounded-xl text-[#262626] font-[Pretendard] text-[16px] not-italic font-medium leading-[16px]"
+                className="h-full bg-orange-500 flex items-center px-2 rounded-xl text-[#262626] font-[Pretendard] text-[12px] not-italic font-medium leading-[16px] break-keep"
                 style={{
                   width: `${tag.pct}%`,
                   backgroundColor: colors[tag.tagCode % colors.length],
                 }}
               >
-                <span className="flex items-center gap-1">
-                  {tag.tagCode} {tag.label}
-                </span>
+                <span className="flex items-center gap-1">{tag.label}</span>
               </div>
-              <span className="absolute right-2 text-[#262626] font-[Pretendard] text-[16px] not-italic font-medium leading-[16px]">
+              <span className="absolute right-2 text-[#262626] font-[Pretendard] text-[14px] not-italic font-medium leading-[16px]">
                 {tag.pct}%
               </span>
             </div>

@@ -14,6 +14,7 @@ type ReviewCardProps = {
   profile?: string;
   images?: string[];
   receipt?: string;
+  rating: number;
 };
 
 // 레벨별 아이콘 매핑
@@ -33,16 +34,15 @@ export default function ReviewCard({
   profile,
   images,
   receipt,
+  rating,
 }: ReviewCardProps) {
   const LevelIcon = levelIcon[level];
-
-  const rating = 4.5;
 
   const Star = Math.floor(rating);
   const StarEmpty = 5 - Star;
 
   return (
-    <div className="rounded-[12px] border border-[#D9D9D9] shadow-[0_2px_4px_rgba(0,0,0,0.1)] p-4 bg-white w-full">
+    <div className="w-full rounded-[12px] border border-[#D9D9D9] shadow-[0_2px_4px_rgba(0,0,0,0.1)] p-4 bg-white">
       <div className="flex items-center justify-between w-full mb-2">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8">

@@ -44,7 +44,7 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
   const StarEmpty = 5 - Star;
 
   return (
-    <div className="flex flex-col gap-4 mt-8">
+    <div className="w-full flex flex-col gap-4 mt-8">
       <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
         리뷰
       </h2>
@@ -61,17 +61,20 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
           ))}
         </div>
       </div>
-      {reviewList.map((review, idx) => (
-        <ReviewCard
-          key={idx}
-          user={review.userNickname}
-          date={review.createdAt}
-          level={review.difficulty}
-          content={review.text}
-          profile={review.userProfileImageUrl}
-          images={review.imageUrls}
-        />
-      ))}
+      <div className="w-full pb-3">
+        {reviewList.map((review, idx) => (
+          <ReviewCard
+            key={idx}
+            user={review.userNickname}
+            date={review.createdAt}
+            level={review.difficulty}
+            rating={review.rating}
+            content={review.text}
+            profile={review.userProfileImageUrl}
+            images={review.imageUrls}
+          />
+        ))}
+      </div>
     </div>
   );
 }
