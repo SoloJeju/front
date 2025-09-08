@@ -12,7 +12,7 @@ type Place = {
 
 type SpotDetail = PlanDetailResponse['result']['days'][0]['spots'][0];
 
-type DayPlan = {
+export type DayPlan = {
   dayIndex: number;
   date: string;
   spots: { contentId: number; spotName: string }[];
@@ -34,7 +34,7 @@ type PlanStore = {
   setDateRange: (range: { start: string | null; end: string | null }) => void;
   setSelectedTransport: (transport: 'WALK' | 'CAR' | 'BUS' | 'TAXI' | 'TRAIN' | 'BICYCLE' | null) => void;
   setPlanType: (type: 'ai' | 'manual' | null) => void;
-  setDayPlans: (plans: DayPlan[]) => void;
+  setDayPlans: (plans: DayPlan[] | ((prevState: DayPlan[]) => DayPlan[])) => void;
   
   updateSpot: (dayIndex: number, locationId: number, newSpotData: SpotDetail) => void;
   updateSpotTime: (dayIndex: number, locationId: number, newTimes: { arrivalDate: string; duringDate: string }) => void;
@@ -72,7 +72,9 @@ export const usePlanStore = create<PlanStore>((set) => ({
   setDateRange: (dateRange) => set({ dateRange }),
   setSelectedTransport: (selectedTransport) => set({ selectedTransport }),
   setPlanType: (planType) => set({ planType }),
-  setDayPlans: (dayPlans) => set({ dayPlans }),
+  setDayPlans: (plans) => set((state) => ({ 
+    dayPlans: typeof plans === 'function' ? plans(state.dayPlans) : plans 
+  })),
 
   addPlace: (place) => set((state) => ({ selectedPlaces: [...state.selectedPlaces, place] })),
   removePlace: (contentId) =>

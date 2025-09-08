@@ -7,7 +7,8 @@ import CalendarIcon from '../../assets/calendar.svg?react';
 import PlusCircleIcon from '../../assets/EASY.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import { createPlan, createAIPlan } from '../../apis/plan';
-import { usePlanStore } from '../../stores/plan-store';
+import { usePlanStore, type DayPlan } from '../../stores/plan-store';
+import Modal from '../../components/common/Modal';
 
 dayjs.locale('ko');
 
@@ -30,6 +31,13 @@ const PlanPage = () => {
     resetPlan,
   } = usePlanStore();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isAddPlaceModalOpen, setIsAddPlaceModalOpen] = useState(false);
+  const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
+
+  const handleOpenAddPlaceModal = (dayIndex: number) => {
+    setCurrentDayIndex(dayIndex);
+    setIsAddPlaceModalOpen(true);
+  };
 
   const transports = [
     { display: '🚶‍♂️ 도보', value: 'WALK' },
@@ -61,25 +69,39 @@ const PlanPage = () => {
   }, [dateRange.start, dateRange.end, setDayPlans]);
   
   useEffect(() => {
-    if (selectedPlaces.length > 0 && dayPlans.length > 0) {
-      const lastPlace = selectedPlaces[selectedPlaces.length - 1];
-      if (!lastPlace.dayIndex) return;
+    if (selectedPlaces.length === 0 || dayPlans.length === 0) return;
 
-      const targetDayIndex = lastPlace.dayIndex;
+    const existingSpotIds = new Set(
+      dayPlans.flatMap(day => day.spots.map(spot => spot.contentId))
+    );
 
-      const targetDay = dayPlans.find(d => d.dayIndex === targetDayIndex);
-      const isAlreadyAdded = targetDay?.spots.some(s => s.contentId === lastPlace.contentId);
+    const newPlacesToAdd = selectedPlaces.filter(
+      place => !existingSpotIds.has(place.contentId)
+    );
 
-      if (!isAlreadyAdded) {
-        setDayPlans(
-          dayPlans.map(dayPlan => 
-            dayPlan.dayIndex === targetDayIndex
-              ? { ...dayPlan, spots: [...dayPlan.spots, { contentId: lastPlace.contentId, spotName: lastPlace.spotName }] }
-              : dayPlan
-          )
-        );
+    if (newPlacesToAdd.length === 0) return;
+
+    const placesByDay = newPlacesToAdd.reduce((acc, place) => {
+      if (place.dayIndex) {
+        if (!acc[place.dayIndex]) {
+          acc[place.dayIndex] = [];
+        }
+        acc[place.dayIndex].push({ contentId: place.contentId, spotName: place.spotName });
       }
-    }
+      return acc;
+    }, {} as Record<number, { contentId: number; spotName: string }[]>);
+
+    setDayPlans((currentDayPlans: DayPlan[]) =>
+      currentDayPlans.map(dayPlan => {
+        if (placesByDay[dayPlan.dayIndex]) {
+          return {
+            ...dayPlan,
+            spots: [...dayPlan.spots, ...placesByDay[dayPlan.dayIndex]],
+          };
+        }
+        return dayPlan;
+      })
+    );
   }, [selectedPlaces, setDayPlans]);
 
   const handleRemovePlace = (dayIndex: number, contentId: number) => {
@@ -219,7 +241,7 @@ const PlanPage = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => navigate('/search-box', { state: { from: '/plan', dayIndex: day.dayIndex } })}
+                      onClick={() => handleOpenAddPlaceModal(day.dayIndex)}
                       className="w-full flex items-center justify-center gap-2 text-[#F78937] border-2 border-dashed border-orange-300 rounded-lg py-2 hover:bg-orange-50 transition-colors"
                     >
                       <PlusCircleIcon className="w-5 h-5" />
@@ -275,6 +297,34 @@ const PlanPage = () => {
             <Calendar onSelect={handleDateSelect} />
           </div>
         </div>
+      )}
+
+      {isAddPlaceModalOpen && (
+        <Modal
+          title={`${currentDayIndex}일차에 장소 추가`}
+          onClose={() => setIsAddPlaceModalOpen(false)}
+        >
+          <div className="flex flex-row gap-3 my-4">
+            <button
+              onClick={() => {
+                navigate('/search-box', { state: { from: '/plan', dayIndex: currentDayIndex } });
+                setIsAddPlaceModalOpen(false);
+              }}
+              className="w-full py-3 text-white bg-[#F78938] rounded-lg"
+            >
+              새로운 장소 검색하기
+            </button>
+            <button
+              onClick={() => {
+                navigate('/cart', { state: { from: 'plan', dayIndex: currentDayIndex } });
+                setIsAddPlaceModalOpen(false);
+              }}
+              className="w-full py-3 text-[#F78938] bg-orange-100 rounded-lg"
+            >
+              내가 담은 장소에서 추가
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
   );
