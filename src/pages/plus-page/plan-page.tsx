@@ -92,7 +92,6 @@ const PlanPage = () => {
       setDateRange({ start, end });
     }
     setIsCalendarOpen(false);
-    setIsCalendarOpen(false);
   };
 
   const handleCreatePlan = async () => {

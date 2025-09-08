@@ -8,6 +8,7 @@ import CloseIcon from '../../assets/closeIcon.svg?react';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import { useCreateRoomStore } from '../../stores/createroom-store';
 import { useWriteReviewStore } from '../../stores/writereview-store';
+import { usePlanStore } from '../../stores/plan-store';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const SearchBoxPage = () => {
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
+
+  const { addPlace } = usePlanStore();
 
   const removeHistoryItem = (item: string) => {
     setSearchHistory((prev) => prev.filter((history) => history !== item));
@@ -59,11 +62,17 @@ const SearchBoxPage = () => {
 
     const { from, dayIndex, locationIdToReplace, mode } = location.state || {};
 
-    console.log('Card clicked:', { spot: spot.title, from, dayIndex, locationIdToReplace, mode });
+    if (from === '/plan') {
+        addPlace({
+            contentId: Number(spot.contentid),
+            spotName: spot.title,
+            dayIndex: dayIndex,
+        });
+        navigate(from);
+        return;
+    }
 
     if (from?.startsWith('/plan/')) {
-      console.log('Navigating back to plan page with spot data');
-      
       if (mode === 'replace') {
         navigate(from, {
           state: {
