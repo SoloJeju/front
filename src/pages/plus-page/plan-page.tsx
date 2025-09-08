@@ -9,6 +9,8 @@ import CloseIcon from '../../assets/closeIcon.svg?react';
 import { createPlan, createAIPlan } from '../../apis/plan';
 import { usePlanStore, type DayPlan } from '../../stores/plan-store';
 import Modal from '../../components/common/Modal';
+import CartIcon from '../../assets/cartAdd.svg?react';
+import SearchIcon from '../../assets/searchIcon.svg?react';
 
 dayjs.locale('ko');
 
@@ -33,6 +35,7 @@ const PlanPage = () => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isAddPlaceModalOpen, setIsAddPlaceModalOpen] = useState(false);
   const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenAddPlaceModal = (dayIndex: number) => {
     setCurrentDayIndex(dayIndex);
@@ -122,6 +125,8 @@ const PlanPage = () => {
       return;
     }
     
+  setIsLoading(true);
+  try {
     if (planType === 'manual') {
       const formattedDays = dayPlans.map(dayPlan => ({
         dayIndex: dayPlan.dayIndex,
@@ -134,7 +139,6 @@ const PlanPage = () => {
         }))
       }));
 
-      try {
         const res = await createPlan({
           title,
           transportType: selectedTransport,
@@ -144,28 +148,24 @@ const PlanPage = () => {
         });
         navigate(`/plan/${res.result.planId}`);
         resetPlan();
-      } catch (error) {
-        console.error("Plan creation failed:", error);
-        alert("계획 생성에 실패했습니다.");
-      }
     } else {
       const allContentIds = dayPlans.flatMap(day => day.spots.map(spot => spot.contentId));
-      try {
-        const res = await createAIPlan({
-          title: title,
-          transportType: selectedTransport,
-          startDate: `${dateRange.start}T00:00:00`,
-          endDate: `${dateRange.end}T23:59:59`,
-          contentIds: allContentIds
-        });
-        navigate(`/plan/${res.result.planId}`);
-        resetPlan(); 
-      } catch (error) {
-        console.error("AI Plan creation failed:", error);
-        alert("AI 계획 생성에 실패했습니다.");
-      }
+      const res = await createAIPlan({
+        title: title,
+        transportType: selectedTransport,
+        startDate: `${dateRange.start}T00:00:00`,
+        endDate: `${dateRange.end}T23:59:59`,
+        contentIds: allContentIds
+      });
+      navigate('/plan/ai-plan', { state: { aiPlanData: res.result}});
+      resetPlan(); 
     }
-  };
+  } catch (error) {
+     console.error("AI Plan creation failed:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const formattedDateRange = dateRange.start && dateRange.end
     ? `${dayjs(dateRange.start).format('YYYY. MM. DD (ddd)')} ~ ${dayjs(dateRange.end).format('YYYY. MM. DD (ddd)')}`
@@ -173,6 +173,11 @@ const PlanPage = () => {
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 z-[100] flex justify-center items-center">
+          <div className="text-white text-xl">AI가 열심히 계획을 짜고 있어요...🍊</div>
+        </div>
+      )}
       <div className="w-full max-w-[480px] pb-24">
         <div className="flex flex-col gap-6 p-4 font-['Pretendard']">
           <div>
@@ -304,24 +309,26 @@ const PlanPage = () => {
           title={`${currentDayIndex}일차에 장소 추가`}
           onClose={() => setIsAddPlaceModalOpen(false)}
         >
-          <div className="flex flex-row gap-3 my-4">
+          <div className="flex flex-row gap-3">
             <button
               onClick={() => {
                 navigate('/search-box', { state: { from: '/plan', dayIndex: currentDayIndex } });
                 setIsAddPlaceModalOpen(false);
               }}
-              className="w-full py-3 text-white bg-[#F78938] rounded-lg"
+              className="flex-1 min-w-0 px-4 py-3 bg-[#F78938] text-white rounded-lg flex flex-col items-center justify-center gap-1"
             >
-              새로운 장소 검색하기
+              <SearchIcon className="10.5 h-10.5" />
+              <span className="text-sm font-medium text-center truncate">새로운 장소 검색</span>
             </button>
             <button
               onClick={() => {
                 navigate('/cart', { state: { from: 'plan', dayIndex: currentDayIndex } });
                 setIsAddPlaceModalOpen(false);
               }}
-              className="w-full py-3 text-[#F78938] bg-orange-100 rounded-lg"
+              className="flex-1 min-w-0 px-4 py-3 bg-orange-100 text-[#F78938] rounded-lg flex flex-col items-center justify-center gap-1"
             >
-              내가 담은 장소에서 추가
+              <CartIcon/>
+              <span className="text-sm font-medium text-center truncate">내가 담은 장소 추가</span>
             </button>
           </div>
         </Modal>

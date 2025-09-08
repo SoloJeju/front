@@ -1,7 +1,7 @@
 export type Spot = {
   arrivalDate: string
   duringDate: string
-  contentId: number
+  contentId: number|null
   title: string
   memo: string
 }
