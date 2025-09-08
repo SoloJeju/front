@@ -17,7 +17,7 @@ const CartPage = () => {
       try {
         const data = await getCartList();
         if (data.isSuccess) {
-          setPlaces(data.result.items);
+          setPlaces(data.result.list ?? []);
         } else {
           alert(data.message);
         }
@@ -44,7 +44,7 @@ const CartPage = () => {
     if (selectedItems.length === places.length) {
       setSelectedItems([]); 
     } else {
-      setSelectedItems(places.map((place) => place.cartId));
+      setSelectedItems(places.map((place) => place.contentid));
     }
   };
 
@@ -53,7 +53,7 @@ const CartPage = () => {
       const response = await bulkDeleteCart(selectedItems);
       if (response.isSuccess) {
         setPlaces((prev) =>
-          prev.filter((place) => !selectedItems.includes(place.cartId)),
+          prev.filter((place) => !selectedItems.includes(place.contentid)),
         );
         setSelectedItems([]);
         setIsEditMode(false);

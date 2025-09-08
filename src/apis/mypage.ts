@@ -1,6 +1,6 @@
 import { authAxios } from './axios';
 import type { ResponseMyChatRoomsDto } from '../types/home';
-import type { UpdateProfileRequest, UpdateProfileResponse } from '../types/mypage';
+import type { ResponseMyPlansDto, UpdateProfileRequest, UpdateProfileResponse } from '../types/mypage';
 import type { ResponseMyInfoDto } from '../types/user';
 
 
@@ -45,5 +45,19 @@ export const updateMyProfile = async (body: UpdateProfileRequest) => {
     '/api/mypage/profile',
     body
   );
+  return data;
+};
+
+export const getMyPlans = async (
+  cursor?: string,
+  page?: number,
+  size?: number
+): Promise<ResponseMyPlansDto> => {
+  const params = new URLSearchParams();
+  if (cursor) params.append('cursor', cursor);
+  if (page !== undefined) params.append('page', page.toString());
+  if (size !== undefined) params.append('size', size.toString());
+
+  const { data } = await authAxios.get(`/api/mypage/plans?${params.toString()}`);
   return data;
 };
