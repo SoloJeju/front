@@ -8,7 +8,7 @@ const PlaceCard = ({
   imageUrl,
   title,
   location,
-  hasCompanionRoom,
+  companionRoomCount,
   tel,
   comment,
   difficulty,
@@ -43,7 +43,7 @@ const PlaceCard = ({
             {title}
           </h2>
           {IconComponent && <IconComponent className="w-4 h-4" />}
-          {hasCompanionRoom && <WithIcon className="w-4 h-4 text-[#F78938]" />}
+          {companionRoomCount>0 && <WithIcon className="w-4 h-4 text-[#F78938]" />}
           {difficulty && (
             <span
               className={`px-1 py-0.5 font-bold text-[10px] rounded-sm ${

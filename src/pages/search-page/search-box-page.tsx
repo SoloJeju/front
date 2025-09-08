@@ -8,26 +8,17 @@ import CloseIcon from '../../assets/closeIcon.svg?react';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import { useCreateRoomStore } from '../../stores/createroom-store';
 import { useWriteReviewStore } from '../../stores/writereview-store';
+import { usePlanStore } from '../../stores/plan-store';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from;
-  const createRoomStore = useCreateRoomStore();
-  const writeReviewStore = useWriteReviewStore();
-  const [searchHistory, setSearchHistory] = useState<string[]>([
-    '돌솥밥',
-    '고등어 덮밥',
-    '바다가 보이는 집',
-    '성산 일출봉',
-    '돌돔솥밥',
-    '돌돌돌돌솥밥',
-    '돌돌돌돌돌솥밥',
-    '돌돌돌돌돌돌돌솥밥'
-  ]);
+  const [searchHistory, setSearchHistory] = useState<string[]>(['돌솥밥', '고등어 덮밥', '바다가 보이는 집', '성산 일출봉']);
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
+
+  const { addPlace } = usePlanStore();
 
   const removeHistoryItem = (item: string) => {
     setSearchHistory((prev) => prev.filter((history) => history !== item));
@@ -69,25 +60,59 @@ const SearchBoxPage = () => {
     const spot = searchResults.find((s) => s.contentid === id);
     if (!spot) return;
 
-    const returnPages = ['/create-room', '/write-review', '/plan'];
+    const { from, dayIndex, locationIdToReplace, mode } = location.state || {};
 
-    if (returnPages.includes(from)) {
-      if (from === '/create-room') {
-        createRoomStore.setFormData({
-          contentId: Number(spot.contentid),
-          spotName: spot.title,
+    if (from === '/plan') {
+        addPlace({
+            contentId: Number(spot.contentid),
+            spotName: spot.title,
+            dayIndex: dayIndex,
         });
-      } else if (from === '/write-review') {
-        writeReviewStore.setFormData({
-          contentId: Number(spot.contentid),
-          spotName: spot.title,
-          contentTypeId: Number(spot.contenttypeid),
+        navigate(from);
+        return;
+    }
+
+    if (from?.startsWith('/plan/')) {
+      if (mode === 'replace') {
+        navigate(from, {
+          state: {
+            selectedSpotForReplacement: spot,
+            dayIndex,
+            locationIdToReplace,
+            mode: 'replace',
+          },
+        });
+      } else if (mode === 'add') {
+        navigate(from, {
+          state: {
+            selectedSpotForReplacement: spot,
+            dayIndex,
+            mode: 'add',
+          },
         });
       }
-      navigate(from);
-    } else {
-      navigate(`/search-detail/${spot.contentid}`);
+      return;
     }
+
+    if (from === '/create-room') {
+      useCreateRoomStore.getState().setFormData({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+      });
+      navigate(from);
+      return;
+    }
+
+    if (from === '/write-review') {
+      useWriteReviewStore.getState().setFormData({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+        contentTypeId: Number(spot.contenttypeid),
+      });
+      navigate(from);
+      return;
+    }
+    navigate(`/search-detail/${spot.contentid}`);
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -136,17 +161,24 @@ const SearchBoxPage = () => {
             <p className="text-black text-base font-semibold mb-4">최근 검색어</p>
             <ul className="flex flex-col gap-3">
               {searchHistory.map((item, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between pb-1"
-              >
-                <span className="text-sm text-[#5D5D5D] cursor-pointer" 
-                onClick={() => handleHistoryClick(item)}>{item}</span>
-                <button onClick={() => removeHistoryItem(item)}>
-                  <CloseIcon className="w-4 h-4 text-[#F78938]" />
-                </button>
-              </li>
-            ))}
+                <li
+                  key={index}
+                  className="flex items-center justify-between pb-1"
+                  onClick={() => handleHistoryClick(item)}
+                >
+                  <span className="text-sm text-[#5D5D5D] cursor-pointer">{item}</span>
+                  <button
+                    type="button"
+                    className="w-4 h-4 flex items-center justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeHistoryItem(item);
+                    }}
+                  >
+                    <CloseIcon />
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         ) : (

@@ -18,11 +18,11 @@ const PlaceCardList = ({
     <div className="flex flex-col gap-2">
       {places.map((place) => (
         <PlaceCard
-          key={place.cartId}
+          key={place.contentid}
           {...place}
           isEditMode={isEditMode}
-          isSelected={selectedItems.includes(place.cartId)}
-          onSelectToggle={() => onSelectToggle(place.cartId)}
+          isSelected={selectedItems.includes(place.contentid)}
+          onSelectToggle={() => onSelectToggle(place.contentid)}
         />
       ))}
     </div>

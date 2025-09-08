@@ -17,3 +17,18 @@ export type UpdateProfilePayload = {
 };
 
 export type UpdateProfileResponse = CommonResponse<UpdateProfilePayload>;
+
+export type PlanItem = {
+  planId: number;
+  title: string;
+  transportType: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+};
+
+export type ResponseMyPlansDto = CommonResponse<{
+  content: PlanItem[];
+  totalElements: number;
+  totalPages: number;
+}>;
