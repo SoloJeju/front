@@ -9,47 +9,41 @@ import PlaceList from '../../components/SearchPage/PlaceList';
 import { useCreateRoomStore } from '../../stores/createroom-store';
 import { useWriteReviewStore } from '../../stores/writereview-store';
 import { usePlanStore } from '../../stores/plan-store';
+import { useSearchHistory } from '../../hooks/tourist/useSearchHistory';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchHistory, setSearchHistory] = useState<string[]>(['돌솥밥', '고등어 덮밥', '바다가 보이는 집', '성산 일출봉']);
+  const { addPlace } = usePlanStore();
+  const { searchHistory, updateHistory, removeHistoryItem } = useSearchHistory(10);
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
 
-  const { addPlace } = usePlanStore();
-
-  const removeHistoryItem = (item: string) => {
-    setSearchHistory((prev) => prev.filter((history) => history !== item));
-  };
-
   const handleSearch = async () => {
     if (!searchInput.trim()) return;
-
-    setSearchHistory((prev) => [searchInput, ...prev.filter((h) => h !== searchInput)]);
+    updateHistory(searchInput);
 
     try {
       const response = await getTouristSearch(searchInput);
-      if (response.isSuccess) {
-        const processedSpots: TouristSpot[] = response.result.list.map((spot) => ({
-          contentid: String(spot.contentid),
-          contenttypeid: String(spot.contenttypeid),
-          title: spot.title,
-          addr1: spot.addr1 ?? '',
-          firstimage: spot.firstimage,
-          hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
-          companionRoomCount: spot.companionRoomCount ?? 0,
-          difficulty: spot.difficulty,
-          reviewTags: spot.reviewTags ? JSON.parse(spot.reviewTags) : null,
-          mapx: '',
-          mapy: '',
-          averageRating: null,
-        }));
-        setSearchResults(processedSpots);
-      } else {
-        setSearchResults([]);
-      }
+      setSearchResults(
+        response.isSuccess
+          ? response.result.list.map((spot) => ({
+              contentid: String(spot.contentid),
+              contenttypeid: String(spot.contenttypeid),
+              title: spot.title,
+              addr1: spot.addr1 ?? '',
+              firstimage: spot.firstimage,
+              hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
+              companionRoomCount: spot.companionRoomCount ?? 0,
+              difficulty: spot.difficulty,
+              reviewTags: spot.reviewTags ? JSON.parse(spot.reviewTags) : null,
+              mapx: '',
+              mapy: '',
+              averageRating: null,
+            }))
+          : []
+      );
     } catch {
       setSearchResults([]);
     }
@@ -63,35 +57,19 @@ const SearchBoxPage = () => {
     const { from, dayIndex, locationIdToReplace, mode } = location.state || {};
 
     if (from === '/plan') {
-        addPlace({
-            contentId: Number(spot.contentid),
-            spotName: spot.title,
-            dayIndex: dayIndex,
-        });
-        navigate(from);
-        return;
+      addPlace({ contentId: Number(spot.contentid), spotName: spot.title, dayIndex });
+      return navigate(from);
     }
 
     if (from?.startsWith('/plan/')) {
-      if (mode === 'replace') {
-        navigate(from, {
-          state: {
-            selectedSpotForReplacement: spot,
-            dayIndex,
-            locationIdToReplace,
-            mode: 'replace',
-          },
-        });
-      } else if (mode === 'add') {
-        navigate(from, {
-          state: {
-            selectedSpotForReplacement: spot,
-            dayIndex,
-            mode: 'add',
-          },
-        });
-      }
-      return;
+      return navigate(from, {
+        state: {
+          selectedSpotForReplacement: spot,
+          dayIndex,
+          locationIdToReplace,
+          mode,
+        },
+      });
     }
 
     if (from === '/create-room') {
@@ -99,8 +77,7 @@ const SearchBoxPage = () => {
         contentId: Number(spot.contentid),
         spotName: spot.title,
       });
-      navigate(from);
-      return;
+      return navigate(from);
     }
 
     if (from === '/write-review') {
@@ -109,24 +86,13 @@ const SearchBoxPage = () => {
         spotName: spot.title,
         contentTypeId: Number(spot.contenttypeid),
       });
-      navigate(from);
-      return;
+      return navigate(from);
     }
     navigate(`/search-detail/${spot.contentid}`);
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleHistoryClick = (item: string) => {
-    setSearchInput(item);
-    handleSearch();
-  };
-  const handleClickBack = () => {
-    navigate(-1);
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
@@ -136,8 +102,7 @@ const SearchBoxPage = () => {
           <button
             type="button"
             className="cursor-pointer w-6 h-6 z-20"
-            onClick={handleClickBack}
-          >
+            onClick={() => navigate(-1)}>
             <BackIcon/>
           </button>
           <div className="flex-1 h-[40px] flex items-center border border-[#F78938] rounded-[20px] bg-[#FFFFFD] px-4">
@@ -152,8 +117,7 @@ const SearchBoxPage = () => {
           </div>
           <SearchIcon
             className="w-[30px] h-[30px] text-[#F78938] cursor-pointer"
-            onClick={handleSearch}
-          />
+            onClick={handleSearch} />
         </div>
 
         {!isAfterSearch ? (
@@ -164,7 +128,10 @@ const SearchBoxPage = () => {
                 <li
                   key={index}
                   className="flex items-center justify-between pb-1"
-                  onClick={() => handleHistoryClick(item)}
+                  onClick={() => {
+                    setSearchInput(item);
+                    handleSearch();
+                  }}
                 >
                   <span className="text-sm text-[#5D5D5D] cursor-pointer">{item}</span>
                   <button
