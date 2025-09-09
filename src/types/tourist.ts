@@ -1,13 +1,16 @@
 import type { CommonCursorResponse, CommonResponse } from './common';
 
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'NONE';
+export type ContentTypeId = 12 | 14 | 15 | 25 | 28 | 32 | 38 | 39;
+
 export type GetTouristSpotsParams = {
   page?: number;
   size?: number;
   sort?: 'A' | 'B' | 'C';
-  contentTypeId?: 12 | 14 | 15 | 25 | 28 | 32 | 38 | 39;
+  contentTypeId?: ContentTypeId;
   areaCode?: number;
   sigunguCode?: number;
-  difficulty?: 'NONE' | 'EASY' | 'NORMAL' | 'HARD';
+  difficulty?: Difficulty;
 };
 
 export type TouristSpot = {

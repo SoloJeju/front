@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '../../assets/search-magnifying-glass.svg?react';
 import DropdownIcon from '../../assets/dropdown.svg?react';
@@ -25,19 +25,28 @@ const defaultCategories = [
   { label: '문화시설', icon: CultureIcon },
 ];
 
-const FilterBar = () => {
-  const navigate = useNavigate();
+interface FilterBarProps {
+  selectedRegion: string;
+  onRegionChange: React.Dispatch<React.SetStateAction<string>>;
+  selectedCategory: string;
+  onCategoryChange: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  const [selectedRegion, setSelectedRegion] = useState('제주도');
+const FilterBar: React.FC<FilterBarProps> = ({
+  selectedRegion,
+  onRegionChange,
+  selectedCategory,
+  onCategoryChange,
+}) => {
+  const navigate = useNavigate();
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
 
   return (
     <div>
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center relative">
           <span className="text-black font-[Pretendard] text-2xl font-bold leading-[26px] tracking-[-0.48px]">
-            {selectedRegion}
+            {selectedRegion === '전체' ? '제주도' : selectedRegion}
           </span>
           <button
             onClick={() => setShowRegionDropdown(!showRegionDropdown)}
@@ -58,7 +67,7 @@ const FilterBar = () => {
                   className={`w-full px-4 py-2 text-left font-[Pretendard] text-base font-medium leading-[18px] tracking-[-0.32px] hover:bg-gray-100
                     ${selectedRegion === region ? 'text-black' : 'text-[#666]'}`}
                   onClick={() => {
-                    setSelectedRegion(region);
+                    onRegionChange(region);
                     setShowRegionDropdown(false);
                   }}
                 >
@@ -82,7 +91,7 @@ const FilterBar = () => {
           return (
             <button
               key={category.label + index}
-              onClick={() => setSelectedCategory(category.label)}
+              onClick={() => onCategoryChange(category.label)}
             >
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
