@@ -26,7 +26,11 @@ export const useLogin = (opts?: LoginHooksOptions) => {
          localStorage.setItem('accessToken', data.result.accessToken);
          localStorage.setItem('refreshToken', data.result.refreshToken);
       }
-      
+
+      if (data.result.id) {
+        localStorage.setItem('userId', String(data.result.id));
+      }
+
       try {
         await opts?.onAfterSuccess?.();
       } catch (hookError) {
