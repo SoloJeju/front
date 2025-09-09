@@ -22,6 +22,7 @@ import WriteReviewPage from './pages/plus-page/write-review-page';
 import CreateRoomPage from './pages/plus-page/create-room-page';
 import PlanPage from './pages/plus-page/plan-page';
 import PlanDetailPage from './pages/plus-page/plan-detail-page';
+import AIPlanPage from './pages/plus-page/plan-ai-page';
 
 import RoomPage from './pages/room-page';
 import ChatRoomPage from './pages/room-page/chat-room-page';
@@ -79,7 +80,6 @@ const publicRoutes: RouteObject[] = [
       { path: 'search-detail/:placeId', element: <SearchDetailPage /> },
 
       { path: 'community', element: <CommunityPage /> },
-      { path: 'community/:postId', element: <PostDetailPage /> },
 
       { path: 'report/:id', element: <ReportDetailPage /> },
       { path: 'inquiry/:id', element: <InquiryDetailPage /> },
@@ -99,6 +99,7 @@ const protectedRoutes: RouteObject[] = [
       { path: 'write-review', element: <WriteReviewPage /> },
       { path: 'plan', element: <PlanPage /> },
       { path: 'plan/:planId', element: <PlanDetailPage /> },
+      { path: 'plan/ai-plan', element: <AIPlanPage /> },
 
       { path: 'community/new-post', element: <PostWritePage /> },
       { path: 'community/:postId', element: <PostDetailPage /> },
