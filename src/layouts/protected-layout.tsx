@@ -17,6 +17,7 @@ const AppLayout = () => {
   const isPlanDetailPage = !!matchPath({ path: '/plan/:planId' }, location.pathname);
   const isCreateRoomPage = !!matchPath({ path: '/create-room' }, location.pathname);
   const isMyPagePlanPage = !!matchPath({ path: '/mypage/plans' }, location.pathname);
+  const isMyPageReviewPage = !!matchPath({ path: '/mypage/reviews' }, location.pathname);
 
   return (
     <div className="flex justify-center min-h-screen">
@@ -29,6 +30,7 @@ const AppLayout = () => {
         {isPlanDetailPage && <BackHeader title="일정 보기"/>}
         {isCreateRoomPage && <BackHeader title="동행방 개설"/>}
         {isMyPagePlanPage && <BackHeader title="나의 여행 계획"/>}
+        {isMyPageReviewPage && <BackHeader title="내가 작성한 리뷰"/>}
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>
