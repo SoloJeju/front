@@ -57,6 +57,11 @@ export default function RoomPage() {
 
   const handleJoinRoom = async () => {
     if (!roomId || isJoining) return;
+    
+if (!roomId || isNaN(Number(roomId))) {
+  console.error("❌ 잘못된 roomId:", roomId);
+  return;
+}
     setIsJoining(true);
     try {
       const res = await chatApiService.joinChatRoom(Number(roomId));
