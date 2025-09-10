@@ -65,7 +65,7 @@ export default function MyRooms() {
                 <RoomCard
                   key={room.roomId}
                   id={room.roomId}
-                  isEnd={room.isCompleted || room.currentParticipants === room.maxParticipants}
+                  isEnd={room.isCompleted || false}
                   title={room.title}
                   location={room.spotName}
                   date={room.scheduledDate || room.joinDate || ''}
@@ -75,7 +75,6 @@ export default function MyRooms() {
                   gender={room.genderRestriction}
                   hasUnreadMessages={room.hasUnreadMessages}
                   unreadCount={room.unreadCount}
-                  from="mypage"
                 />
               ))}
               

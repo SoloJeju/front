@@ -1,12 +1,11 @@
 import PlaceCard from "./PlaceCard";
-import type { Place } from "../../types/place";
-
+import type { CartItem } from "../../types/cart";
 
 type PlaceCardListProps = {
-  places: Place[];
+  places: CartItem[];
   isEditMode: boolean;
-  selectedItems: (string | number)[];
-  onSelectToggle: (id: string | number) => void;
+  selectedItems: number[];
+  onSelectToggle: (id: number) => void;
 };
 
 const PlaceCardList = ({
@@ -19,11 +18,11 @@ const PlaceCardList = ({
     <div className="flex flex-col gap-2">
       {places.map((place) => (
         <PlaceCard
-          key={place.id}
+          key={place.contentid}
           {...place}
           isEditMode={isEditMode}
-          isSelected={selectedItems.includes(place.id)}
-          onSelectToggle={() => onSelectToggle(place.id)}
+          isSelected={selectedItems.includes(place.contentid)}
+          onSelectToggle={() => onSelectToggle(place.contentid)}
         />
       ))}
     </div>

@@ -6,22 +6,23 @@ import { useNavigate } from 'react-router-dom';
 
 interface CommentCardProps {
   id: number;
-  writer: string;
+  author: string;
+  authorId: number;
   image: string | null;
-  time: string;
+  time: Date;
   comment: string;
   isOpenMore: boolean;
   isMine: boolean;
   ref: React.RefObject<HTMLDivElement | null>;
   setIsOpenMore: (id: number) => void;
   onDelete: (id: number) => void;
-  onModify: (id: number) => void;
   onReport: (id: number) => void;
 }
 
 const CommentCard = ({
   id,
-  writer,
+  author,
+  authorId,
   image,
   time,
   comment,
@@ -30,11 +31,8 @@ const CommentCard = ({
   ref,
   setIsOpenMore,
   onDelete,
-  onModify,
   onReport,
 }: CommentCardProps) => {
-  // ex authorId
-  const authorId = 1;
   const navigate = useNavigate();
 
   const handleProfileDetail = (id: number) => {
@@ -44,7 +42,7 @@ const CommentCard = ({
     <div className="relative">
       <img
         src={image ? image : BasicProfile}
-        alt={`${writer}의 프로필`}
+        alt={`${author}의 프로필`}
         className="w-8 h-8 absolute top-5 -left-5 cursor-pointer"
         onClick={() => handleProfileDetail(authorId)}
       />
@@ -55,23 +53,23 @@ const CommentCard = ({
               className="font-[pretendard] font-medium text-sm text-black cursor-pointer"
               onClick={() => handleProfileDetail(authorId)}
             >
-              {writer}
+              {author}
             </span>
             <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-              {time}
+              {new Date(time).toLocaleDateString()}
             </time>
           </div>
           <button type="button" onClick={() => setIsOpenMore(id)}>
             <img src={More} alt="더보기" />
           </button>
         </div>
-        <div className="absolute right-0 top-10">
+        <div className="absolute right-0 top-10 z-50">
           {isOpenMore && (
             <MoreButton
               isMine={isMine}
+              isComment={true}
               ref={ref}
               onDelete={() => onDelete?.(id)}
-              onModify={() => onModify?.(id)}
               onReport={() => onReport?.(id)}
             />
           )}
