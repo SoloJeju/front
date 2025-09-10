@@ -18,6 +18,8 @@ const AppLayout = () => {
   const isCreateRoomPage = !!matchPath({ path: '/create-room' }, location.pathname);
   const isMyPagePlanPage = !!matchPath({ path: '/mypage/plans' }, location.pathname);
   const isMyPageReviewPage = !!matchPath({ path: '/mypage/reviews' }, location.pathname);
+  const isEditReviewPage = !!matchPath({ path: '/edit-review/:reviewId' }, location.pathname);
+  const isMyPageRoomPage = !!matchPath({ path: '/mypage/rooms' }, location.pathname);
 
   return (
     <div className="flex justify-center min-h-screen">
@@ -26,11 +28,13 @@ const AppLayout = () => {
         {isCommunityDetailPage && <BackHeader title="게시글" />}
         {isCommunityWritePage && <BackHeader title="게시글 작성" />}
         {isReviewWritePage && <BackHeader title="리뷰 작성"/>}
+        {isEditReviewPage && <BackHeader title="리뷰 수정"/>}        
         {isPlanPage && <BackHeader title="계획 짜기"/>}
         {isPlanDetailPage && <BackHeader title="일정 보기"/>}
         {isCreateRoomPage && <BackHeader title="동행방 개설"/>}
         {isMyPagePlanPage && <BackHeader title="나의 여행 계획"/>}
         {isMyPageReviewPage && <BackHeader title="내가 작성한 리뷰"/>}
+        {isMyPageRoomPage && <BackHeader title="동행방 리스트"/>}
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>

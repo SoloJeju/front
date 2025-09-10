@@ -42,7 +42,7 @@ export default function MyReviews() {
   }
 
   return (
-    <div className="font-Pretendard bg-[#FFFFFD] min-h-screen flex justify-center">
+    <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen flex justify-center">
       <div className="w-full max-w-[480px]">
         {isEmpty ? (
           <div className="pt-40 text-center flex flex-col items-center text-gray-500">

@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { useDeleteReview } from '../../hooks/review/useDeleteReview';
 import type { ReviewItem } from '../../types/mypage';
 import MapIcon from '../../assets/mapPin.svg?react';
 import ProfileDefImg from '../../assets/profileDefault.svg';
@@ -8,7 +10,7 @@ import NoStarIcon from '../../assets/noStar.svg?react';
 
 const DIFFICULTY_STYLES: { [key: string]: string } = {
   EASY: 'bg-[#C8F5DA] text-[#006259]',
-  NORMAL: 'bg-[#FFED8C] text-[#F78937]',
+  MEDIUM: 'bg-[#FFED8C] text-[#F78937]',
   HARD: 'bg-[#FFBBBB] text-[#FF3E3E]',
 };
 
@@ -17,6 +19,27 @@ interface ReviewCardProps {
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
+  const navigate = useNavigate();
+  const { mutate: deleteReviewMutate } = useDeleteReview();
+
+  const handleEdit = () => {
+    navigate(`/edit-review/${review.id}`);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+      deleteReviewMutate(review.id, {
+        onSuccess: () => {
+          alert('리뷰가 삭제되었습니다.');
+        },
+        onError: (error) => {
+          console.error('Review deletion failed:', error);
+          alert('리뷰 삭제에 실패했습니다.');
+        },
+      });
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm w-full font-[Pretendard]">
       <div className="flex justify-between items-start mb-3">
@@ -48,9 +71,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             {review.difficulty}
           </span>
           <div className="text-xs text-[#666666] font-normal">
-            <button className="cursor-pointer">수정</button>
+            <button onClick={handleEdit} className="cursor-pointer">수정</button>
             <span> · </span>
-            <button className="cursor-pointer text-[#FF3E3E]">삭제</button>
+            <button onClick={handleDelete} className="cursor-pointer text-[#FF3E3E]">삭제</button>
           </div>
         </div>
       </div>

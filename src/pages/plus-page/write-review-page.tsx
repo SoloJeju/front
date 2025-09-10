@@ -34,7 +34,7 @@ const WriteReviewPage = () => {
   const [moments, setMoments] = useState<ReviewTag[]>([]);
   const [selectedMoments, setSelectedMoments] = useState<number[]>([]);
   const [text, setText] = useState('');
-  const [difficulty, setDifficulty] = useState<'EASY' | 'NORMAL' | 'HARD' | null>(null);
+  const [difficulty, setDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD' | null>(null);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [rating, setRating] = useState<number>(0);
@@ -208,9 +208,9 @@ const WriteReviewPage = () => {
                   쉬워요
                 </span>
               </button>
-              <button type="button" onClick={() => setDifficulty('NORMAL')} className="flex flex-col items-center">
-                {difficulty === 'NORMAL' ? <Normal /> : <NoNormal />}
-                <span className={`text-s mt-1 font-medium ${difficulty === 'NORMAL' ? 'text-[#F78938]' : 'text-[#B4B4B4]'}`}>
+              <button type="button" onClick={() => setDifficulty('MEDIUM')} className="flex flex-col items-center">
+                {difficulty === 'MEDIUM' ? <Normal /> : <NoNormal />}
+                <span className={`text-s mt-1 font-medium ${difficulty === 'MEDIUM' ? 'text-[#F78938]' : 'text-[#B4B4B4]'}`}>
                   보통이에요
                 </span>
               </button>

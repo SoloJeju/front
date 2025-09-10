@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import BackHeader from '../../components/common/Headers/BackHeader';
 import RoomCard from '../../components/common/RoomCard/RoomCard';
 import PostNone from '/src/assets/post-none.svg';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
@@ -34,9 +33,9 @@ export default function MyRooms() {
     <div className="font-Pretendard bg-[#FFFFFD] min-h-screen flex justify-center">
       <div className="w-full max-w-[480px]">
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        {/* <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <BackHeader title="동행방 리스트" />
-        </div>
+        </div> */}
 
         {/* 콘텐츠 */}
         <div className="p-4">
