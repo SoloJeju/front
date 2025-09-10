@@ -12,11 +12,32 @@ const AppLayout = () => {
     { path: '/community/new-post' },
     location.pathname
   );
-  const isReviewWritePage = !!matchPath({ path: '/write-review' }, location.pathname);
+  const isReviewWritePage = !!matchPath(
+    { path: '/write-review' },
+    location.pathname
+  );
   const isPlanPage = !!matchPath({ path: '/plan' }, location.pathname);
-  const isPlanDetailPage = !!matchPath({ path: '/plan/:planId' }, location.pathname);
-  const isCreateRoomPage = !!matchPath({ path: '/create-room' }, location.pathname);
-  const isMyPagePlanPage = !!matchPath({ path: '/mypage/plans' }, location.pathname);
+  const isPlanDetailPage = !!matchPath(
+    { path: '/plan/:planId' },
+    location.pathname
+  );
+  const isCreateRoomPage = !!matchPath(
+    { path: '/create-room' },
+    location.pathname
+  );
+  const isMyPagePlanPage = !!matchPath(
+    { path: '/mypage/plans' },
+    location.pathname
+  );
+  const isMyChatRooms = !!matchPath(
+    { path: '/mypage/rooms' },
+    location.pathname
+  );
+
+  const isChatRooom = !!matchPath(
+    { path: 'chat-room/:roomId' },
+    location.pathname
+  );
 
   return (
     <div className="flex justify-center min-h-screen">
@@ -24,12 +45,13 @@ const AppLayout = () => {
         {isAlarmPage && <BackHeader title="알림" />}
         {isCommunityDetailPage && <BackHeader title="게시글" />}
         {isCommunityWritePage && <BackHeader title="게시글 작성" />}
-        {isReviewWritePage && <BackHeader title="리뷰 작성"/>}
-        {isPlanPage && <BackHeader title="계획 짜기"/>}
-        {isPlanDetailPage && <BackHeader title="일정 보기"/>}
-        {isCreateRoomPage && <BackHeader title="동행방 개설"/>}
-        {isMyPagePlanPage && <BackHeader title="나의 여행 계획"/>}
-        <div className="flex-1 px-4 pt-15 pb-15">
+        {isReviewWritePage && <BackHeader title="리뷰 작성" />}
+        {isPlanPage && <BackHeader title="계획 짜기" />}
+        {isPlanDetailPage && <BackHeader title="일정 보기" />}
+        {isCreateRoomPage && <BackHeader title="동행방 개설" />}
+        {isMyPagePlanPage && <BackHeader title="나의 여행 계획" />}
+        {isMyChatRooms && <BackHeader title="나의 동행방" />}
+        <div className={`flex-1 px-4 pb-15 ${isChatRooom ? '' : 'pt-15 '}`}>
           <Outlet />
         </div>
       </div>

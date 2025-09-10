@@ -297,7 +297,6 @@ export default function HomePage() {
               <RoomCard
                 key={room.roomId}
                 id={room.roomId}
-                isEnd={room.currentParticipants === room.maxParticipants}
                 title={room.title}
                 location={room.spotName}
                 date={room.scheduledDate}
