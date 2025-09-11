@@ -15,7 +15,6 @@ export interface ProfileState {
   bio: string;
   email: string;
   password: string;
-
   // 경험 횟수
   soloTripCount: number;
   companionRoomCount: number;
