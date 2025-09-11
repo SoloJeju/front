@@ -88,12 +88,14 @@ export const getMyScraps = async (
   size?: number
 ): Promise<ResponseMyScrapsDto> => {
   const params = new URLSearchParams();
-  if (cursor !== undefined) params.append('cursor', cursor);
-  if (page !== undefined) params.append('page', String(page));
-  if (size !== undefined) params.append('size', String(size));
 
-  const { data } = await authAxios.get(
-    `/api/mypage/scraps?${params.toString()}`
+  if (cursor != null) params.append('cursor', cursor);
+  if (page != null) params.append('page', String(page));
+  if (size != null) params.append('size', String(size));
+
+  const qs = params.toString();
+  const { data } = await authAxios.get<ResponseMyScrapsDto>(
+    `/api/mypage/scraps${qs ? `?${qs}` : ''}`
   );
   return data;
 };
@@ -115,12 +117,13 @@ export const getMyPosts = async (
   size?: number
 ): Promise<ResponseMyPostsDto> => {
   const params = new URLSearchParams();
-  if (cursor !== undefined) params.append('cursor', cursor);
-  if (page !== undefined) params.append('page', String(page));
-  if (size !== undefined) params.append('size', String(size));
+  if (cursor != null) params.append('cursor', cursor);
+  if (page != null) params.append('page', String(page));
+  if (size != null) params.append('size', String(size));
 
-  const { data } = await authAxios.get(
-    `/api/mypage/posts?${params.toString()}`
+  const qs = params.toString();
+  const { data } = await authAxios.get<ResponseMyPostsDto>(
+    `/api/mypage/posts${qs ? `?${qs}` : ''}`
   );
   return data;
 };
