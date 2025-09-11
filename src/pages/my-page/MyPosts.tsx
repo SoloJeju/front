@@ -2,77 +2,54 @@ import BackHeader from '../../components/common/Headers/BackHeader';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 
-const examplePosts = [
-  {
-    id: 1,
-    type: '여행 정보',
-    title: '제주도 동쪽 여행 코스 추천합니다!',
-    content: '아이들과 함께 가기 좋은 코스와 맛집 정보를 정리했어요.',
-    commentNumber: 4,
-    time: '2시간 전',
-    writer: '홍길동',
-    image: null,
-  },
-  {
-    id: 2,
-    type: '맛집',
-    title: '서귀포 흑돼지 맛집 다녀왔어요',
-    content: '정말 맛있었던 흑돼지 집 후기 공유합니다.',
-    commentNumber: 8,
-    time: '1일 전',
-    writer: '김철수',
-    image: null,
-  },
-  {
-    id: 3,
-    type: '여행 후기',
-    title: '한라산 등반 후기 (초보자 팁 포함)',
-    content: '한라산 등반하면서 알게 된 팁과 주의사항을 공유합니다.',
-    commentNumber: 11,
-    time: '3일 전',
-    writer: '이영희',
-    image: null,
-  },
-];
+import { useMyPosts } from '../../hooks/mypage/useMyPosts';
+import type { Post } from '../../types/post';
 
 const MyPosts = () => {
+  const { data, isLoading, error } = useMyPosts(0, 10); // page: 0, size: 10
+
+  let list: Post[] = [];
+  if (data?.result && 'content' in data.result) {
+    list = data.result.content;
+  }
+
   return (
     <div className="font-Pretendard">
-      {/* 1. 상단 바 */}
       <header className="relative flex items-center justify-center p-4">
         <BackHeader title="내가 작성한 글" />
       </header>
 
-      {/* 2. 게시글 목록 */}
       <main className="p-4 flex flex-col gap-4">
-        {examplePosts.length > 0 ? (
-          examplePosts.map((post) => (
-            <PostCard
-              key={post.id}
-              id={post.id}
-              type={post.type}
-              title={post.title}
-              content={post.content}
-              commentNumber={post.commentNumber}
-              time={post.time}
-              writer={post.writer}
-              image={post.image}
-            />
-          ))
-        ) : (
-          <div className="pt-40 text-center flex flex-col items-center text-gray-500">
-            {/* 빈 상태 SVG */}
-            <img
-              src={PostNone}
-              alt="빈 상태"
-              className="w-[170px] h-[102px] mb-4"
-            />
+        {isLoading && <div>게시글을 불러오는 중...</div>}
+        {error && <div>에러가 발생했습니다.</div>}
 
-            {/* 안내 텍스트 */}
-            <p className="text-lg">작성한 글이 없어요.</p>
-            <p className="mt-2 text-sm">커뮤니티에 첫 글을 남겨보세요!</p>
-          </div>
-        )}
+        {!isLoading &&
+          !error &&
+          (list.length > 0 ? (
+            list.map((post) => (
+              <PostCard
+                key={post.postId}
+                id={post.postId}
+                type={post.postCategory}
+                title={post.title}
+                content={post.content}
+                commentNumber={post.commentCount}
+                time={post.createdAt.toString()}
+                writer={post.authorNickname}
+                image={post.thumbnailUrl}
+              />
+            ))
+          ) : (
+            <div className="pt-40 text-center flex flex-col items-center text-gray-500">
+              <img
+                src={PostNone}
+                alt="빈 상태"
+                className="w-[170px] h-[102px] mb-4"
+              />
+              <p className="text-lg">작성한 글이 없어요.</p>
+              <p className="mt-2 text-sm">커뮤니티에 첫 글을 남겨보세요!</p>
+            </div>
+          ))}
       </main>
     </div>
   );
