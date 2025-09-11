@@ -9,7 +9,6 @@ type LoginHooksOptions = {
   onAfterSuccess?: () => Promise<void> | void;
 };
 
-
 interface ApiErrorResponse {
   message: string;
 }
@@ -23,8 +22,8 @@ export const useLogin = (opts?: LoginHooksOptions) => {
     },
     onSuccess: async (data) => {
       if (data.result.accessToken && data.result.refreshToken) {
-         localStorage.setItem('accessToken', data.result.accessToken);
-         localStorage.setItem('refreshToken', data.result.refreshToken);
+        localStorage.setItem('accessToken', data.result.accessToken);
+        localStorage.setItem('refreshToken', data.result.refreshToken);
       }
 
       if (data.result.id) {
@@ -42,12 +41,9 @@ export const useLogin = (opts?: LoginHooksOptions) => {
     },
     onError: (error: Error) => {
       console.error('[useLogin/onError] 로그인 최종 실패:', error);
-      
-  
       if (isAxiosError<ApiErrorResponse>(error) && error.response) {
-    
         const status = error.response.status;
-        const message = error.response.data.message; 
+        const message = error.response.data.message;
 
         if (status === 401) {
           toast.error('이메일 또는 비밀번호가 올바르지 않습니다.');
