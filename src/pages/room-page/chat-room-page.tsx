@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import ChatInput from '../../components/ChatRoomPage/ChatInput';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ChatModal from '../../components/ChatRoomPage/ChatModal';
 import chatApiService from '../../services/chat';
 import websocketService from '../../services/websocket';
@@ -66,11 +66,23 @@ export default function ChatRoomPage() {
     };
   }, []);
 
+  // 외부 영역의 스크롤 없애기
+  useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   useEffect(() => {
     if (isCompletedFromState) {
       setIsCompleted(true);
     }
   }, [isCompletedFromState]);
+
   const { data: myChatRooms } = useGetMyChatRooms();
 
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
@@ -94,6 +106,7 @@ export default function ChatRoomPage() {
     }
   }, [roomId, queryClient]);
 
+  // 초기 메시지 로드
   const loadMessages = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -124,6 +137,7 @@ export default function ChatRoomPage() {
     }
   }, [roomId]);
 
+  // WebSocket 연결 및 이벤트 등록
   const connectWebSocket = useCallback(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -141,14 +155,16 @@ export default function ChatRoomPage() {
       console.error('roomId가 비어있음, WebSocket 연결 불가');
       return;
     }
+
     websocketService.connect(Number(roomId), token);
 
-    // WebSocket 콜백 등록
+    // WebSocket 이벤트 콜백 등록
     websocketService.onConnect(() => {
       setIsConnected(true);
       setError('');
     });
 
+    // 메시지 처리 로직
     websocketService.onMessage((data: WebSocketChatMessage) => {
       // 현재 사용자 정보 가져오기
       const currentUserId = localStorage.getItem('userId');
@@ -158,6 +174,7 @@ export default function ChatRoomPage() {
         return;
       }
 
+      // 일반 메시지 분기 처리
       if (data.type === 'TALK') {
         const newChatMessage: ChatMessage = {
           id: data.id,
@@ -172,12 +189,14 @@ export default function ChatRoomPage() {
           isMine: false,
         };
 
+        // 상태 업데이트: 기존 메시지 뒤에 추가
         setMessages((prev) => {
           const combined = [...prev, newChatMessage];
           // id 중복 제거
           return Array.from(new Map(combined.map((m) => [m.id, m])).values());
         });
 
+        // 멤버 입장 메시지 분기 처리
         // 다른 사람의 메시지가 왔을 때는 자동 스크롤하지 않음 (사용자가 스크롤 위치를 유지할 수 있도록)
       } else if (data.type === 'ENTER') {
         const enterMessage: ChatMessage = {
@@ -194,7 +213,9 @@ export default function ChatRoomPage() {
         };
 
         setMessages((prev) => [...prev, enterMessage]);
-      } else if (data.type === 'EXIT') {
+      }
+      // 멤버 퇴장 메시지 분기 처리
+      else if (data.type === 'EXIT') {
         const exitMessage: ChatMessage = {
           id: data.id,
           content: data.content,
@@ -241,10 +262,12 @@ export default function ChatRoomPage() {
     };
   }, [roomId]);
 
-  const debouncedMarkMessagesAsRead = useCallback(
-    debounce(() => {
-      markMessagesAsRead();
-    }, 500), // 0.5초 내 여러 번 스크롤해도 1번만 실행
+  // markMessagesAsRead를 디바운스하여 중복 트리거 방지
+  const debouncedMarkMessagesAsRead = useMemo(
+    () =>
+      debounce(() => {
+        markMessagesAsRead();
+      }, 500),
     [markMessagesAsRead]
   );
 
@@ -283,17 +306,20 @@ export default function ChatRoomPage() {
   // 스크롤 이벤트 핸들러 (읽음 처리 포함)
   const handleScroll = handleMessageScroll;
 
-  const loadMoreMessages = async () => {
+  // 이전(과거) 메시지 로드 함수 (무한 스크롤)
+  const loadMoreMessages = useCallback(async () => {
     if (isLoadingMore || !hasNext) return;
     if (!listRef.current) return;
 
     try {
       setIsLoadingMore(true);
 
+      // 스크롤 보정에 사용할 이전 컨테이너 높이와 top 위치 저장
       const container = listRef.current;
       const prevScrollHeight = container.scrollHeight;
       const prevScrollTop = container.scrollTop;
 
+      // 가장 오래된 메시지의 sendAt을 기준으로 그 이전 데이터를 요청
       const oldestMessageTime = messages[0]?.sendAt;
       if (!oldestMessageTime) {
         setIsLoadingMore(false);
@@ -333,10 +359,11 @@ export default function ChatRoomPage() {
     } catch (err) {
       console.error('이전 메시지 로드 오류:', err);
     } finally {
-      setIsLoadingMore(false);
+      setTimeout(() => setIsLoadingMore(false), 200);
     }
-  };
+  }, [isLoadingMore, hasNext, messages, roomId]);
 
+  // 메시지 전송
   const sendMessage = () => {
     if (!newMessage.trim() || !isConnected) return;
 
@@ -375,6 +402,7 @@ export default function ChatRoomPage() {
     websocketService.sendMessage(messageData);
   };
 
+  // Enter키 단일 전송 처리
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -398,6 +426,7 @@ export default function ChatRoomPage() {
     return message.type === 'ENTER' || message.type === 'EXIT';
   };
 
+  // 시간 포맷팅
   const formatTime = (timeString: string) => {
     const date = new Date(timeString);
     const hours = date.getHours();
@@ -431,6 +460,7 @@ export default function ChatRoomPage() {
     return currentDate !== previousDate;
   };
 
+  // 채팅방 나가기
   const leaveRoom = async () => {
     try {
       const response = await chatApiService.leaveChatRoom(Number(roomId));
@@ -445,6 +475,7 @@ export default function ChatRoomPage() {
     }
   };
 
+  // 모달창 참조
   useEffect(() => {
     const handleClickModalBg = (e: MouseEvent) => {
       if (modalBg.current && e.target === modalBg.current) {
@@ -477,6 +508,7 @@ export default function ChatRoomPage() {
     return () => observer.disconnect();
   }, [hasNext, isLoadingMore, loadMoreMessages]);
 
+  // 메시지 전송
   const handleSubmit = () => {
     sendMessage();
   };
@@ -556,7 +588,7 @@ export default function ChatRoomPage() {
               ) : (
                 <>
                   {isLoadingMore && (
-                    <div className="text-center py-2">
+                    <div className="text-center py-2" ref={topSentinelRef}>
                       이전 메시지를 불러오는 중...
                     </div>
                   )}
