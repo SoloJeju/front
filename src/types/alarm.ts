@@ -17,3 +17,22 @@ export type ResponseMyNotiListDto = CommonCursorResponse<{
 
 // 미확인 알림 여부
 export type ResponseUnreadNotiDto = CommonResponse<boolean>;
+
+// 내 알림 그룹 조회
+export type ResponseGroupedNotiDto = CommonResponse<{
+  content: [
+    {
+      type: string;
+      resourceType: string;
+      resourceId: number;
+      latestId: number;
+      latestMessage: string;
+      totalCount: number;
+      unreadCount: number;
+      latestCreatedAt: Date;
+    },
+  ];
+  nextCursor: string | null;
+  hasNext: boolean;
+  size: number;
+}>;
