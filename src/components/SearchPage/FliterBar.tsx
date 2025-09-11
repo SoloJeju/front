@@ -53,7 +53,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
             className="ml-2"
             aria-label="지역 선택"
           >
-            <DropdownIcon className="w-6 h-6" />
+            <DropdownIcon className={`w-6 h-6 transform transition-transform ${showRegionDropdown ? 'rotate-180' : ''}`} />
           </button>
 
           {showRegionDropdown && (

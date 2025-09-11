@@ -93,7 +93,7 @@ const MyPage = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-white font-Pretendard">
+    <div className="relative min-h-screen bg-white font-[Pretendard]">
       <header className="relative bg-[#F78938]">
         <div className="px-4 pt-4 pb-2">
           <Link

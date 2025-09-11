@@ -14,7 +14,7 @@ const MyPosts = () => {
   }
 
   return (
-    <div className="font-Pretendard">
+    <div className="font-[Pretendard]">
       <header className="relative flex items-center justify-center p-4">
         <BackHeader title="내가 작성한 글" />
       </header>

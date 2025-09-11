@@ -244,7 +244,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-Pretendard">
+    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-[Pretendard]">
       <BackHeader title="프로필 수정하기" />
 
       {/* fixed 헤더와 겹치지 않게 상단 여백 확보 */}

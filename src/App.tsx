@@ -59,6 +59,7 @@ import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
 
 import SafetyCheckPage from './pages/safety-check-page';
 import StatsPage from './pages/safety-check-page/stats-page';
+import EditReviewPage from './pages/plus-page/edit-review-page';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const queryClient = new QueryClient();
@@ -97,6 +98,7 @@ const protectedRoutes: RouteObject[] = [
       { path: 'alarm', element: <AlarmPage /> },
 
       { path: 'write-review', element: <WriteReviewPage /> },
+      { path: 'edit-review/:reviewId', element: <EditReviewPage /> },
       { path: 'plan', element: <PlanPage /> },
       { path: 'plan/:planId', element: <PlanDetailPage /> },
       { path: 'plan/ai-plan', element: <AIPlanPage /> },

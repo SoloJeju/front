@@ -28,7 +28,7 @@ export default function MyRooms() {
   });
 
   return (
-    <div className="font-Pretendard bg-[#FFFFFD] min-h-screen flex justify-center">
+    <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen flex justify-center">
       <div className="w-full max-w-[480px]">
         {/* 콘텐츠 */}
         <div className="p-4">

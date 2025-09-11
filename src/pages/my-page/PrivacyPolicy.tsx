@@ -2,7 +2,7 @@ import BackHeader from '../../components/common/Headers/BackHeader';
 
 const PrivacyPolicy = () => {
   return (
-    <div className="font-Pretendard">
+    <div className="font-[Pretendard]">
       <header className="relative flex items-center justify-center p-4">
         <BackHeader title="개인정보 처리방침" />
       </header>

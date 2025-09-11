@@ -47,8 +47,6 @@ export type PlanItem = {
   endDate: string;
   createdAt: string;
 };
-export type ResponseMyPlansDto = CommonResponse<OffsetPage<PlanItem>>;
-
 /* ----------------------------
  * 스크랩 목록 (오프셋 | 커서 통합)
  * ---------------------------- */
@@ -73,3 +71,48 @@ export type ResponseMyPostsDto = CommonResponse<MyPostsPage>;
  * ---------------------------- */
 export type MyCommentedPostsPage = OffsetPage<Post> | CursorPage<Post>;
 export type ResponseMyCommentedPostsDto = CommonResponse<MyCommentedPostsPage>;
+
+
+export type ResponseMyPlansDto = CommonResponse<{
+  content: PlanItem[];
+  totalElements: number;
+  totalPages: number;
+}>;
+
+export type ReviewItem = {
+  id: number;
+  touristSpotId: number;
+  touristSpotName: string;
+  touristSpotImage: string;
+  touristSpotAverageRating: number;
+  reviewText: string;
+  difficulty: string;
+  visitDate: string;
+  receipt: boolean;
+  rating: number;
+  thumbnailUrl: string | null;
+  thumbnailName: string | null;
+  tags: string[];
+  images: string[];
+  userId: number;
+  userNickname: string;
+  userProfileImage: string | null;
+  createdAt: string;
+};
+
+export type ResponseMyReviewsDto = CommonResponse<{
+  content: ReviewItem[];
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}>;

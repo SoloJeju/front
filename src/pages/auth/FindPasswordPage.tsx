@@ -175,7 +175,7 @@ export default function FindPasswordPage() {
   // Step 1: 이메일 인증
   if (step === 1) {
     return (
-      <div className="min-h-screen px-6 pt-15 pb-6 font-Pretendard bg-white">
+      <div className="min-h-screen px-6 pt-15 pb-6 font-[Pretendard] bg-white">
         <main className="w-full mx-auto mb-20">
           <h1 className="text-[24px] font-bold mb-6">비밀번호 찾기</h1>
           <div className="flex flex-col space-y-4">
@@ -226,7 +226,7 @@ export default function FindPasswordPage() {
   // Step 2: 새 비밀번호 입력
   if (step === 2) {
     return (
-      <div className="min-h-screen px-6 pt-15 pb-6 font-Pretendard bg-white">
+      <div className="min-h-screen px-6 pt-15 pb-6 font-[Pretendard] bg-white">
         <main className="w-full max-w-sm mx-auto mb-20">
           <h1 className="text-[24px] font-bold mb-6">새 비밀번호 설정</h1>
           <div className="flex flex-col space-y-5">
