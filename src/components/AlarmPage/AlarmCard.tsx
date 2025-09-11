@@ -6,7 +6,7 @@ interface AlarmCardProps {
   type: string;
   message: string;
   resourceId: number;
-  isRead: boolean;
+  unreadCount: number;
 }
 
 const AlarmCard = ({
@@ -14,7 +14,7 @@ const AlarmCard = ({
   type,
   message,
   resourceId,
-  isRead,
+  unreadCount,
 }: AlarmCardProps) => {
   const navigate = useNavigate();
 
@@ -38,11 +38,13 @@ const AlarmCard = ({
       className="px-5 py-4 border border-[#FFCEAA] rounded-xl relative select-none"
       onClick={handleNavigate}
     >
-      {!isRead && (
+      {unreadCount !== 0 && (
         <div
-          className="w-2 h-2 bg-red-500 rounded-full absolute right-3 top-5"
+          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-1"
           aria-label="읽지 않은 알림"
-        ></div>
+        >
+          {unreadCount}
+        </div>
       )}
       <h2 className="font-medium text-[14px] text-black">
         {type === 'MESSAGE' ? '메시지' : '댓글'} 알림
