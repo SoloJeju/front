@@ -22,7 +22,7 @@ const MyBookmarks = () => {
   }
 
   return (
-    <div className="font-Pretendard">
+    <div className="font-[Pretendard]">
       {/* 1. 상단 바 */}
       <header className="relative flex items-center justify-center p-4">
         <BackHeader title="내가 스크랩한 글" />

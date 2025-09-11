@@ -15,7 +15,7 @@ const LanguageSettings = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('ko');
 
   return (
-    <div className="font-Pretendard bg-[#FFFFFD] min-h-screen">
+    <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] mx-auto">
         <BackHeader title="언어 설정" />
 

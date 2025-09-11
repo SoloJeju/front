@@ -67,7 +67,7 @@ export default function ResultStep() {
 
         <div className="w-full max-w-xs p-6 flex flex-col items-center">
           <img src={resultImage} alt={resultName} className="w-70 h-70 mb-8" />
-          <p className="text-2xl font-Pretendard font-bold text-primary mb-2">
+          <p className="text-2xl font-[Pretendard] font-bold text-primary mb-2">
             {resultName}
           </p>
           <p className="text-gray-600">{resultDescription}</p>

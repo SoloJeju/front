@@ -117,7 +117,7 @@ const StatsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 font-[Pretendard]">
       <AlarmHeader title="안전 점검 통계" showBackButton={true} />
 
       <div className="pt-16 px-4 pb-20">
