@@ -1,5 +1,5 @@
 import { authAxios } from './axios';
-import type { ReviewTagsResponse, CreateReviewPayload, CreateReviewResponse, ReviewDetailResponse, UpdateReviewPayload } from '../types/review';
+import type { ReviewTagsResponse, CreateReviewPayload, CreateReviewResponse, ReviewDetailResponse, UpdateReviewPayload, UpdateReviewResponse } from '../types/review';
 import type { CommonResponse } from '../types/common'; 
 
 export const getReviewTags = async (contentTypeId: number): Promise<ReviewTagsResponse> => {
@@ -33,7 +33,7 @@ export const getReviewDetail = async (reviewId: number): Promise<ReviewDetailRes
   return data;
 };
 
-export const updateReview = async (reviewId: number, payload: UpdateReviewPayload): Promise<CommonResponse<any>> => {
+export const updateReview = async (reviewId: number, payload: UpdateReviewPayload): Promise<UpdateReviewResponse> => {
   const { data } = await authAxios.patch(`/api/reviews/${reviewId}`, payload);
   return data;
 };

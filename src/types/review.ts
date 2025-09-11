@@ -70,3 +70,15 @@ export type ReviewDetailResponse = {
   message: string;
   result: ReviewDetail;
 };
+
+export type UpdateReviewResult = {
+  id: number;
+  content: string;
+};
+
+export type UpdateReviewResponse = {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: UpdateReviewResult;
+};
