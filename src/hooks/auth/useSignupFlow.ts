@@ -19,7 +19,7 @@ export const useSignup = () => {
     mutationFn: signup,
     onSuccess: (data) => {
       toast.success(`${data.result.name}님, 회원가입이 완료되었습니다.`);
-      navigate('/'); 
+      navigate('/login'); 
     },
     onError: (error) => {
       console.error('최종 회원가입 실패:', error);

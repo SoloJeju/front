@@ -6,7 +6,7 @@ import { usePassword } from '../../../hooks/auth/usePassword';
 
 function CriteriaChips({ items }: { items: { met: boolean; text: string }[] }) {
   return (
-    <div className="mt-2 flex flex-wrap gap-2 text-[12px] leading-5">
+    <div className="mt-2 flex flex-wrap gap-2 text-[12px] leading-5 font-[Pretendard]">
       {items.map((it, i) => (
         <span
           key={i}

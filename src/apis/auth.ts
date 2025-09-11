@@ -5,7 +5,6 @@ import type {
   LoginResponse,
   SignupRequest,
   SignupResponse,
-  SendEmailCodeRequest,
   CheckEmailCodeRequest,
   CheckEmailRequest,
   CheckNicknameRequest,
@@ -60,11 +59,15 @@ export const signup = async (signupData: SignupRequest): Promise<CommonResponse<
 
 // 이메일 인증코드 전송 API
 export const sendEmailCode = async (
-  requestData: SendEmailCodeRequest
+  email:string
 ) : Promise<CommonResponse<string>> => {
   const { data } = await publicAxios.post<CommonResponse<string>>(
     '/api/auth/send-email',
-    requestData
+    email,{
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }
   );
   return data;
 }
