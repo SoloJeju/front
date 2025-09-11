@@ -9,8 +9,14 @@ import { updateMyProfile } from '../../apis/mypage';
 import { useQueryClient } from '@tanstack/react-query';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import { validateImageFile, uploadImageToS3 } from '../../apis/s3';
+import axios from 'axios';
 
 const MAX_BIO_LEN = 25;
+
+const DEFAULT_IMG = '/default-profile.svg';
+const handleImgError: React.ReactEventHandler<HTMLImageElement> = (e) => {
+  e.currentTarget.src = DEFAULT_IMG;
+};
 
 export default function ProfileEdit() {
   const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
@@ -83,7 +89,7 @@ export default function ProfileEdit() {
         setIsNicknameChecked(false);
         toast.error(res.message || '사용할 수 없는 닉네임입니다.');
       }
-    } catch (e) {
+    } catch (e: unknown) {
       setIsNicknameChecked(false);
       console.error('닉네임 확인 오류:', e);
       toast.error('닉네임 확인 중 오류가 발생했습니다.');
@@ -111,7 +117,7 @@ export default function ProfileEdit() {
       } else {
         toast.error(res.message || '이미지 업로드에 실패했습니다.');
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('이미지 업로드 오류:', err);
       toast.error('이미지 업로드 중 오류가 발생했습니다.');
     } finally {
@@ -189,7 +195,7 @@ export default function ProfileEdit() {
         }
         payload.imageName = up.result.imageName;
         payload.imageUrl = up.result.imageUrl;
-      } catch (e) {
+      } catch (e: unknown) {
         console.error('저장 직전 업로드 오류:', e);
         toast.error('이미지 처리 중 오류가 발생했습니다.');
         return;
@@ -219,12 +225,18 @@ export default function ProfileEdit() {
       } else {
         toast.error(res.message || '수정에 실패했습니다.');
       }
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        '서버 오류가 발생했습니다.';
-      console.error('updateMyProfile error:', err?.response || err);
+    } catch (err: unknown) {
+      let msg = '서버 오류가 발생했습니다.';
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data as { message?: string } | undefined;
+        msg = data?.message ?? err.message ?? msg;
+        console.error('updateMyProfile error:', err.response ?? err);
+      } else if (err instanceof Error) {
+        msg = err.message;
+        console.error('updateMyProfile error:', err);
+      } else {
+        console.error('updateMyProfile error:', err);
+      }
       toast.error(`수정 실패: ${msg}`);
     } finally {
       setIsSaving(false);
@@ -258,14 +270,10 @@ export default function ProfileEdit() {
       {/* 프로필 이미지 + 연필(팝오버 트리거) */}
       <div className="relative mb-10">
         <img
-          src={
-            profileImage || initialState.profileImage || '/default-profile.svg'
-          }
+          src={profileImage || initialState.profileImage || DEFAULT_IMG}
           alt="프로필 이미지"
           className="w-32 h-32 rounded-full object-cover"
-          onError={({ currentTarget }) => {
-            currentTarget.src = '/default-profile.svg';
-          }}
+          onError={handleImgError}
         />
 
         <button

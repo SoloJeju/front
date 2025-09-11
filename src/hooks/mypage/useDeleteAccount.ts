@@ -17,12 +17,12 @@ export const useDeleteProfile = () => {
       qc.clear(); // React Query 캐시 전체 비우기
       navigate('/login', { replace: true });
     },
-    onError: (err: any) => {
+    onError: (error: unknown) => {
       const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        '회원 탈퇴 중 오류가 발생했습니다.';
-      console.error('[useDeleteProfile] 탈퇴 실패:', err?.response || err);
+        error instanceof Error
+          ? error.message
+          : '회원 탈퇴 중 오류가 발생했습니다.';
+      console.error('[useDeleteProfile] 탈퇴 실패:', error);
       toast.error(msg);
     },
   });
