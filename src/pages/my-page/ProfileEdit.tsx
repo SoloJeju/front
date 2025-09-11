@@ -6,22 +6,26 @@ import editIcon from '../../assets/edit-icon.svg';
 import toast from 'react-hot-toast';
 import { checkNickname as apiCheckNickname } from '../../apis/auth';
 import { updateMyProfile } from '../../apis/mypage';
+import { useQueryClient } from '@tanstack/react-query';
+import BackHeader from '../../components/common/Headers/BackHeader';
+import { validateImageFile, uploadImageToS3 } from '../../apis/s3';
 
 const MAX_BIO_LEN = 25;
 
 export default function ProfileEdit() {
   const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
     useProfileStore();
+  const qc = useQueryClient();
 
-  // 원래 닉네임: 변경 여부 판단용
+  // 원래 닉네임(변경 여부 판단)
   const originalNickname = useRef(nickName);
 
-  const [isNicknameChecked, setIsNicknameChecked] = useState(true); // 초기엔 '변경 안 함'이므로 통과
+  // UI 상태
+  const [isNicknameChecked, setIsNicknameChecked] = useState(true);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [bioLen, setBioLen] = useState<number>(
     bio ? Math.min(bio.length, MAX_BIO_LEN) : 0
   );
-
   const [isChecking, setIsChecking] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -32,7 +36,7 @@ export default function ProfileEdit() {
     setBioLen(bio ? Math.min(bio.length, MAX_BIO_LEN) : 0);
   }, [bio]);
 
-  // 팝오버 닫기: ESC / 바깥 클릭
+  // 팝오버: ESC/바깥 클릭으로 닫힘
   useEffect(() => {
     const onKey = (e: KeyboardEvent) =>
       e.key === 'Escape' && setIsProfileMenuOpen(false);
@@ -54,14 +58,14 @@ export default function ProfileEdit() {
   const openProfileMenu = () => setIsProfileMenuOpen(true);
   const closeProfileMenu = () => setIsProfileMenuOpen(false);
 
-  // 닉네임 변경 시: 원래 값과 다르면 중복확인 다시 요구
+  // 닉네임 입력 → 원래 값과 다르면 중복확인 필요
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const next = e.target.value;
     setNickName(next);
     setIsNicknameChecked(next === originalNickname.current);
   };
 
-  // 닉네임 중복확인 API
+  // 닉네임 중복확인
   const handleCheckNickname = async () => {
     if (!nickName) return;
     if (nickName === originalNickname.current) {
@@ -69,10 +73,9 @@ export default function ProfileEdit() {
       toast.success('현재 닉네임 그대로 사용합니다.');
       return;
     }
-
     try {
       setIsChecking(true);
-      const res = await apiCheckNickname({ nickName: nickName });
+      const res = await apiCheckNickname({ nickName });
       if (res.isSuccess) {
         setIsNicknameChecked(true);
         toast.success(res.result || '사용 가능한 닉네임입니다.');
@@ -82,20 +85,39 @@ export default function ProfileEdit() {
       }
     } catch (e) {
       setIsNicknameChecked(false);
-      console.error('에러 발생:', e);
+      console.error('닉네임 확인 오류:', e);
       toast.error('닉네임 확인 중 오류가 발생했습니다.');
     } finally {
       setIsChecking(false);
     }
   };
 
-  // 프로필 사진 업로드(미리보기용 dataURL)
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 선택 → 검증 → S3 업로드 → 미리보기 URL 반영
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setProfileImage(reader.result as string);
-    reader.readAsDataURL(file);
+
+    const { isValid, errorMessage } = validateImageFile(file);
+    if (!isValid) {
+      toast.error(errorMessage || '이미지 파일을 확인해 주세요.');
+      return;
+    }
+
+    try {
+      const res = await uploadImageToS3(file);
+      if (res.isSuccess) {
+        setProfileImage(res.result.imageUrl);
+        toast.success('이미지를 업로드했어요.');
+      } else {
+        toast.error(res.message || '이미지 업로드에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('이미지 업로드 오류:', err);
+      toast.error('이미지 업로드 중 오류가 발생했습니다.');
+    } finally {
+      // 같은 파일 다시 선택할 때도 onChange가 동작하도록 초기화
+      if (e.target) e.target.value = '';
+    }
   };
 
   const handleUploadFromMenu = () => {
@@ -117,20 +139,20 @@ export default function ProfileEdit() {
     setBioLen(trimmed.length);
   };
 
-  // 저장 가능 조건: 닉네임 존재 + (닉네임 안 바꿈 || 중복확인 완료) + 저장중 아님
+  // 저장 가능 조건
   const canSave =
     !!nickName &&
     (nickName === originalNickname.current || isNicknameChecked) &&
     !isSaving;
 
-  // 저장: PATCH /api/mypage/profile
+  // 저장
   const handleSave = async () => {
     if (!canSave) {
       alert('닉네임 중복 확인을 완료해주세요.');
       return;
     }
 
-    // 서버에 보낼 payload 구성 (변경된 것만)
+    // 변경된 항목만 보냄
     const payload: {
       nickName?: string;
       imageName?: string;
@@ -138,35 +160,44 @@ export default function ProfileEdit() {
       bio?: string;
     } = {};
 
-    // 닉네임 변경 시에만 포함
     if (nickName !== originalNickname.current) {
       payload.nickName = nickName;
     }
 
-    // 이미지 정책
+    // 이미지 분기
     const isDefault = profileImage === initialState.profileImage;
 
     if (isDefault) {
-      // 기본 이미지로 저장
+      // 기본 이미지: URL은 생략 권장
       payload.imageName = 'default-profile.svg';
-      payload.imageUrl = '';
     } else if (/^https?:\/\//.test(profileImage)) {
-      // URL 이미지(예: 카카오 URL)
+      // 이미 URL(S3/외부 링크)
       const fileNameFromUrl = profileImage.split('/').pop() || 'profile.jpg';
       payload.imageName = fileNameFromUrl;
       payload.imageUrl = profileImage;
     } else if (profileImage.startsWith('data:image/')) {
-      // dataURL(로컬 업로드 미리보기) → 서버가 URL만 허용하면 업로드 API가 필요
-      // TODO: 이미지 업로드 API 연동 후, 업로드 URL을 imageUrl로 전달
-      toast('로컬 업로드 이미지는 아직 서버 저장을 지원하지 않습니다.', {
-        icon: 'ℹ️',
-      });
+      // 예외: 혹시 dataURL 상태가 남아있다면 저장 직전에 업로드하여 URL로 치환
+      try {
+        const blob = await (await fetch(profileImage)).blob();
+        const file = new File([blob], 'profile.jpg', {
+          type: blob.type || 'image/jpeg',
+        });
+        const up = await uploadImageToS3(file);
+        if (!up.isSuccess) {
+          toast.error(up.message || '이미지 업로드에 실패했습니다.');
+          return;
+        }
+        payload.imageName = up.result.imageName;
+        payload.imageUrl = up.result.imageUrl;
+      } catch (e) {
+        console.error('저장 직전 업로드 오류:', e);
+        toast.error('이미지 처리 중 오류가 발생했습니다.');
+        return;
+      }
     }
 
-    // bio(선택)
     if (bio) payload.bio = bio.slice(0, MAX_BIO_LEN);
 
-    // 변경 없으면 리턴
     if (
       !payload.nickName &&
       !payload.imageName &&
@@ -182,14 +213,19 @@ export default function ProfileEdit() {
       const res = await updateMyProfile(payload);
       if (res.isSuccess) {
         toast.success('프로필이 수정되었습니다.');
-        // 닉네임 원본 갱신 + 버튼 상태 초기화
         originalNickname.current = nickName;
         setIsNicknameChecked(true);
+        qc.invalidateQueries({ queryKey: ['myInfo'] });
       } else {
         toast.error(res.message || '수정에 실패했습니다.');
       }
-    } catch {
-      toast.error('프로필 수정 중 오류가 발생했습니다.');
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        '서버 오류가 발생했습니다.';
+      console.error('updateMyProfile error:', err?.response || err);
+      toast.error(`수정 실패: ${msg}`);
     } finally {
       setIsSaving(false);
     }
@@ -197,6 +233,15 @@ export default function ProfileEdit() {
 
   return (
     <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-Pretendard">
+      <BackHeader title="프로필 수정하기" />
+
+      {/* fixed 헤더와 겹치지 않게 상단 여백 확보 */}
+      <div
+        aria-hidden
+        style={{ height: 'calc(56px + env(safe-area-inset-top))' }}
+      />
+
+      {/* 파일 업로드 input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -205,23 +250,23 @@ export default function ProfileEdit() {
         accept="image/*"
       />
 
-      <h1 className="text-[24px] font-bold mb-8 text-center">
+      {/* 시각적 제목은 헤더로 대체 */}
+      <h1 className="text-[24px] font-bold mb-8 text-center sr-only">
         프로필 수정하기
       </h1>
 
       {/* 프로필 이미지 + 연필(팝오버 트리거) */}
       <div className="relative mb-10">
-        {profileImage ? (
-          <img
-            src={profileImage}
-            alt="프로필 이미지"
-            className="w-32 h-32 rounded-full object-cover"
-          />
-        ) : (
-          <div className="w-32 h-32 rounded-full bg-[#F5F5F5] grid place-items-center text-sm text-[#737373]">
-            기본 이미지
-          </div>
-        )}
+        <img
+          src={
+            profileImage || initialState.profileImage || '/default-profile.svg'
+          }
+          alt="프로필 이미지"
+          className="w-32 h-32 rounded-full object-cover"
+          onError={({ currentTarget }) => {
+            currentTarget.src = '/default-profile.svg';
+          }}
+        />
 
         <button
           type="button"
@@ -284,7 +329,7 @@ export default function ProfileEdit() {
       {/* 닉네임 */}
       <div className="w-full flex flex-col gap-2">
         <label className="text-[16px] font-medium">닉네임</label>
-        <div className="flex items-center gap-4 border-b border-gray-300 pb-2">
+        <div className="flex items-center gap-4">
           <div className="flex-grow">
             <Input
               type="text"
@@ -310,12 +355,12 @@ export default function ProfileEdit() {
         )}
       </div>
 
-      {/* 한 줄 소개 (선택, 25자 제한) */}
+      {/* 한 줄 소개 */}
       <div className="w-full flex flex-col gap-2 mt-6 mb-8">
         <label className="text-[16px] font-medium">
           한 줄 소개 <span className="text-sm text-[#666666] ml-2">*선택</span>
         </label>
-        <div className="border-b border-gray-300 pb-2">
+        <div>
           <Input
             type="text"
             placeholder="한 줄 소개를 입력해주세요"
