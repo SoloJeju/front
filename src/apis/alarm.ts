@@ -1,4 +1,5 @@
 import type {
+  ResponseGroupedNotiDto,
   ResponseMyNotiListDto,
   ResponseUnreadNotiDto,
 } from '../types/alarm';
@@ -38,4 +39,19 @@ export const getUnreadNoti = async (): Promise<ResponseUnreadNotiDto> => {
 // 단일 알림 확인
 export const putReadNoti = async (notificationId: number) => {
   await authAxios.put(`/api/notifications/${notificationId}/read`);
+};
+
+// 내 알림 그룹 조회
+export const getMyGroupedNotiList = async ({
+  cursor,
+  size = 10,
+}: {
+  cursor: string | undefined;
+  size?: number;
+}): Promise<ResponseGroupedNotiDto> => {
+  const { data } = await authAxios(`/api/notifications/grouped`, {
+    params: { cursor, size },
+  });
+
+  return data;
 };
