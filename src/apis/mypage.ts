@@ -8,6 +8,7 @@ import type {
   ResponseMyScrapsDto,
   ResponseMyPostsDto,
   ResponseMyCommentedPostsDto,
+  ResponseMyReviewsDto,
 } from '../types/mypage';
 import type {
   ResponseMyInfoDto,
@@ -142,5 +143,19 @@ export const getMyCommentedPosts = async (
   const { data } = await authAxios.get(
     `/api/mypage/commented-posts?${params.toString()}`
   );
+  return data;
+};
+
+export const getMyReviews = async (
+  cursor?: string,
+  page?: number,
+  size?: number
+): Promise<ResponseMyReviewsDto> => {
+  const params = new URLSearchParams();
+  if (cursor) params.append('cursor', cursor);
+  if (page !== undefined) params.append('page', page.toString());
+  if (size !== undefined) params.append('size', size.toString());
+
+  const { data } = await authAxios.get(`/api/mypage/reviews?${params.toString()}`);
   return data;
 };

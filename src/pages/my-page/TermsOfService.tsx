@@ -2,7 +2,7 @@ import BackHeader from '../../components/common/Headers/BackHeader';
 
 const TermsOfService = () => {
   return (
-    <div className="font-Pretendard">
+    <div className="font-[Pretendard]">
       <header className="relative flex items-center justify-center p-4">
         <BackHeader title="서비스 이용약관" />
       </header>

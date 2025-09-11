@@ -116,7 +116,7 @@ const SirenConfirmModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-[Pretendard]">
       <div className="bg-white rounded-2xl p-6 mx-4 text-center max-w-sm w-full shadow-2xl">
         <div className="text-4xl mb-4">🚨</div>
         <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -307,7 +307,7 @@ const SafetyCheckPage = () => {
   const completionRate = calculateCompletionRate(safetyData);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-[Pretendard]">
       <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[480px] p-3 flex items-center justify-between bg-white z-50">
         <div className="flex justify-start items-center w-16">
           <button
@@ -330,7 +330,7 @@ const SafetyCheckPage = () => {
           </button>
         </div>
         <div className="flex justify-center flex-1">
-          <span className="text-black-2 text-lg font-semibold font-['Pretendard'] leading-relaxed">
+          <span className="text-black-2 text-lg font-semibold leading-relaxed">
             혼행 체크
           </span>
         </div>

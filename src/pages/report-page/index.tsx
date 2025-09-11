@@ -266,7 +266,7 @@ const ReportPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center font-Pretendard">
+      <div className="min-h-screen bg-white flex items-center justify-center font-[Pretendard]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F78938] mx-auto"></div>
           <p className="mt-4 text-[#666666]">신고 사유를 불러오는 중...</p>
@@ -276,7 +276,7 @@ const ReportPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-Pretendard">
+    <div className="min-h-screen bg-white font-[Pretendard]">
       {/* 헤더 */}
       <header className="relative bg-[#F78938]">
         <div className="px-4 pt-4 pb-2">

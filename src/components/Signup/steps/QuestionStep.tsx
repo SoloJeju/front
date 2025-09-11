@@ -24,7 +24,7 @@ export default function QuestionStep({
   const buttonText = isLastStep ? '시작하기' : '다음으로';
 
   return (
-    <div className="px-6 pb-6 flex flex-col min-h-screen font-Pretendard max-w-app mx-auto justify-between">
+    <div className="px-6 pb-6 flex flex-col min-h-screen font-[Pretendard] max-w-app mx-auto justify-between">
       <div>
         {/* 상단 UI */}
         <div className="flex justify-center space-x-1.5 pt-4">
