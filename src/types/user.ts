@@ -7,7 +7,7 @@ export type MyInfo = {
   name: string;
   nickName: string;
   imageUrl: string;
-  birth: Date;
+  birth: string;
   gender: string;
   country: string;
   soloPlanCount: number;
@@ -17,3 +17,19 @@ export type MyInfo = {
 };
 
 export type ResponseMyInfoDto = CommonResponse<MyInfo>;
+
+// 다른 사용자 프로필 조회
+export type OtherUserProfile = {
+  userId: number;
+  nickName: string;
+  imageUrl: string;
+  birth: string;
+  gender: 'MALE' | 'FEMALE';
+  country: string;
+  soloPlanCount: number;
+  groupChatCount: number;
+  bio: string;
+  userType: string;
+};
+
+export type GetOtherUserProfileResponse = CommonResponse<OtherUserProfile>;

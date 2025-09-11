@@ -14,4 +14,3 @@ export type CommonCursorResponse<T> = {
   hasNext: boolean;
   size: number;
 };
-
