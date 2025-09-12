@@ -12,7 +12,6 @@ import type { MyChatRoom } from '../../types/home';
 import { useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
 
-
 interface ChatModalProps {
   panelRef: React.RefObject<HTMLDivElement | null>;
   roomId: string | undefined;
@@ -21,9 +20,13 @@ interface ChatModalProps {
   onDeleteRoom?: () => void;
 }
 
-
-const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose, onDeleteRoom }: ChatModalProps) => {
-
+const ChatModal = ({
+  panelRef,
+  roomId,
+  onLeaveRoom,
+  onClose,
+  onDeleteRoom,
+}: ChatModalProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient(); // React Query 클라이언트
 
@@ -34,7 +37,7 @@ const ChatModal = ({ panelRef, roomId, onLeaveRoom, onClose, onDeleteRoom }: Cha
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const { data: myChatRooms, isPending: isRoomDetailPending } =
     useGetMyChatRooms();
@@ -64,7 +67,7 @@ const [isCompleting, setIsCompleting] = useState(false);
     }
   }, [roomId]);
 
-   const handleDeleteRoom = useCallback(async () => {
+  const handleDeleteRoom = useCallback(async () => {
     if (!roomId) return;
     try {
       const res = await chatApiService.deleteChatRoom(Number(roomId));
@@ -78,14 +81,12 @@ const [isCompleting, setIsCompleting] = useState(false);
       } else {
         alert(res.message || '채팅방 삭제에 실패했습니다.');
       }
-      } catch (e: unknown) {
-        console.error(e);
-        const err = e as { response?: { data?: { message?: string } } };
-        const msg = err.response?.data?.message || '...';
-        alert(msg);
-      }
-
-
+    } catch (e: unknown) {
+      console.error(e);
+      const err = e as { response?: { data?: { message?: string } } };
+      const msg = err.response?.data?.message || '...';
+      alert(msg);
+    }
   }, [roomId, queryClient, navigate, onDeleteRoom]);
 
   // 완료 처리 핸들러 (방장 전용)
@@ -107,7 +108,9 @@ const [isCompleting, setIsCompleting] = useState(false);
     } catch (e: unknown) {
       console.error(e);
       const err = e as { response?: { data?: { message?: string } } };
-      const msg = err.response?.data?.message || '모집 완료 처리 중 알 수 없는 오류가 발생했습니다.';
+      const msg =
+        err.response?.data?.message ||
+        '모집 완료 처리 중 알 수 없는 오류가 발생했습니다.';
       alert(msg);
     } finally {
       setIsCompleting(false);
@@ -139,7 +142,6 @@ const [isCompleting, setIsCompleting] = useState(false);
         className="fixed inset-0 w-full h-full bg-black/20"
         onClick={handleOutsideClick}
       >
-
         <div
           className="fixed right-0 top-0 h-full w-[88vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001]"
           ref={panelRef}
@@ -163,7 +165,9 @@ const [isCompleting, setIsCompleting] = useState(false);
           ref={panelRef}
         >
           <div className="flex flex-col items-center h-full gap-4 justify-center pt-10">
-            <p className="text-red-500 text-center">정보를 불러오는데 실패했습니다.</p>
+            <p className="text-red-500 text-center">
+              정보를 불러오는데 실패했습니다.
+            </p>
             <button
               onClick={loadChatRoomUsers}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -180,16 +184,18 @@ const [isCompleting, setIsCompleting] = useState(false);
     return null;
   }
 
-  const me = usersData.users?.find(u => u.mine);
+  const me = usersData.users?.find((u) => u.mine);
   const amOwner = !!me?.owner;
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh]  bg-black/40 z-[1000]" onClick={handleOutsideClick}>
-        <div
-          className="fixed right-0 top-0 h-full w-[80vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001] px-5 pt-[100px] flex flex-col"
-          ref={panelRef}
-        >
-
+    <div
+      className="fixed inset-0 w-full h-[100dvh]  bg-black/40 z-[1000]"
+      onClick={handleOutsideClick}
+    >
+      <div
+        className="fixed right-0 top-0 h-full w-[80vw] max-w-[420px] bg-[#FFFFFD] shadow-2xl rounded-l-2xl overflow-y-auto z-[1001] px-5 pt-[100px] flex flex-col"
+        ref={panelRef}
+      >
         {/* 채팅방 이름을 맨 위에 배치 */}
         <h1 className="font-[pretendard] font-semibold text-[22px] text-black mb-2">
           {room.title}
@@ -227,7 +233,7 @@ const [isCompleting, setIsCompleting] = useState(false);
               id={user.userId}
               isMine={user.mine}
               isActive={user.active}
-              isOwner={user.owner}   
+              isOwner={user.owner}
             />
           ))}
         </div>
@@ -235,102 +241,104 @@ const [isCompleting, setIsCompleting] = useState(false);
         {/* 남은 공간을 채우는 영역 */}
         <div className="flex-1 overflow-y-auto"></div>
 
-{/* 하단 고정 버튼 */}
-<div className="w-full border-t border-[#FFCEAA]">
-  <div className="flex items-center justify-between w-full px-4 py-4">
-    {/* 방장만 노출 & 완료만 가능 */}
-    {amOwner && (
-      <button
-        type="button"
-        className="px-3 py-2 rounded-xl font-[pretendard] text-sm font-semibold
+        {/* 하단 고정 버튼 */}
+        <div className="w-full border-t border-[#FFCEAA]">
+          <div className="flex items-center justify-between w-full px-4 py-4">
+            {/* 방장만 노출 & 완료만 가능 */}
+            {amOwner && (
+              <button
+                type="button"
+                className="px-3 py-2 rounded-xl font-[pretendard] text-sm font-semibold
                    bg-[#F78938] text-white disabled:opacity-60 disabled:cursor-not-allowed"
-        disabled={room.isCompleted || isCompleting}
-        onClick={() => setIsCompleteModalOpen(true)}  // ← 무조건 모달 먼저
-      >
-        {isCompleting ? '완료 중...' : '모집 완료하기'}
-      </button>
-    )}
+                disabled={room.isCompleted || isCompleting}
+                onClick={() => setIsCompleteModalOpen(true)} // ← 무조건 모달 먼저
+              >
+                {isCompleting ? '완료 중...' : '모집 완료하기'}
+              </button>
+            )}
 
-    <button
-      type="button"
-      className="flex gap-2 items-center font-[pretendard] font-normal text-sm text-[#5D5D5D]"
-      onClick={() => setIsModalOpen(true)}
-    >
-      <img src={Exit} />
-      {amOwner ? '방 삭제' : '방 나가기'}
-    </button>
-  </div>
-</div>
-
+            <button
+              type="button"
+              className="flex gap-2 items-center font-[pretendard] font-normal text-sm text-[#5D5D5D]"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <img src={Exit} />
+              {amOwner ? '방 삭제' : '방 나가기'}
+            </button>
+          </div>
+        </div>
       </div>
 
-
       {isModalOpen &&
-  createPortal(
-    <div className="fixed inset-0 z-[9999]">
-      <Modal
-        title={amOwner ? '동행방을 삭제하시겠어요?' : '동행방을 나가시겠어요?'}
-        children={
-          <p>{amOwner ? '삭제 시 대화 내용이 영구히 삭제됩니다.' : '대화 내용은 복구할 수 없습니다.'}</p>
-        }
-        buttons={[
-          { text: '취소', onClick: () => setIsModalOpen(false), variant: 'gray' },
-          {
-            text: '확인',
-            onClick: () => {
-              setIsModalOpen(false);
-              if (amOwner) {
-                handleDeleteRoom();
-              } else {
-                onLeaveRoom();
+        createPortal(
+          <div className="fixed inset-0 z-[9999]">
+            <Modal
+              title={
+                amOwner ? '동행방을 삭제하시겠어요?' : '동행방을 나가시겠어요?'
               }
-            },
-            variant: 'orange',
-          },
-        ]}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>,
-    document.body
-  )
-}
-  {isCompleteModalOpen &&
-      createPortal(
-        <div className="fixed inset-0 z-[9999]">
-          <Modal
-            title="동행방 모집을 완료하시겠어요?"
-            children={
-              <div className="space-y-2">
-                <p>모집 완료 시 아래 제한이 적용됩니다.</p>
-                <ul className="list-disc pl-5 text-sm text-[#5D5D5D]">
-                  <li>완료 이후의 <b>메시지 전송이 더 이상 불가</b>합니다.</li>
-                  <li>새로운 사용자의 <b>방 입장이 불가</b>합니다.</li>
-                </ul>
-              </div>
-            }
-            buttons={[
-              { text: '취소', onClick: () => setIsCompleteModalOpen(false), variant: 'gray' },
-              {
-                text: '확인',
-                onClick: () => {
-                  handleCompleteRoom(); // 완료 API 실행
+              buttons={[
+                {
+                  text: '취소',
+                  onClick: () => setIsModalOpen(false),
+                  variant: 'gray',
                 },
-                variant: 'orange',
-              },
-            ]}
-            onClose={() => setIsCompleteModalOpen(false)}
-          />
-        </div>,
-        document.body
-      )
-    }
-
+                {
+                  text: '확인',
+                  onClick: () => {
+                    setIsModalOpen(false);
+                    if (amOwner) {
+                      handleDeleteRoom();
+                    } else {
+                      onLeaveRoom();
+                    }
+                  },
+                  variant: 'orange',
+                },
+              ]}
+              onClose={() => setIsModalOpen(false)}
+            />
+          </div>,
+          document.body
+        )}
+      {isCompleteModalOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999]">
+            <Modal
+              title="동행방 모집을 완료하시겠어요?"
+              children={
+                <div className="space-y-2">
+                  <p>모집 완료 시 아래 제한이 적용됩니다.</p>
+                  <ul className="list-disc pl-5 text-sm text-[#5D5D5D]">
+                    <li>
+                      완료 이후의 <b>메시지 전송이 더 이상 불가</b>합니다.
+                    </li>
+                    <li>
+                      새로운 사용자의 <b>방 입장이 불가</b>합니다.
+                    </li>
+                  </ul>
+                </div>
+              }
+              buttons={[
+                {
+                  text: '취소',
+                  onClick: () => setIsCompleteModalOpen(false),
+                  variant: 'gray',
+                },
+                {
+                  text: '확인',
+                  onClick: () => {
+                    handleCompleteRoom(); // 완료 API 실행
+                  },
+                  variant: 'orange',
+                },
+              ]}
+              onClose={() => setIsCompleteModalOpen(false)}
+            />
+          </div>,
+          document.body
+        )}
     </div>
   );
-
-
 };
-
-
 
 export default ChatModal;
