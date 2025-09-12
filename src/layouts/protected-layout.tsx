@@ -1,5 +1,6 @@
 import { matchPath, Outlet, useLocation } from 'react-router-dom';
 import BackHeader from '../components/common/Headers/BackHeader';
+import Navbar from '../components/common/Navbar';
 
 const AppLayout = () => {
   const location = useLocation();
@@ -21,6 +22,9 @@ const AppLayout = () => {
   const isEditReviewPage = !!matchPath({ path: '/edit-review/:reviewId' }, location.pathname);
   const isMyPageRoomPage = !!matchPath({ path: '/mypage/rooms' }, location.pathname);
 
+  const isMyPage = matchPath({ path: '/mypage/*' }, location.pathname);
+
+
   return (
     <div className="flex justify-center min-h-screen">
       <div className="w-full max-w-[480px] min-h-screen flex flex-col justify-between bg-[#FFFFFD]">
@@ -38,6 +42,7 @@ const AppLayout = () => {
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>
+        {isMyPage && <Navbar />}
       </div>
     </div>
   );
