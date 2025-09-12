@@ -10,6 +10,7 @@ import {
 } from '../../../constants/userTypeImages';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
+import { useKakaoSignup } from '../../../hooks/auth/useKakaoSignup.ts';
 
 function isUserType(value: unknown): value is UserType {
   return typeof value === 'string' && value in userTypeImages;
@@ -17,6 +18,8 @@ function isUserType(value: unknown): value is UserType {
 
 export default function ResultStep() {
   const navigate = useNavigate();
+  const { executeKakaoSignup } = useKakaoSignup();
+  const finalProfileData = useProfileStore.getState();
 
   const nickName = useProfileStore((s) => s.nickName);
   const userType = useProfileStore((s) => s.userType);
@@ -49,8 +52,27 @@ export default function ResultStep() {
     ? userTypeDescriptions[validUserType]
     : '당신의 성향을 분석하고 있어요!';
 
-  const handleStart = () => {
-    const finalProfileData = useProfileStore.getState();
+const handleStart = () => {
+  const isKakaoLogin =
+    !!localStorage.getItem('accessToken') &&
+    localStorage.getItem('isProfileCompleted') === 'false';
+
+  if (isKakaoLogin) {
+    executeKakaoSignup({
+      name: finalProfileData.name,
+      gender: finalProfileData.gender === '남자' ? 'MALE' : 'FEMALE',
+      birthDate: finalProfileData.birthdate,
+      nickName: finalProfileData.nickName,
+      userType: finalProfileData.userType,
+      imageName: finalProfileData.profileImage
+        ? finalProfileData.profileImage.split('/').pop()
+        : '',
+      imageUrl: finalProfileData.profileImage,
+      bio: finalProfileData.bio,
+    });
+    return;
+  }
+
     console.log('Final Profile Submitted:', finalProfileData);
     toast.success('회원가입이 완료되었습니다! 환영해요 👋');
     navigate('/');
