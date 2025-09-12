@@ -1,34 +1,41 @@
 import { useNavigate } from 'react-router-dom';
-import { putReadNoti } from '../../apis/alarm';
+import { putReadGroupedNoti } from '../../apis/alarm';
 
 interface AlarmCardProps {
-  id: number;
   type: string;
   message: string;
   resourceId: number;
   unreadCount: number;
+  resourceType: string;
 }
 
 const AlarmCard = ({
-  id,
   type,
   message,
   resourceId,
   unreadCount,
+  resourceType,
 }: AlarmCardProps) => {
   const navigate = useNavigate();
+  console.log(type);
 
   const handleNavigate = async () => {
     // 메시지 알림일 경우, 해당 동행방으로 이동
     if (type === 'MESSAGE') {
-      await putReadNoti(id).then(() => {
+      await putReadGroupedNoti({ type, resourceType, resourceId }).then(() => {
         navigate(`/room/${resourceId}`);
       });
     }
-    // 댓글 알림일 경우, 해당 게시글로 이동
+    // 댓글 알림, 좋아요 알림일 경우, 해당 게시글로 이동
+    else if (type === 'LIKE' || type === 'COMMENT') {
+      await putReadGroupedNoti({ type, resourceType, resourceId }).then(() => {
+        navigate(`/community/${resourceId}`);
+      });
+    }
+    // 이외의 경우, 임시로 마이페이지로 이동 (추후 수정)
     else {
-      await putReadNoti(id).then(() => {
-        navigate(`community/${resourceId}`);
+      await putReadGroupedNoti({ type, resourceType, resourceId }).then(() => {
+        navigate(`/mypage`);
       });
     }
   };
@@ -40,7 +47,7 @@ const AlarmCard = ({
     >
       {unreadCount !== 0 && (
         <div
-          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-1"
+          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-1 flex justify-center"
           aria-label="읽지 않은 알림"
         >
           {unreadCount}
