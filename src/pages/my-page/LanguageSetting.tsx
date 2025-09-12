@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { IoIosCheckmark } from 'react-icons/io';
-import BackHeader from '../../components/common/Headers/BackHeader';
 
 // UI 확인을 위한 언어 목록 그냥 임의로 넣어놓은 것
 const languages = [
@@ -17,8 +16,6 @@ const LanguageSettings = () => {
   return (
     <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] mx-auto">
-        <BackHeader title="언어 설정" />
-
         <main className="pt-16 p-4">
           <ul className="space-y-2">
             {languages.map((lang) => (

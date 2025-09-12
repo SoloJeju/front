@@ -60,9 +60,32 @@ const ProtectedLayout = () => {
     { path: '/mypage/rooms' },
     location.pathname
   );
-
   const isChatRoom = !!matchPath(
     { path: 'chat-room/:roomId' },
+    location.pathname
+  );
+  const isMyPageTermsPage = !!matchPath(
+    { path: '/mypage/terms' },
+    location.pathname
+  );
+  const isMyPagePostsPage = !!matchPath(
+    { path: '/mypage/posts' },
+    location.pathname
+  );
+  const isMyPagePrivacyPage = !!matchPath(
+    { path: '/mypage/privacy' },
+    location.pathname
+  );
+  const isMyPageBookmarksPage = !!matchPath(
+    { path: '/mypage/bookmarks' },
+    location.pathname
+  );
+  const isMyPageCommentsPage = !!matchPath(
+    { path: '/mypage/comments' },
+    location.pathname
+  );
+  const isMyPageLanguagePage = !!matchPath(
+    { path: '/mypage/language' },
     location.pathname
   );
   const isMyPageReviewPage = !!matchPath(
@@ -77,7 +100,10 @@ const ProtectedLayout = () => {
     { path: '/mypage/rooms' },
     location.pathname
   );
-
+  const isAiPlan = !!matchPath(
+    { path: 'plan/ai-plan' },
+    location.pathname
+  );
   const isMyPage = matchPath({ path: '/mypage/*' }, location.pathname);
 
   return (
@@ -89,13 +115,20 @@ const ProtectedLayout = () => {
         {isReviewWritePage && <BackHeader title="리뷰 작성" />}
         {isEditReviewPage && <BackHeader title="리뷰 수정" />}
         {isPlanPage && <BackHeader title="계획 짜기" />}
-        {isPlanDetailPage && <BackHeader title="일정 보기" />}
         {isCreateRoomPage && <BackHeader title="동행방 개설" />}
         {isMyPagePlanPage && <BackHeader title="나의 여행 계획" />}
         {isMyPageReviewPage && <BackHeader title="내가 작성한 리뷰" />}
         {isMyPageRoomPage && <BackHeader title="동행방 리스트" />}
         {isMyChatRooms && <BackHeader title="나의 동행방" />}
-        <div className={`flex-1 px-4 pb-15 ${isChatRoom ? '' : 'pt-15 '}`}>
+        {isAiPlan && <BackHeader title="AI 추천 계획 보기" />}
+        {isMyPageBookmarksPage && <BackHeader title="내가 스크랩한 글" />}
+        {isMyPageCommentsPage && <BackHeader title="내가 댓글 단 글" />}
+        {isMyPageLanguagePage && <BackHeader title="언어 설정" />}
+        {isMyPageTermsPage && <BackHeader title="서비스 이용약관" />}
+        {isMyPagePrivacyPage && <BackHeader title="개인정보 처리방침" />}
+        {isMyPagePostsPage && <BackHeader title="내가 작성한 글" />}
+        
+        <div className={`flex-1 px-4 pb-15 ${isChatRoom||isPlanDetailPage ? '' : 'pt-15 '}`}>
           <Outlet />
         </div>
         {isMyPage && <Navbar />}

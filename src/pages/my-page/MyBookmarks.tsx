@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import BackHeader from '../../components/common/Headers/BackHeader';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 import { useMyScraps } from '../../hooks/mypage/useMyScraps';
@@ -23,11 +22,6 @@ const MyBookmarks = () => {
 
   return (
     <div className="font-[Pretendard]">
-      {/* 1. 상단 바 */}
-      <header className="relative flex items-center justify-center p-4">
-        <BackHeader title="내가 스크랩한 글" />
-      </header>
-
       {/* 2. 게시글 목록 */}
       <main className="p-4 flex flex-col gap-4">
         {isLoading && <div>불러오는 중...</div>}
