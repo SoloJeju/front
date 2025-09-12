@@ -36,3 +36,6 @@ export type ResponseGroupedNotiDto = CommonResponse<{
   hasNext: boolean;
   size: number;
 }>;
+
+// 그룹 알림 읽음 처리
+export type ResponseReadGroupedNotiDto = CommonResponse<unknown>;
