@@ -7,6 +7,7 @@ import ProfileInfoStep from '../../components/Signup/steps/ProfileInfoStep';
 import IntroStep from '../../components/Signup/steps/IntroStep';
 import QuestionStep from '../../components/Signup/steps/QuestionStep';
 import ResultStep from '../../components/Signup/steps/ResultStep';
+import { useSearchParams } from 'react-router-dom';
 
 interface QuestionConfig {
   question: string;
@@ -80,13 +81,20 @@ const questions: QuestionConfig[] = [
   },
 ];
 
+
 export default function SignupPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const store = useProfileStore();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     store.reset();
   }, [store.reset]);
+
+  useEffect(() => {
+    const stepFromUrl = Number(searchParams.get('step')) || 1;
+    setCurrentStep(stepFromUrl);
+  }, [searchParams]);
 
   const nextStep = () => setCurrentStep((prev) => prev + 1);
 

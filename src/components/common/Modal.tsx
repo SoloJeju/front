@@ -9,7 +9,7 @@ type ModalButton = {
 
 interface ModalProps {
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   buttons?: ModalButton[];
   onClose?: () => void;
 }
@@ -33,7 +33,11 @@ const Modal = ({ title, children, buttons = [], onClose }: ModalProps) => {
     >
       <div className="w-full max-w-[480px] bg-white p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.25)] flex flex-col gap-6">
         <div className="w-full flex justify-end">
-          <button onClick={onClose} aria-label="닫기" className="cursor-pointer">
+          <button
+            onClick={onClose}
+            aria-label="닫기"
+            className="cursor-pointer"
+          >
             <CloseIcon />
           </button>
         </div>

@@ -35,11 +35,11 @@ export default function AlarmPage() {
           return notis?.map((noti) => (
             <AlarmCard
               key={noti.latestId}
-              id={noti.latestId}
               type={noti.type}
               message={noti.latestMessage}
               unreadCount={noti.unreadCount}
               resourceId={noti.resourceId}
+              resourceType={noti.resourceType}
             />
           ));
         })}
