@@ -27,7 +27,7 @@ export const useEmail = ({ onSuccess, skipDuplicateCheck = false }: UseEmailProp
     if (!isEmailValid) return;
 
     const sendCodeAction = () => {
-      sendCodeMutation({ email }, {
+      sendCodeMutation(email, {
         onSuccess: () => { 
           toast.success('인증번호가 전송되었습니다.'); 
           setIsCodeSent(true); 

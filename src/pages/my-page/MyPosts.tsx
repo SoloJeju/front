@@ -1,4 +1,3 @@
-import BackHeader from '../../components/common/Headers/BackHeader';
 import PostCard from '../../components/common/PostCard';
 import PostNone from '/src/assets/post-none.svg';
 
@@ -15,10 +14,6 @@ const MyPosts = () => {
 
   return (
     <div className="font-[Pretendard]">
-      <header className="relative flex items-center justify-center p-4">
-        <BackHeader title="내가 작성한 글" />
-      </header>
-
       <main className="p-4 flex flex-col gap-4">
         {isLoading && <div>게시글을 불러오는 중...</div>}
         {error && <div>에러가 발생했습니다.</div>}

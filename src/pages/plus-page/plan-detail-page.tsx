@@ -197,7 +197,7 @@ const PlanDetailPage = () => {
     <div className="flex justify-center bg-gray-50 min-h-screen font-['Pretendard']">
       <div className="w-full max-w-[480px] bg-white pb-24">
         <BackHeader title="일정 보기" rightContent={<button onClick={handlePlanDelete} className="px-5 py-2 bg-orange-100/70 rounded-[20px] inline-flex justify-center items-center justify-start text-[#F78937] text-sm font-medium leading-none">삭제</button>} />
-        <main className="px-4">
+        <main className="pt-12 px-4">
           <div className="mt-4 mb-4">
             <input
               className={`text-2xl font-bold border-none w-full bg-transparent focus:outline-none p-1 -m-1 rounded-md ${

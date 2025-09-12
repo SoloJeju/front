@@ -172,14 +172,14 @@ const PlanPage = () => {
     : '';
 
   return (
-    <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
+    <div className="flex justify-center bg-[#FFFFFD] min-h-screen font-['Pretendard']">
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-[100] flex justify-center items-center">
           <div className="text-white text-xl">AI가 열심히 계획을 짜고 있어요...🍊</div>
         </div>
       )}
       <div className="w-full max-w-[480px] pb-24">
-        <div className="flex flex-col gap-6 p-4 font-['Pretendard']">
+        <div className="flex flex-col gap-6 p-4">
           <div>
             <label className="text-black text-base font-medium leading-none">여행 제목</label>
             <input

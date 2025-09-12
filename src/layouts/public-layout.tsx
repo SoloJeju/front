@@ -11,6 +11,12 @@ const AppLayout = () => {
     location.pathname
   );
 
+  // Navbar 숨길 페이지!!
+  const hideNavbarPaths = ['/login', '/signup', '/find-password','/splash'];
+  const shouldHideNavbar = hideNavbarPaths.some((path) =>
+    matchPath({ path, end: true }, location.pathname)
+  );
+
   return (
     <div className="flex justify-center min-h-screen">
       <div className="w-full min-h-screen max-w-[480px] flex flex-col justify-between bg-[#FFFFFD]">
@@ -19,7 +25,7 @@ const AppLayout = () => {
         <div className="flex-1 px-4 pt-15 pb-15">
           <Outlet />
         </div>
-        <Navbar />
+        {!shouldHideNavbar && <Navbar />}
       </div>
     </div>
   );

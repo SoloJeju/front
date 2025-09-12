@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
-
-import BackHeader from '../../components/common/Headers/BackHeader';
 import DayTabs from '../../components/Plus/Plan/DayTabs';
 import PlaceCard from '../../components/Plus/Plan/PlaceCard';
 import EditPlanModal from '../../components/Plus/Plan/EditPlanModal';
@@ -256,8 +254,7 @@ const AIReviewPage = () => {
   return (
     <div className="flex justify-center bg-gray-50 min-h-screen font-['Pretendard']">
       <div className="w-full max-w-[480px] bg-white pb-24">
-        <BackHeader title="AI 추천 계획 보기" />
-        <main className="px-4">
+        <main className="pt-12 px-4">
           <div className="mt-4 mb-4">
             <h2 className="text-2xl font-bold text-gray-800">{plan.title}</h2>
             <div className="mt-2 text-base font-medium text-gray-600">
