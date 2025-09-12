@@ -85,7 +85,7 @@ const publicRoutes: RouteObject[] = [
       { path: 'report/:id', element: <ReportDetailPage /> },
       { path: 'inquiry/:id', element: <InquiryDetailPage /> },
 
-      { path: 'oauth2/code/kakao', element: <KakaoCallbackPage /> },
+      { path: 'auth/kakao/callback', element: <KakaoCallbackPage /> },
     ],
   },
 ];
