@@ -1,9 +1,35 @@
-import { matchPath, Outlet, useLocation } from 'react-router-dom';
+import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import BackHeader from '../components/common/Headers/BackHeader';
 import Navbar from '../components/common/Navbar';
+import Modal from '../components/common/Modal';
 
-const AppLayout = () => {
+const useAuth = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    setIsLoggedIn(!!token);
+  }, []);
+  return isLoggedIn;
+};
+
+const ProtectedLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const isLoggedIn = useAuth();
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn===false) {
+      setShowModal(true);
+    }
+  }, [isLoggedIn, location.pathname]);
+
+  const handleLoginRedirect = () => {
+    setShowModal(false);
+    navigate('/login');
+  };
+
   const isAlarmPage = !!matchPath({ path: '/alarm' }, location.pathname);
   const isCommunityDetailPage = !!matchPath(
     { path: '/community/:postId' },
@@ -35,7 +61,7 @@ const AppLayout = () => {
     location.pathname
   );
 
-  const isChatRooom = !!matchPath(
+  const isChatRoom = !!matchPath(
     { path: 'chat-room/:roomId' },
     location.pathname
   );
@@ -54,7 +80,6 @@ const AppLayout = () => {
 
   const isMyPage = matchPath({ path: '/mypage/*' }, location.pathname);
 
-
   return (
     <div className="flex justify-center min-h-screen">
       <div className="w-full max-w-[480px] min-h-screen flex flex-col justify-between bg-[#FFFFFD]">
@@ -70,13 +95,25 @@ const AppLayout = () => {
         {isMyPageReviewPage && <BackHeader title="내가 작성한 리뷰" />}
         {isMyPageRoomPage && <BackHeader title="동행방 리스트" />}
         {isMyChatRooms && <BackHeader title="나의 동행방" />}
-        <div className={`flex-1 px-4 pb-15 ${isChatRooom ? '' : 'pt-15 '}`}>
+        <div className={`flex-1 px-4 pb-15 ${isChatRoom ? '' : 'pt-15 '}`}>
           <Outlet />
         </div>
         {isMyPage && <Navbar />}
+
+        {showModal && (
+          <Modal
+            title="로그인이 필요한 서비스입니다"
+            onClose={() => setShowModal(false)}
+            buttons={[
+              { text: '로그인하러 가기', onClick: handleLoginRedirect, variant: 'orange' },
+            ]}
+          >
+            로그인 후 혼자옵서예의 더 많은 기능을 만나보세요!
+          </Modal>
+        )}
       </div>
     </div>
   );
 };
 
-export default AppLayout;
+export default ProtectedLayout;
