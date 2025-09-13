@@ -143,7 +143,13 @@ const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          style: { wordBreak: 'keep-all', whiteSpace: 'pre-wrap' },
+        }}
+      />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );
