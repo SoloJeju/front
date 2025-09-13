@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 import { checkNickname as apiCheckNickname } from '../../apis/auth';
 import { updateMyProfile } from '../../apis/mypage';
 import { useQueryClient } from '@tanstack/react-query';
-import BackHeader from '../../components/common/Headers/BackHeader';
 import { validateImageFile, uploadImageToS3 } from '../../apis/s3';
 import axios from 'axios';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
