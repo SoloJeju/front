@@ -83,7 +83,6 @@ export default function ResultStep() {
       imageName: '',
     };
     executeSignup(signupData);
-
   };
 
   return (
@@ -98,7 +97,9 @@ export default function ResultStep() {
         <div className="w-full max-w-xs p-6 flex flex-col items-center">
           <img src={resultImage} alt={resultName} className="w-70 h-70 mb-8" />
           <p className="text-2xl font-bold text-primary mb-2">{resultName}</p>
-          <p className="text-gray-600">{resultDescription}</p>
+          <p className="text-gray-600 whitespace-pre-wrap">
+            {resultDescription}
+          </p>
         </div>
       </div>
 
@@ -109,7 +110,11 @@ export default function ResultStep() {
           variant="primary"
           disabled={!validUserType || isSigningUp}
         >
-          {isSigningUp ? '가입하는 중...' : validUserType ? '시작하기' : '분석 중...'}
+          {isSigningUp
+            ? '가입하는 중...'
+            : validUserType
+              ? '시작하기'
+              : '분석 중...'}
         </Button>
       </div>
     </div>
