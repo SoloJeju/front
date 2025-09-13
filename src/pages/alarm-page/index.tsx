@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import AlarmCard from '../../components/AlarmPage/AlarmCard';
 import { useInView } from 'react-intersection-observer';
 import useGetInfiniteGroupedNoti from '../../hooks/alarm/useGetInfiniteGroupedNoti';
+import PostNone from '/src/assets/post-none.svg';
 
 export default function AlarmPage() {
   const { data, isFetching, hasNextPage, fetchNextPage, isPending, isError } =
@@ -32,16 +33,25 @@ export default function AlarmPage() {
         {data?.pages.flatMap((page) => {
           const notis = page.result.content;
 
-          return notis?.map((noti) => (
-            <AlarmCard
-              key={noti.latestId}
-              type={noti.type}
-              message={noti.latestMessage}
-              unreadCount={noti.unreadCount}
-              resourceId={noti.resourceId}
-              resourceType={noti.resourceType}
-            />
-          ));
+          return notis ? (
+            notis.map((noti) => (
+              <AlarmCard
+                key={noti.latestId}
+                type={noti.type}
+                message={noti.latestMessage}
+                unreadCount={noti.unreadCount}
+                resourceId={noti.resourceId}
+                resourceType={noti.resourceType}
+              />
+            ))
+          ) : (
+            <div className="pt-15 flex flex-col justify-center items-center h-full">
+              <img src={PostNone} className="w-20 h-20" />
+              <p className="font-[pretendard] font-medium text-[#B4B4B4]">
+                알림이 존재하지 않습니다
+              </p>
+            </div>
+          );
         })}
       </div>
       <div ref={ref}></div>

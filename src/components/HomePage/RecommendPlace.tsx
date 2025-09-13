@@ -3,6 +3,7 @@ import ExamplePlace from '/src/assets/ex-place.png';
 
 interface RecommendPlaceProps {
   id: number;
+  typeId: number;
   title: string;
   image?: string;
   level: string;
@@ -10,6 +11,7 @@ interface RecommendPlaceProps {
 
 const RecommendPlace = ({
   id,
+  typeId,
   title,
   image = '',
   level,
@@ -17,7 +19,11 @@ const RecommendPlace = ({
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate(`search-detail/${id}`);
+    navigate(`search-detail/${id}`, {
+      state: {
+        contentTypeId: typeId,
+      },
+    });
   };
 
   return (

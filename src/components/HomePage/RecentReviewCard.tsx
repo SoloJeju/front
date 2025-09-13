@@ -3,6 +3,7 @@ import ExamplePlace from '/src/assets/ex-place.png';
 
 interface RecentReviewCardProps {
   id: number;
+  typeId: number;
   image?: string;
   name: string;
   comment: string | null;
@@ -10,6 +11,7 @@ interface RecentReviewCardProps {
 
 const RecentReviewCard = ({
   id,
+  typeId,
   image,
   name,
   comment = '',
@@ -20,6 +22,7 @@ const RecentReviewCard = ({
     navigate(`search-detail/${id}`, {
       state: {
         selectTab: '리뷰',
+        contentTypeId: typeId,
       },
     });
   };

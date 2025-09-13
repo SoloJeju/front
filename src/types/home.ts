@@ -3,6 +3,7 @@ import type { CommonResponse } from './common';
 // 오늘의 추천 장소 Top3
 export type TodayRecommendedSpots = {
   contentId: number;
+  contentTypeId: number;
   title: string;
   firstImage: string;
   difficulty: string;
@@ -16,6 +17,7 @@ export type ResponseTodayRecommendedSpotsDto = CommonResponse<
 export type LatestReviews = {
   reviewId: number;
   contentId: number;
+  contentTypeId: number;
   spotName: string;
   spotImage: string;
   content: string | null;
