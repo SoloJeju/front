@@ -1,13 +1,24 @@
-import { useNavigate } from 'react-router-dom';
-import FilterBar from '../../components/SearchPage/FliterBar';
-import KakaoMap from '../../components/SearchPage/KaKaoMap';
-import Menu from '../../assets/menu.svg?react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import FilterBar from "../../components/SearchPage/FliterBar";
+import KakaoMap from "../../components/SearchPage/KaKaoMap";
+import Menu from "../../assets/menu.svg?react";
+import type { Category } from "../../types/searchmap";
 
 const SearchMapPage = () => {
   const navigate = useNavigate();
+
+  const [selectedRegion, setSelectedRegion] = useState("전체");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("전체"); // TS 타입 명시
+
   return (
     <div>
-      <FilterBar />
+      <FilterBar
+        selectedRegion={selectedRegion}
+        onRegionChange={setSelectedRegion}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
       <div className="relative shrink-0 rounded-t-[12px] border-t border-[var(--PrimaryColor,#F78938)] bg-[var(--white-2,#FFFFFD)] mt-4 overflow-hidden">
         <div className="absolute top-4 w-full flex justify-center z-10">
           <button
@@ -19,14 +30,12 @@ const SearchMapPage = () => {
           </button>
         </div>
         <div className="w-full h-[507px]">
-          <KakaoMap />
+          {/* 카테고리 선택값만 전달 */}
+          <KakaoMap selectedCategory={selectedCategory} />
         </div>
       </div>
-
     </div>
   );
 };
-
-
 
 export default SearchMapPage;
