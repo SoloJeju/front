@@ -220,7 +220,6 @@ export default function ProfileEdit() {
 
   return (
     <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-[Pretendard]">
-      <BackHeader title="프로필 수정하기" />
       <div
         aria-hidden
         style={{ height: 'calc(56px + env(safe-area-inset-top))' }}
