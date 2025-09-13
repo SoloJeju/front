@@ -29,9 +29,9 @@ const RecommendPlace = ({
   return (
     <div className="relative cursor-pointer" onClick={handleNavigate}>
       <p
-        className={`absolute right-2 top-2 px-0.5 py-1 font-[pretendard] font-bold text-[10px] rounded-sm   ${level === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : level === 'NORMAL' ? 'text-[#FFC32A] bg-[#FFEE8C]' : level === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
+        className={`absolute right-2 top-2 px-1 py-0.5 font-[pretendard] font-bold text-[10px] rounded-sm   ${level === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : level === 'MEDIUM' ? 'text-[#F78937] bg-[#FFEE8C]' : level === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
       >
-        {level}
+        {level === 'MEDIUM' ? 'NORMAL' : level}
       </p>
       <figure>
         <img

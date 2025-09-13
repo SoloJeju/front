@@ -51,7 +51,7 @@ export default function MyReviews() {
             <p className="mt-2 text-sm">첫 리뷰를 남겨보세요!</p>
           </div>
         ) : (
-          <div className="p-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {reviews.map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}

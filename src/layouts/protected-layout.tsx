@@ -60,6 +60,10 @@ const ProtectedLayout = () => {
     { path: '/mypage/rooms' },
     location.pathname
   );
+  const isEnterRoom = !!matchPath(
+    { path: 'room/:roomId' },
+    location.pathname
+  );
   const isChatRoom = !!matchPath(
     { path: 'chat-room/:roomId' },
     location.pathname
@@ -104,7 +108,28 @@ const ProtectedLayout = () => {
     { path: 'plan/ai-plan' },
     location.pathname
   );
-  const isMyPage = matchPath({ path: '/mypage/*' }, location.pathname);
+  const isCartPage = !!matchPath(
+    { path: 'cart' }, 
+    location.pathname
+  );
+  const isInquiryPage = !!matchPath(
+    { path: 'inquiry/my' }, 
+    location.pathname
+  );
+  const isReportPage = !!matchPath(
+    { path: 'report/my' }, 
+    location.pathname
+  );
+  const isMyPageProfileEdit = !!matchPath(
+    { path: '/mypage/profile-edit' },
+    location.pathname
+  );
+  const isProfilePage = !!matchPath(
+    { path: '/profile/:userId' },
+    location.pathname
+  );
+  const isMyPageAll = matchPath({ path: '/mypage/*' }, location.pathname);
+  const isMyPage = matchPath({ path: '/mypage' }, location.pathname);
 
   return (
     <div className="flex justify-center min-h-screen">
@@ -127,11 +152,12 @@ const ProtectedLayout = () => {
         {isMyPageTermsPage && <BackHeader title="서비스 이용약관" />}
         {isMyPagePrivacyPage && <BackHeader title="개인정보 처리방침" />}
         {isMyPagePostsPage && <BackHeader title="내가 작성한 글" />}
+        {isMyPageProfileEdit && <BackHeader title="프로필 수정하기" />}
         
-        <div className={`flex-1 px-4 pb-15 ${isChatRoom||isPlanDetailPage ? '' : 'pt-15 '}`}>
+        <div className={`flex-1 ${isChatRoom || isMyPage || isPlanDetailPage || isCartPage || isInquiryPage || isReportPage || isEnterRoom || isProfilePage  ? '' : 'px-6'} ${isEnterRoom || isProfilePage ? '' : 'pb-15 '} ${isChatRoom || isPlanDetailPage || isMyPage ||isCartPage|| isInquiryPage || isReportPage || isEnterRoom || isProfilePage ? '' : 'pt-15 '}`}>
           <Outlet />
         </div>
-        {isMyPage && <Navbar />}
+        {isMyPageAll && <Navbar />}
 
         {showModal && (
           <Modal

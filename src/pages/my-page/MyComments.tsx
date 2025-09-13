@@ -14,7 +14,7 @@ const MyComments = () => {
 
   return (
     <div className="font-[Pretendard]">
-      <main className="p-4 flex flex-col gap-4">
+      <main className="flex flex-col gap-4">
         {isLoading && <div>게시글을 불러오는 중...</div>}
         {error && <div>에러가 발생했습니다.</div>}
 

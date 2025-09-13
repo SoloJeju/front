@@ -179,7 +179,7 @@ const PlanPage = () => {
         </div>
       )}
       <div className="w-full max-w-[480px] pb-24">
-        <div className="flex flex-col gap-6 p-4">
+        <div className="flex flex-col gap-6">
           <div>
             <label className="text-black text-base font-medium leading-none">여행 제목</label>
             <input

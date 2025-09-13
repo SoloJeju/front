@@ -110,11 +110,11 @@ const CartPage = () => {
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen font-[Pretendard]">
-      <div className="w-full max-w-[480px] pb-24">
-        <Header 
+      <Header 
           title={isSelectionMode ? "추가할 장소 선택" : "내가 담은 장소"} 
           rightContent={<RightHeaderContent />}
         />
+      <div className="w-full max-w-[480px] pt-12 px-6 pb-24">
 
         {places.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-full">
@@ -125,7 +125,7 @@ const CartPage = () => {
           </div>
         ) : (
           <>
-            <div className="flex justify-between py-2 px-4">
+            <div className="flex justify-between py-2">
               {(isEditMode || isSelectionMode) ? (
                 <>
                   <button onClick={handleSelectAll} className="text-sm text-[#F78938] cursor-pointer">

@@ -69,7 +69,7 @@ return (
             <p className="mt-2 text-sm">새로운 여행을 계획해보세요.</p>
           </div>
         ) : (
-          <div className="p-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {plans.map((plan) => (
               <div
                 key={plan.planId}

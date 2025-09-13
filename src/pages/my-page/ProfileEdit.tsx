@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 import { checkNickname as apiCheckNickname } from '../../apis/auth';
 import { updateMyProfile } from '../../apis/mypage';
 import { useQueryClient } from '@tanstack/react-query';
-import BackHeader from '../../components/common/Headers/BackHeader';
 import { validateImageFile, uploadImageToS3 } from '../../apis/s3';
 import axios from 'axios';
 
@@ -244,15 +243,7 @@ export default function ProfileEdit() {
   };
 
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-[Pretendard]">
-      <BackHeader title="프로필 수정하기" />
-
-      {/* fixed 헤더와 겹치지 않게 상단 여백 확보 */}
-      <div
-        aria-hidden
-        style={{ height: 'calc(56px + env(safe-area-inset-top))' }}
-      />
-
+    <div className="bg-white relative flex flex-col items-center pb-6 font-[Pretendard]">
       {/* 파일 업로드 input */}
       <input
         type="file"
@@ -261,14 +252,8 @@ export default function ProfileEdit() {
         className="hidden"
         accept="image/*"
       />
-
-      {/* 시각적 제목은 헤더로 대체 */}
-      <h1 className="text-[24px] font-bold mb-8 text-center sr-only">
-        프로필 수정하기
-      </h1>
-
       {/* 프로필 이미지 + 연필(팝오버 트리거) */}
-      <div className="relative mb-10">
+      <div className="relative mb-10 mt-6">
         <img
           src={profileImage || initialState.profileImage || DEFAULT_IMG}
           alt="프로필 이미지"

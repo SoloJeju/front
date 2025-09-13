@@ -31,7 +31,7 @@ export default function MyRooms() {
     <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen flex justify-center">
       <div className="w-full max-w-[480px]">
         {/* 콘텐츠 */}
-        <div className="p-4">
+        <div>
           {isPending ? (
             <div className="pt-40 text-center text-gray-500 flex flex-col items-center">
               <p className="text-lg">동행방 목록을 불러오는 중...</p>

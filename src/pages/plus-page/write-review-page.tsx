@@ -142,7 +142,7 @@ const WriteReviewPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-24">
-        <div className="flex flex-col gap-6 pt-3 font-['Pretendard'] px-4">
+        <div className="flex flex-col gap-6 font-['Pretendard']">
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>
             <div

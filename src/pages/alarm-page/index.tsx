@@ -29,7 +29,7 @@ export default function AlarmPage() {
 
   return (
     <>
-      <div className="flex flex-col gap-3 px-4">
+      <div className="flex flex-col gap-3">
         {data?.pages.flatMap((page) => {
           const notis = page.result.content;
 
