@@ -252,6 +252,7 @@ export default function HomePage() {
               <RecommendPlace
                 key={spot.contentId}
                 id={spot.contentId}
+                typeId={spot.contentTypeId}
                 title={spot.title}
                 image={spot.firstImage}
                 level={spot.difficulty}
@@ -271,6 +272,7 @@ export default function HomePage() {
               <RecentReviewCard
                 key={review.contentId}
                 id={review.contentId}
+                typeId={review.contentTypeId}
                 name={review.spotName}
                 image={review.spotImage}
                 comment={review.content}
