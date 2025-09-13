@@ -147,7 +147,7 @@ const MyPage = () => {
       </header>
 
       {/* 본문 */}
-      <main className="mx-4 pb-12">
+      <main className="px-6 pb-12">
         {/* 내 활동 */}
         <section className="mt-6 border-b border-[#EDEDED]">
           <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">

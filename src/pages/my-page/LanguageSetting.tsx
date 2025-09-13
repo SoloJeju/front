@@ -16,7 +16,7 @@ const LanguageSettings = () => {
   return (
     <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] mx-auto">
-        <main className="pt-16 p-4">
+        <main>
           <ul className="space-y-2">
             {languages.map((lang) => (
               <li

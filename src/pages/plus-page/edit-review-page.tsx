@@ -147,7 +147,7 @@ const EditReviewPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
       <div className="w-full max-w-[480px] pb-24">
-        <div className="flex flex-col gap-6 pt-3 font-['Pretendard'] px-4">
+        <div className="flex flex-col gap-6 pt-3 font-['Pretendard']">
           <div>
             <label className="text-black text-base font-medium leading-none">장소</label>
             <div className="flex items-center border border-[#D9D9D9] rounded-xl px-4 py-3 text-sm justify-between mt-2 bg-gray-100">

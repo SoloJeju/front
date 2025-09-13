@@ -3,7 +3,7 @@ import { memo } from "react";
 const SkeletonPlaceCard = () => {
   return (
     <div
-      className="flex w-full h-[92px] bg-[#FFFFFD] items-center px-4 font-[Pretendard] animate-pulse"
+      className="flex w-full h-[92px] bg-[#FFFFFD] items-center font-[Pretendard] animate-pulse"
       style={{ borderBottom: "1px solid #F78938" }}
     >
       <div className="relative w-[108px] h-[80px] shrink-0 bg-gray-200 rounded-[12px]" />

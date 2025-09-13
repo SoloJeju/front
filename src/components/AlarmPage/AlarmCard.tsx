@@ -42,7 +42,7 @@ const AlarmCard = ({
 
   return (
     <div
-      className="px-5 py-4 border border-[#FFCEAA] rounded-xl relative select-none"
+      className="px-5 py-4 border border-[#FFCEAA] rounded-xl relative select-none font-[Pretendard]"
       onClick={handleNavigate}
     >
       {unreadCount !== 0 && (

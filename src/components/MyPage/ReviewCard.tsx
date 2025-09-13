@@ -82,11 +82,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         <img
           src={review.thumbnailUrl}
           alt="리뷰 사진"
-          className="w-32 h-32 object-cover rounded-lg mb-4"
+          className="w-32 h-32 object-cover rounded-lg mt-4"
         />
       )}
 
-      <p className="text-gray-800 mb-4 whitespace-pre-wrap">{review.reviewText}</p>
+      <p className="text-gray-800 my-4 whitespace-pre-wrap">{review.reviewText}</p>
 
       {review.tags && review.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4 mt-6">

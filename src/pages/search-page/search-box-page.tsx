@@ -97,7 +97,7 @@ const SearchBoxPage = () => {
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
-      <div className="w-full max-w-[480px] pb-10 px-4 font-[Pretendard]">
+      <div className="w-full max-w-[480px] pb-10 font-[Pretendard]">
         <div className="flex items-center w-full gap-2 mt-5">
           <button
             type="button"

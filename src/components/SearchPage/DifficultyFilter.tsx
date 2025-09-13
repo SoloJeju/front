@@ -28,7 +28,7 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({
   const selectedItem = DIFFICULTIES.find((d) => d.value === selectedDifficulty);
 
   return (
-    <div className="px-4 py-2 font-[Pretendard] relative">
+    <div className="py-2 font-[Pretendard] relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
         className="flex items-center justify-between px-2 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50"

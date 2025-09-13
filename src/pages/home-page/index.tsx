@@ -153,7 +153,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 px-4">
+    <div className="flex flex-col flex-1">
       <div className="w-full h-60 relative">
         <Swiper
           loop={true}
