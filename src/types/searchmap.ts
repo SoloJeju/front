@@ -20,6 +20,7 @@ export interface Place {
   firstimage: string;
   difficulty: string;
   openCompanionRoomCount: number;
+  tel?: string;
 }
 
 export interface PlaceListResponse {
