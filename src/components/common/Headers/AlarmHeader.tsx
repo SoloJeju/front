@@ -98,7 +98,7 @@ const AlarmHeader = ({
           className="cursor-pointer w-6 h-6 relative"
           onClick={handleClickAlarm}
         >
-          {hasUnreadNoti && (
+          {hasUnreadNoti?.result && (
             <div
               className="absolute right-0 w-2 h-2 rounded-full bg-red-500"
               aria-label="읽지 않은 알림 존재"

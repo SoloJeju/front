@@ -1,13 +1,20 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getTouristSpots } from '../../apis/tourist';
+import type { ContentTypeId, Difficulty } from '../../types/tourist';
 
-export const useGetTouristList = () => {
+interface TouristListFilters {
+  sigunguCode: number | undefined;
+  contentTypeId: ContentTypeId | undefined;
+  difficulty: Difficulty | undefined;
+}
+
+export const useGetTouristList = (filters: TouristListFilters) => {
   return useInfiniteQuery({
-    queryKey: ['touristSpots'],
-    queryFn: ({ pageParam = 0 }) => getTouristSpots({ page: pageParam, size: 100 }),
+    queryKey: ['touristSpots', filters],
+    queryFn: ({ pageParam = 0 }) => getTouristSpots({ page: pageParam, size: 100, ...filters }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.result.list.length === 0) {
+      if (!lastPage.result.list || lastPage.result.list.length === 0) {
         return undefined;
       }
       return allPages.length;

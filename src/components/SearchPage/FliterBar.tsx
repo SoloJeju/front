@@ -29,8 +29,10 @@ const defaultCategories = [
 interface FilterBarProps {
   selectedRegion: string;
   onRegionChange: React.Dispatch<React.SetStateAction<string>>;
+  
   selectedCategory: Category;
   onCategoryChange: React.Dispatch<React.SetStateAction<Category>>;
+
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -44,7 +46,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div>
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between py-2">
         <div className="flex items-center relative">
           <span className="text-black font-[Pretendard] text-2xl font-bold leading-[26px] tracking-[-0.48px]">
             {selectedRegion === '전체' ? '제주도' : selectedRegion}
@@ -65,7 +67,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
               {defaultRegions.map((region) => (
                 <button
                   key={region}
-                  className={`w-full px-4 py-2 text-left font-[Pretendard] text-base font-medium leading-[18px] tracking-[-0.32px] hover:bg-gray-100
+                  className={`w-full py-2 text-left font-[Pretendard] text-base font-medium leading-[18px] tracking-[-0.32px] hover:bg-gray-100
                     ${selectedRegion === region ? 'text-black' : 'text-[#666]'}`}
                   onClick={() => {
                     onRegionChange(region);
@@ -86,7 +88,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
         </div>
       </div>
 
-      <div className="flex gap-4 px-4 py-3 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-4 py-3 overflow-x-auto scrollbar-hide">
         {defaultCategories.map((category, index) => {
           const IconComponent = category.icon;
           return (

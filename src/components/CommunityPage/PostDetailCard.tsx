@@ -30,7 +30,6 @@ interface PostDetailCardProps {
   isMine: boolean;
   isScraped: boolean;
   chatRoomId?: number;
-  isEnd?: string;
   chatRoomTitle?: string;
   location?: string;
   date?: Date;
@@ -63,7 +62,6 @@ const PostDetailCard = ({
   isScraped,
   chatRoomId,
   chatRoomTitle,
-  isEnd,
   location,
   date,
   pre,
@@ -167,14 +165,13 @@ const PostDetailCard = ({
       {chatRoomId && (
         <RoomCard
           id={chatRoomId}
-          isEnd={isEnd === '모집중' ? false : true}
           title={chatRoomTitle}
           location={location}
           date={date}
           pre={pre}
           all={all}
           imageUrl={chatRoomImage}
-          iamgeName={chatRoomImageName}
+          imageName={chatRoomImageName}
           gender={gender}
         />
       )}

@@ -8,7 +8,7 @@ const PlaceCard = ({
   imageUrl,
   title,
   location,
-  hasCompanionRoom,
+  companionRoomCount,
   tel,
   comment,
   difficulty,
@@ -21,9 +21,9 @@ const PlaceCard = ({
 
   return (
     <div
-      className="flex w-full h-[92px] bg-[var(--white-2,#FFFFFD)] items-center px-4 font-[Pretendard] cursor-pointer"
+      className="flex w-full h-[92px] bg-[var(--white-2,#FFFFFD)] items-center font-[Pretendard] cursor-pointer"
       style={{ borderBottom: '1px solid #F78938' }}
-      onClick={() => onClick(contentid)}
+      onClick={() => onClick(contentid, contenttypeid)}
     >
       <div className="relative w-[108px] h-[80px] shrink-0">
         {imageUrl ? (
@@ -39,22 +39,24 @@ const PlaceCard = ({
 
       <div className="flex flex-col flex-1 justify-center pl-3 gap-2">
         <div className="flex items-center gap-1">
-          <h2 className="text-black font-medium text-[16px] leading-[18px]">{title}</h2>
+          <h2 className="text-black font-medium text-[16px] leading-[18px]">
+            {title}
+          </h2>
           {IconComponent && <IconComponent className="w-4 h-4" />}
-          {hasCompanionRoom && <WithIcon className="w-4 h-4 text-[#F78938]" />}
+          {companionRoomCount>0 && <WithIcon className="w-4 h-4 text-[#F78938]" />}
           {difficulty && (
             <span
               className={`px-1 py-0.5 font-bold text-[10px] rounded-sm ${
                 difficulty === 'EASY'
                   ? 'text-[#006259] bg-[#C8F5DA]'
-                  : difficulty === 'NORMAL'
-                  ? 'text-[#FFC32A] bg-[#FFEE8C]'
-                  : difficulty === 'HARD'
-                  ? 'text-[#FF3E3E] bg-[#FFBBBB]'
-                  : 'text-[#707070] bg-[#C2C6C4]'
+                  : difficulty === 'MEDIUM'
+                    ? 'text-[#F78937] bg-[#FFED8C]'
+                    : difficulty === 'HARD'
+                      ? 'text-[#FF3E3E] bg-[#FFBBBB]'
+                      : 'text-[#707070] bg-[#C2C6C4]'
               }`}
             >
-              {difficulty}
+              {difficulty === 'MEDIUM' ? 'NORMAL' : difficulty}
             </span>
           )}
         </div>

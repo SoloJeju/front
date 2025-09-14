@@ -22,9 +22,9 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function (payload) {
   console.log('백그라운드 메시지 수신:', payload);
 
-  const notificationTitle = payload.data.title;
+  const title = payload.notification?.title || payload.data?.title || '알림';
   const notificationOptions = {
-    body: payload.data.body,
+    body: payload.notification?.body || payload.data?.body || '',
     icon: '/assets/favicon.svg',
   };
 
