@@ -2,6 +2,7 @@ export interface ContentType {
   id: number;
   label: string;
   marker: string; // 퍼블릭 마커 이미지 경로
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
 export const CONTENT_TYPES: ContentType[] = [
