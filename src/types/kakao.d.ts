@@ -29,7 +29,11 @@ declare namespace kakao.maps {
   }
 
   namespace event {
-    function addListener(target: any, type: string, handler: (...args: any[]) => void): void;
+    function addListener(
+      target: kakao.maps.Marker | kakao.maps.Map | kakao.maps.CustomOverlay,
+      type: "click" | "mouseover" | "mouseout" | string,
+      handler: (event: KakaoMouseEvent) => void
+    ): void;
   }
 }
 
