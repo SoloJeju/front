@@ -18,7 +18,7 @@ interface KakaoMapProps {
 
 declare global {
   interface Window {
-    kakao: any;
+    kakao: typeof kakao;
   }
 }
 
@@ -29,8 +29,8 @@ const KakaoMap = ({
   selectedCategory,
 }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  let activeOverlay: any = null;
-  let myLocationMarker: any = null;
+  let activeOverlay: kakao.maps.CustomOverlay | null = null;
+  let myLocationMarker: kakao.maps.Marker | null = null;
 
   useEffect(() => {
     const kakaoLoad = async () => {
