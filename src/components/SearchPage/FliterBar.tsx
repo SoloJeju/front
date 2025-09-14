@@ -11,6 +11,7 @@ import LeisureIcon from '../../assets/category-leisure.svg?react';
 import ShoppingIcon from '../../assets/category-shopping.svg?react';
 import CourseIcon from '../../assets/category-course.svg?react';
 import CultureIcon from '../../assets/category-culture.svg?react';
+import type { Category } from '../../types/searchmap';
 
 const defaultRegions = ['전체', '남제주군', '북제주군', '서귀포시', '제주시'];
 const defaultCategories = [
@@ -28,8 +29,9 @@ const defaultCategories = [
 interface FilterBarProps {
   selectedRegion: string;
   onRegionChange: React.Dispatch<React.SetStateAction<string>>;
-  selectedCategory: string;
-  onCategoryChange: React.Dispatch<React.SetStateAction<string>>;
+  
+  selectedCategory: Category;
+  onCategoryChange: React.Dispatch<React.SetStateAction<Category>>;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -91,8 +93,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
           return (
             <button
               key={category.label + index}
-              onClick={() => onCategoryChange(category.label)}
-            >
+              onClick={() => onCategoryChange(category.label as Category)}>
+
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
                 style={{ color: selectedCategory === category.label ? '#FFF7D1' : '#FFFFFD' }}

@@ -10,6 +10,7 @@ import { useGetTouristList } from '../../hooks/tourist/useGetTouristList';
 import type { ContentTypeId, Difficulty } from '../../types/tourist';
 import ScrollTopButton from '../../components/SearchPage/ScrollTopButton';
 import SkeletonPlaceList from '../../components/SkeletonUI/SkeletonPlaceList';
+import type { Category } from '../../types/searchmap';
 
 const SIGUNGU_CODE_MAP: { [key: string]: number | undefined } = {
   '전체': undefined, '남제주군': 1, '북제주군': 2, '서귀포시': 3, '제주시': 4,
@@ -24,7 +25,7 @@ const SearchPage = () => {
   const loader = useRef<HTMLDivElement | null>(null);
 
   const [selectedRegion, setSelectedRegion] = useState('전체');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('전체');
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('NONE');
 
   const getContentTypeIdForFilter = () => {
