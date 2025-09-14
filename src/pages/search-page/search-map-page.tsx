@@ -23,7 +23,7 @@ const SearchMapPage = () => {
         <div className="absolute top-4 w-full flex justify-center z-10">
           <button
             className="flex w-[108px] h-[30px] justify-center items-center gap-[4px] flex-shrink-0 rounded-[20px] border border-[#F78938] bg-[#FFFFFD] text-black text-[12px] font-medium leading-[30px] tracking-[-0.24px] font-[Pretendard]"
-            onClick={() => navigate("/search")}
+            onClick={() => navigate('/search')}
           >
             <Menu className="text-[#F78938] w-[20px] h-[20px]" />
             리스트로 보기

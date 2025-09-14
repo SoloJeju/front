@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../components/common/Headers/BackHeader";
 import PlaceCardList from "../../components/CartPage/PlaceCardList";
 import PostNone from "../../assets/post-none.svg";
-import Modal from "../../components/common/Modal"; 
+import Modal from "../../components/common/Modal";
 import { getCartList, bulkDeleteCart } from "../../apis/cart";
 import type { CartItem } from "../../types/cart";
+import { usePlanStore } from "../../stores/plan-store";
 
 const CartPage = () => {
   const [places, setPlaces] = useState<CartItem[]>([]);
@@ -12,12 +14,19 @@ const CartPage = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { addPlace } = usePlanStore();
+
+  const isSelectionMode = location.state?.from === 'plan';
+  const targetDayIndex = location.state?.dayIndex;
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const data = await getCartList();
         if (data.isSuccess) {
-          setPlaces(data.result.items);
+          setPlaces(data.result.list ?? []);
         } else {
           alert(data.message);
         }
@@ -31,7 +40,7 @@ const CartPage = () => {
 
   const toggleEditMode = () => {
     setIsEditMode((prev) => !prev);
-    setSelectedItems([]); 
+    setSelectedItems([]);
   };
 
   const handleSelectToggle = (id: number) => {
@@ -42,9 +51,9 @@ const CartPage = () => {
 
   const handleSelectAll = () => {
     if (selectedItems.length === places.length) {
-      setSelectedItems([]); 
+      setSelectedItems([]);
     } else {
-      setSelectedItems(places.map((place) => place.cartId));
+      setSelectedItems(places.map((place) => place.contentid));
     }
   };
 
@@ -53,7 +62,7 @@ const CartPage = () => {
       const response = await bulkDeleteCart(selectedItems);
       if (response.isSuccess) {
         setPlaces((prev) =>
-          prev.filter((place) => !selectedItems.includes(place.cartId)),
+          prev.filter((place) => !selectedItems.includes(place.contentid)),
         );
         setSelectedItems([]);
         setIsEditMode(false);
@@ -67,21 +76,45 @@ const CartPage = () => {
     }
   };
 
+  const handleAddSelectedPlaces = () => {
+    if (selectedItems.length === 0) {
+      alert("추가할 장소를 선택해주세요.");
+      return;
+    }
+    
+    selectedItems.forEach(contentId => {
+      const placeToAdd = places.find(p => p.contentid === contentId);
+      if (placeToAdd) {
+        addPlace({
+          contentId: placeToAdd.contentid,
+          spotName: placeToAdd.title,
+          dayIndex: targetDayIndex,
+        });
+      }
+    });
+    
+    alert(`${selectedItems.length}개의 장소가 추가되었습니다.`);
+    navigate('/plan');
+  };
+  
+  const RightHeaderContent = () => {
+    if (places.length === 0) return null;
+    if (isSelectionMode) return null;
+
+    return (
+      <button onClick={toggleEditMode} className="text-sm text-[#F78938] font-medium">
+        {isEditMode ? "취소" : "편집"}
+      </button>
+    );
+  };
+
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen font-[Pretendard]">
-      <div className="w-full max-w-[480px] pb-24">
-        <div className="flex justify-between items-center">
-          <Header 
-            title="내가 담은 장소" 
-            rightContent={places.length > 0 && (
-              <button
-                onClick={toggleEditMode}
-                className="text-sm text-[#F78938] font-medium">
-                {isEditMode ? "취소" : "편집"}
-              </button>
-            )} 
-          />
-        </div>
+      <Header 
+          title={isSelectionMode ? "추가할 장소 선택" : "내가 담은 장소"} 
+          rightContent={<RightHeaderContent />}
+        />
+      <div className="w-full max-w-[480px] pt-12 px-6 pb-24">
 
         {places.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-full">
@@ -93,20 +126,20 @@ const CartPage = () => {
         ) : (
           <>
             <div className="flex justify-between py-2">
-              {isEditMode ? (
+              {(isEditMode || isSelectionMode) ? (
                 <>
-                  <button
-                    onClick={handleSelectAll}
-                    className="text-sm text-[#F78938] cursor-pointer"
-                  >
+                  <button onClick={handleSelectAll} className="text-sm text-[#F78938] cursor-pointer">
                     전체 선택
                   </button>
-                  <button
-                    onClick={() => setIsModalOpen(true)} 
-                    className="text-sm text-red-500 cursor-pointer"
-                  >
-                    삭제
-                  </button>
+                  {isSelectionMode ? (
+                    <button onClick={handleAddSelectedPlaces} className="text-sm text-blue-500 cursor-pointer font-semibold">
+                      선택 완료 ({selectedItems.length})
+                    </button>
+                  ) : (
+                    <button onClick={() => setIsModalOpen(true)} className="text-sm text-red-500 cursor-pointer">
+                      삭제
+                    </button>
+                  )}
                 </>
               ) : (
                 <div className="h-5" />
@@ -115,7 +148,7 @@ const CartPage = () => {
 
             <PlaceCardList
               places={places}
-              isEditMode={isEditMode}
+              isEditMode={isEditMode || isSelectionMode}
               selectedItems={selectedItems}
               onSelectToggle={handleSelectToggle}
             />

@@ -15,7 +15,7 @@ const PlaceCardList = ({ spots, onCardClick }: PlaceCardListProps) => {
           location={spot.addr1}
           tel={spot.tel}
           comment={spot.reviewTags}
-          hasCompanionRoom={spot.hasCompanionRoom}
+          companionRoomCount={spot.companionRoomCount}
           difficulty={spot.difficulty}
         />
       ))}

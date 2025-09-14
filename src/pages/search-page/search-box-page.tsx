@@ -7,57 +7,44 @@ import BackIcon from '../../assets/beforeArrow.svg?react';
 import CloseIcon from '../../assets/closeIcon.svg?react';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import { useCreateRoomStore } from '../../stores/createroom-store';
+import { useWriteReviewStore } from '../../stores/writereview-store';
+import { usePlanStore } from '../../stores/plan-store';
+import { useSearchHistory } from '../../hooks/tourist/useSearchHistory';
 
 const SearchBoxPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setFormData } = useCreateRoomStore();
-  
-  const [searchHistory, setSearchHistory] = useState<string[]>([
-    '돌솥밥',
-    '고등어 덮밥',
-    '바다가 보이는 집',
-    '성산 일출봉',
-    '돌돔솥밥',
-    '돌돌돌돌솥밥',
-    '돌돌돌돌돌솥밥',
-    '돌돌돌돌돌돌돌솥밥'
-  ]);
+  const { addPlace } = usePlanStore();
+  const { searchHistory, updateHistory, removeHistoryItem } =
+    useSearchHistory(10);
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
-
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
-
-  const removeHistoryItem = (item: string) => {
-    setSearchHistory((prev) => prev.filter((history) => history !== item));
-  };
 
   const handleSearch = async () => {
     if (!searchInput.trim()) return;
-
-    setSearchHistory((prev) => [searchInput, ...prev.filter((h) => h !== searchInput)]);
+    updateHistory(searchInput);
 
     try {
       const response = await getTouristSearch(searchInput);
-      if (response.isSuccess) {
-        const processedSpots: TouristSpot[] = response.result.list.map(spot => ({
-          contentid: String(spot.contentid),
-          contenttypeid: String(spot.contenttypeid),
-          title: spot.title,
-          addr1: spot.addr1 ?? '', 
-          firstimage: spot.firstimage,
-          hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
-          companionRoomCount: spot.companionRoomCount ?? 0,
-          difficulty: spot.difficulty,
-          reviewTags: spot.reviewTags ? JSON.parse(spot.reviewTags) : null,
-          mapx: '',
-          mapy: '',
-          averageRating: null,
-        }));
-        setSearchResults(processedSpots);
-      } else {
-        setSearchResults([]);
-      }
+      setSearchResults(
+        response.isSuccess
+          ? response.result.list.map((spot) => ({
+              contentid: String(spot.contentid),
+              contenttypeid: String(spot.contenttypeid),
+              title: spot.title,
+              addr1: spot.addr1 ?? '',
+              firstimage: spot.firstimage,
+              hasCompanionRoom: (spot.companionRoomCount ?? 0) > 0,
+              companionRoomCount: spot.companionRoomCount ?? 0,
+              difficulty: spot.difficulty,
+              reviewTags: spot.reviewTags ? JSON.parse(spot.reviewTags) : null,
+              mapx: '',
+              mapy: '',
+              averageRating: null,
+            }))
+          : []
+      );
     } catch {
       setSearchResults([]);
     }
@@ -65,44 +52,68 @@ const SearchBoxPage = () => {
   };
 
   const handleCardClick = (id: string) => {
-    const spot = searchResults.find(s => s.contentid === id);
+    const spot = searchResults.find((s) => s.contentid === id);
     if (!spot) return;
 
-    const from = location.state?.from;
-    const returnPages = ['/create-room', '/write-review', '/plan'];
+    const { from, dayIndex, locationIdToReplace, mode } = location.state || {};
 
-    if (returnPages.includes(from)) {
-      setFormData({ contentId: Number(spot.contentid), spotName: spot.title });
-      navigate(from);
-    } else {
-      navigate(`/search-detail/${spot.contentid}`);
+    if (from === '/plan') {
+      addPlace({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+        dayIndex,
+      });
+      return navigate(from);
     }
+
+    if (from?.startsWith('/plan/')) {
+      return navigate(from, {
+        state: {
+          selectedSpotForReplacement: spot,
+          dayIndex,
+          locationIdToReplace,
+          mode,
+        },
+      });
+    }
+
+    if (from === '/create-room') {
+      useCreateRoomStore.getState().setFormData({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+      });
+      return navigate(from);
+    }
+
+    if (from === '/write-review') {
+      useWriteReviewStore.getState().setFormData({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+        contentTypeId: Number(spot.contenttypeid),
+      });
+      return navigate(from);
+    }
+    navigate(`/search-detail/${spot.contentid}`, {
+      state: {
+        contentTypeId: spot.contenttypeid,
+      },
+    });
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleHistoryClick = (item: string) => {
-    setSearchInput(item);
-    handleSearch();
-  };
-  const handleClickBack = () => {
-    navigate(-1);
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
-      <div className="w-full max-w-[480px] pb-10 px-4 font-[Pretendard]">
+      <div className="w-full max-w-[480px] pb-10 font-[Pretendard]">
         <div className="flex items-center w-full gap-2 mt-5">
           <button
             type="button"
             className="cursor-pointer w-6 h-6 z-20"
-            onClick={handleClickBack}
+            onClick={() => navigate(-1)}
           >
-            <BackIcon/>
+            <BackIcon />
           </button>
           <div className="flex-1 h-[40px] flex items-center border border-[#F78938] rounded-[20px] bg-[#FFFFFD] px-4">
             <input
@@ -122,30 +133,47 @@ const SearchBoxPage = () => {
 
         {!isAfterSearch ? (
           <div className="mt-5">
-            <p className="text-black text-base font-semibold mb-4">최근 검색어</p>
+            <p className="text-black text-base font-semibold mb-4">
+              최근 검색어
+            </p>
             <ul className="flex flex-col gap-3">
-            {searchHistory.map((item, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between pb-1"
-              >
-                <span className="text-sm text-[#5D5D5D] cursor-pointer" 
-                onClick={() => handleHistoryClick(item)}>{item}</span>
-                <button onClick={() => removeHistoryItem(item)}>
-                  <CloseIcon className="w-4 h-4 text-[#F78938]" />
-                </button>
-              </li>
-            ))}
+              {searchHistory.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between pb-1"
+                  onClick={() => {
+                    setSearchInput(item);
+                    handleSearch();
+                  }}
+                >
+                  <span className="text-sm text-[#5D5D5D] cursor-pointer">
+                    {item}
+                  </span>
+                  <button
+                    type="button"
+                    className="w-4 h-4 flex items-center justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeHistoryItem(item);
+                    }}
+                  >
+                    <CloseIcon />
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         ) : (
           <div className="mt-5">
             {searchResults.length > 0 ? (
-               <PlaceList spots={searchResults} onCardClick={handleCardClick} />
+              <PlaceList spots={searchResults} onCardClick={handleCardClick} />
             ) : (
-              <p className="text-center text-gray-500 mt-10">검색 결과가 없습니다.</p>
+              <p className="text-center text-gray-500 mt-10">
+                검색 결과가 없습니다.
+              </p>
             )}
-          </div>)}
+          </div>
+        )}
       </div>
     </div>
   );

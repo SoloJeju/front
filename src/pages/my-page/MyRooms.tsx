@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import BackHeader from '../../components/common/Headers/BackHeader';
 import RoomCard from '../../components/common/RoomCard/RoomCard';
 import PostNone from '/src/assets/post-none.svg';
 import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
@@ -8,8 +7,6 @@ import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 export default function MyRooms() {
   const { data, isFetching, hasNextPage, fetchNextPage, isPending, isError } =
     useGetMyChatRooms();
-  
-
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -31,15 +28,10 @@ export default function MyRooms() {
   });
 
   return (
-    <div className="font-Pretendard bg-[#FFFFFD] min-h-screen flex justify-center">
+    <div className="font-[Pretendard] bg-[#FFFFFD] min-h-screen flex justify-center">
       <div className="w-full max-w-[480px]">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <BackHeader title="동행방 리스트" />
-        </div>
-
         {/* 콘텐츠 */}
-        <div className="p-4">
+        <div>
           {isPending ? (
             <div className="pt-40 text-center text-gray-500 flex flex-col items-center">
               <p className="text-lg">동행방 목록을 불러오는 중...</p>
@@ -65,7 +57,6 @@ export default function MyRooms() {
                 <RoomCard
                   key={room.roomId}
                   id={room.roomId}
-                  isEnd={room.isCompleted || room.currentParticipants === room.maxParticipants}
                   title={room.title}
                   location={room.spotName}
                   date={room.scheduledDate || room.joinDate || ''}
@@ -75,15 +66,16 @@ export default function MyRooms() {
                   gender={room.genderRestriction}
                   hasUnreadMessages={room.hasUnreadMessages}
                   unreadCount={room.unreadCount}
-                  from="mypage"
                 />
               ))}
-              
+
               {/* 무한스크롤 감지 요소 */}
               {hasNextPage && (
                 <div ref={ref} className="py-4 text-center">
                   {isFetching ? (
-                    <p className="text-gray-500">더 많은 동행방을 불러오는 중...</p>
+                    <p className="text-gray-500">
+                      더 많은 동행방을 불러오는 중...
+                    </p>
                   ) : (
                     <div className="h-4" />
                   )}

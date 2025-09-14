@@ -14,10 +14,3 @@ export type CommonCursorResponse<T> = {
   hasNext: boolean;
   size: number;
 };
-
-// 로그인 응답 타입
-export type LoginResponse = {
-  id: number;
-  accessToken: string;
-  refreshToken: string;
-};
