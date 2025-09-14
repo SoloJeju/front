@@ -29,6 +29,7 @@ const defaultCategories = [
 interface FilterBarProps {
   selectedRegion: string;
   onRegionChange: React.Dispatch<React.SetStateAction<string>>;
+  
   selectedCategory: Category;
   onCategoryChange: React.Dispatch<React.SetStateAction<Category>>;
 }
@@ -92,9 +93,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
           return (
             <button
               key={category.label + index}
-              onClick={() => onCategoryChange(category.label as Category)}
+              onClick={() => onCategoryChange(category.label as Category)}>
 
-            >
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
                 style={{ color: selectedCategory === category.label ? '#FFF7D1' : '#FFFFFD' }}
