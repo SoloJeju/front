@@ -33,7 +33,7 @@ export default function AlarmPage() {
         {data?.pages.flatMap((page) => {
           const notis = page.result.content;
 
-          return notis ? (
+          return notis.length > 0 ? (
             notis.map((noti) => (
               <AlarmCard
                 key={noti.latestId}
