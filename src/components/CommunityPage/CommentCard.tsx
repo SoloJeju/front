@@ -43,7 +43,7 @@ const CommentCard = ({
       <img
         src={image ? image : BasicProfile}
         alt={`${author}의 프로필`}
-        className="w-8 h-8 absolute top-5 -left-5 cursor-pointer"
+        className="w-8 h-8 absolute top-5 -left-5 cursor-pointer rounded-full"
         onClick={() => handleProfileDetail(authorId)}
       />
       <div className="p-4 border border-[#FFCEAA] rounded-xl">
