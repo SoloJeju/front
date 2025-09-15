@@ -12,6 +12,7 @@ import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import { useLocation } from 'react-router-dom';
 import ModalPortal from '../../components/ChatRoomPage/ModalPortal';
 import { debounce } from 'lodash';
+import BasicProfile from '/src/assets/basicProfile.png';
 
 export default function ChatRoomPage() {
   const { roomId } = useParams();
@@ -627,7 +628,7 @@ export default function ChatRoomPage() {
                           >
                             {!isMyMessage(message) && (
                               <img
-                                src="/src/assets/basicProfile.png"
+                                src={BasicProfile}
                                 alt={`${message.senderName}님의 프로필`}
                                 className="w-8 h-8 shrink-0"
                               />
