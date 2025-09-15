@@ -20,7 +20,7 @@ const ProtectedLayout = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (isLoggedIn===false) {
+    if (isLoggedIn === false) {
       setShowModal(true);
     }
   }, [isLoggedIn, location.pathname]);
@@ -60,10 +60,7 @@ const ProtectedLayout = () => {
     { path: '/mypage/rooms' },
     location.pathname
   );
-  const isEnterRoom = !!matchPath(
-    { path: 'room/:roomId' },
-    location.pathname
-  );
+  const isEnterRoom = !!matchPath({ path: 'room/:roomId' }, location.pathname);
   const isChatRoom = !!matchPath(
     { path: 'chat-room/:roomId' },
     location.pathname
@@ -104,22 +101,10 @@ const ProtectedLayout = () => {
     { path: '/mypage/rooms' },
     location.pathname
   );
-  const isAiPlan = !!matchPath(
-    { path: 'plan/ai-plan' },
-    location.pathname
-  );
-  const isCartPage = !!matchPath(
-    { path: 'cart' }, 
-    location.pathname
-  );
-  const isInquiryPage = !!matchPath(
-    { path: 'inquiry/my' }, 
-    location.pathname
-  );
-  const isReportPage = !!matchPath(
-    { path: 'report/my' }, 
-    location.pathname
-  );
+  const isAiPlan = !!matchPath({ path: 'plan/ai-plan' }, location.pathname);
+  const isCartPage = !!matchPath({ path: 'cart' }, location.pathname);
+  const isInquiryPage = !!matchPath({ path: 'inquiry/my' }, location.pathname);
+  const isReportPage = !!matchPath({ path: 'report/my' }, location.pathname);
   const isMyPageProfileEdit = !!matchPath(
     { path: '/mypage/profile-edit' },
     location.pathname
@@ -153,8 +138,10 @@ const ProtectedLayout = () => {
         {isMyPagePrivacyPage && <BackHeader title="개인정보 처리방침" />}
         {isMyPagePostsPage && <BackHeader title="내가 작성한 글" />}
         {isMyPageProfileEdit && <BackHeader title="프로필 수정하기" />}
-        
-        <div className={`flex-1 ${isChatRoom || isMyPage || isPlanDetailPage || isCartPage || isInquiryPage || isReportPage || isEnterRoom || isProfilePage  ? '' : 'px-6'} ${isEnterRoom || isProfilePage ? '' : 'pb-15 '} ${isChatRoom || isPlanDetailPage || isMyPage ||isCartPage|| isInquiryPage || isReportPage || isEnterRoom || isProfilePage ? '' : 'pt-15 '}`}>
+
+        <div
+          className={`flex-1 ${isChatRoom || isMyPage || isPlanDetailPage || isCartPage || isInquiryPage || isReportPage || isEnterRoom || isProfilePage ? '' : 'px-6'} ${isEnterRoom || isProfilePage ? '' : 'pb-15 '} ${isChatRoom || isPlanDetailPage || isMyPage || isCartPage || isInquiryPage || isReportPage || isEnterRoom || isProfilePage ? '' : 'pt-15 '}`}
+        >
           <Outlet />
         </div>
         {isMyPageAll && <Navbar />}
@@ -162,9 +149,13 @@ const ProtectedLayout = () => {
         {showModal && (
           <Modal
             title="로그인이 필요한 서비스입니다"
-            onClose={() => setShowModal(false)}
+            onClose={() => navigate(-1)}
             buttons={[
-              { text: '로그인하러 가기', onClick: handleLoginRedirect, variant: 'orange' },
+              {
+                text: '로그인하러 가기',
+                onClick: handleLoginRedirect,
+                variant: 'orange',
+              },
             ]}
           >
             로그인 후 혼자옵서예의 더 많은 기능을 만나보세요!
