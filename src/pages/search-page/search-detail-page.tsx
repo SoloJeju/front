@@ -21,6 +21,7 @@ import { useInView } from 'react-intersection-observer';
 import useGetInfiniteReveiws from '../../hooks/tourist/useGetInfiniteReveiws';
 import useGetChatRooms from '../../hooks/tourist/useGetChatRooms';
 import PostNone from '/src/assets/post-none.svg';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -145,8 +146,7 @@ export default function SearchDetailPage() {
     isPendingReviews ||
     isPendingChatRooms
   ) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner color={'#ffffff'} />;
   }
 
   if (isErrorImages || isErrorReviews || isErrorChatRooms) {

@@ -19,6 +19,7 @@ import ExBanner4 from '/src/assets/banner-ex4.png';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
 import useFCM from '../../hooks/alarm/useFCM';
 import { useEffect } from 'react';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 // import { useProfileStore } from '../../stores/profile-store';
 
 export default function HomePage() {
@@ -114,6 +115,8 @@ export default function HomePage() {
       navigate('/community');
     } else if (userType === '루트 집중형') {
       navigate('/plan');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -130,6 +133,8 @@ export default function HomePage() {
       navigate('/community');
     } else if (userType === '루트 집중형') {
       navigate('/search');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -139,8 +144,7 @@ export default function HomePage() {
     isPendingRecommendedChatRooms ||
     isLoadingMyInfo
   ) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (
@@ -225,7 +229,7 @@ export default function HomePage() {
           <div className="flex gap-1.5">
             <button
               type="button"
-              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
+              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep cursor-pointer"
               onClick={handleClickFirstButton}
             >
               <img src={Pin} />
@@ -233,7 +237,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
+              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep cursor-pointer"
               onClick={handleClickSecondButton}
             >
               <img src={Pin} />

@@ -3,6 +3,7 @@ import AlarmCard from '../../components/AlarmPage/AlarmCard';
 import { useInView } from 'react-intersection-observer';
 import useGetInfiniteGroupedNoti from '../../hooks/alarm/useGetInfiniteGroupedNoti';
 import PostNone from '/src/assets/post-none.svg';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function AlarmPage() {
   const { data, isFetching, hasNextPage, fetchNextPage, isPending, isError } =
@@ -19,8 +20,7 @@ export default function AlarmPage() {
   }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
   if (isPending) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (isError) {

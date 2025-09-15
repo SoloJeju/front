@@ -3,6 +3,7 @@ import Alarm from '../../../assets/alarmIcon.svg';
 import Logo from '../../../assets/logo-home.svg';
 import ShieldCheck from '../../../assets/shieldCheck.svg';
 import useGetUnreadNoti from '../../../hooks/alarm/useGetUnreadNoti';
+import LoadingSpinner from '../LoadingSpinner';
 
 interface AlarmHeaderProps {
   title?: string;
@@ -45,8 +46,7 @@ const AlarmHeader = ({
   };
 
   if (isLoadingUnreadNoti) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (isErrorUnreadNoti) {

@@ -17,7 +17,6 @@ const AlarmCard = ({
   resourceType,
 }: AlarmCardProps) => {
   const navigate = useNavigate();
-  console.log(type);
 
   const handleNavigate = async () => {
     // 메시지 알림일 경우, 해당 동행방으로 이동
@@ -47,7 +46,7 @@ const AlarmCard = ({
     >
       {unreadCount !== 0 && (
         <div
-          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-1 flex justify-center"
+          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-2 flex justify-center"
           aria-label="읽지 않은 알림"
         >
           {unreadCount}
