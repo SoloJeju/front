@@ -31,7 +31,7 @@ export default function EmailStep({ onNext }: { onNext: () => void }) {
   if (isVerified) return null;
 
   return (
-    <div className="px-6 pt-10 pb-6 font-[Pretendard]">
+    <div className="pt-10 pb-6 font-[Pretendard]">
       <h1 className="text-[24px] font-bold mb-6">회원 가입</h1>
       <div className="flex flex-col space-y-4">
         <Input
