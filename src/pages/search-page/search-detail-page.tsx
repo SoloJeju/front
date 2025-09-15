@@ -22,6 +22,7 @@ import useGetInfiniteReveiws from '../../hooks/tourist/useGetInfiniteReveiws';
 import useGetChatRooms from '../../hooks/tourist/useGetChatRooms';
 import PostNone from '/src/assets/post-none.svg';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ExImage from '../../assets/ex-place.svg';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -168,10 +169,11 @@ export default function SearchDetailPage() {
       <div className="relative w-full h-[240px] flex-shrink-0">
         <img
           src={
-            spotDetailData?.basic.firstimage ??
-            spotDetailData?.basic.firstimage2
+            spotDetailData?.basic.firstimage ||
+            spotDetailData?.basic.firstimage2 ||
+            ExImage
           }
-          alt={spotDetailData?.basic.title}
+          alt={spotDetailData?.basic.title || '이미지 없음'}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />

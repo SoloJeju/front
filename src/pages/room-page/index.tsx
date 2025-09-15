@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Back from '/src/assets/beforeArrow.svg';
-import ExImage from '/src/assets/exampleImage.png';
+import ExImage from '/src/assets/exampleImage.svg';
 import Clock from '/src/assets/clock.svg';
 import Location from '/src/assets/location.svg';
 import People from '/src/assets/people.svg';

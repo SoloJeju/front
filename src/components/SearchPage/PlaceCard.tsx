@@ -1,6 +1,7 @@
 import WithIcon from '../../assets/with.svg?react';
 import { CONTENT_TYPES } from '../../constants/contentTypes.ts';
 import type { PlaceCardProps } from '../../types/tourist';
+import ExImage from '../../assets/ex-place.svg';
 
 const PlaceCard = ({
   contentid,
@@ -15,7 +16,7 @@ const PlaceCard = ({
   onClick,
 }: PlaceCardProps) => {
   const contentTypeInfo = CONTENT_TYPES.find(
-    (type) => type.id === parseInt(contenttypeid, 10)
+    (type) => String(type.id) === contenttypeid
   );
   const IconComponent = contentTypeInfo?.icon;
 
@@ -33,7 +34,11 @@ const PlaceCard = ({
             className="absolute inset-0 w-full h-full object-cover rounded-[12px]"
           />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-gray-200 rounded-[12px]" />
+          <img
+            src={ExImage}
+            alt="이미지 없음"
+            className="absolute inset-0 w-full h-full object-cover rounded-[12px]"
+          />
         )}
       </div>
 
