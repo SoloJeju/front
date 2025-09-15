@@ -254,7 +254,7 @@ const ChatModal = ({
                 disabled={room.isCompleted || isCompleting}
                 onClick={() => setIsCompleteModalOpen(true)} // ← 무조건 모달 먼저
               >
-                {isCompleting ? '완료 중...' : '모집 완료하기'}
+                {isCompleting ? '완료 중...' : '동행 완료하기'}
               </button>
             )}
 
