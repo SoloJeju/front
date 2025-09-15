@@ -115,6 +115,8 @@ export default function HomePage() {
       navigate('/community');
     } else if (userType === '루트 집중형') {
       navigate('/plan');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -131,6 +133,8 @@ export default function HomePage() {
       navigate('/community');
     } else if (userType === '루트 집중형') {
       navigate('/search');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -225,7 +229,7 @@ export default function HomePage() {
           <div className="flex gap-1.5">
             <button
               type="button"
-              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
+              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep cursor-pointer"
               onClick={handleClickFirstButton}
             >
               <img src={Pin} />
@@ -233,7 +237,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep"
+              className="flex gap-2 p-2 font-[pretendard] font-medium text-black text-sm border border-[#F78938] rounded-xl break-keep cursor-pointer"
               onClick={handleClickSecondButton}
             >
               <img src={Pin} />
