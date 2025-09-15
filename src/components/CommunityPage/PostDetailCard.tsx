@@ -137,7 +137,7 @@ const PostDetailCard = ({
           <img
             src={authorImage ?? BasicProfile}
             alt={author ? author : '익명'}
-            className="w-6 h-6"
+            className="w-6 h-6 rounded-full"
           />
           <span className="font-[pretendard] font-medium text-sm text-[#5D5D5D]">
             {author ? author : '익명'}

@@ -380,9 +380,7 @@ export default function SearchDetailPage() {
 
             {!showAllReviews && (
               <button
-                className="mt-4 flex w-[393px] px-6 py-2 justify-center items-center 
-                        text-center text-[#F78938] font-[Pretendard] text-[16px] 
-                        not-italic font-medium leading-[18px] tracking-[-0.32px]"
+                className="w-full max-w-[480px] mt-4 py-2 flex justify-center text-center text-[#F78938] font-[Pretendard] text-[16px] not-italic font-medium leading-[18px] tracking-[-0.32px]"
                 onClick={() => setShowAllReviews(true)}
               >
                 + 더보기
