@@ -4,8 +4,6 @@ import { getToken } from 'firebase/messaging';
 const VAPIP_KEY = import.meta.env.VITE_VAPID_KEY;
 
 export const requestNotificationPermission = async () => {
-  console.log(VAPIP_KEY);
-
   try {
     // 사용자에게 알림 권한 요청
     const permission = await Notification.requestPermission();

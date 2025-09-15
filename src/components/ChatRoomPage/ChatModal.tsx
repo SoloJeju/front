@@ -11,6 +11,7 @@ import type { ChatRoomUsersResponse } from '../../types/chat';
 import type { MyChatRoom } from '../../types/home';
 import { useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
+import BasicProfile from '/src/assets/basicProfile.png';
 
 interface ChatModalProps {
   panelRef: React.RefObject<HTMLDivElement | null>;
@@ -228,7 +229,7 @@ const ChatModal = ({
           {usersData.users?.map((user) => (
             <ChatMemberCard
               key={user.userId}
-              profileUrl={user.profileImage || '/src/assets/basicProfile.png'}
+              profileUrl={user.profileImage || BasicProfile}
               name={user.username}
               id={user.userId}
               isMine={user.mine}
