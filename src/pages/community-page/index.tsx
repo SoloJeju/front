@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useGetInfinitePostList from '../../hooks/community/useGetInfinitePostList';
 import { useInView } from 'react-intersection-observer';
 import { filterCategoryKoToEn } from '../../utils/filterCategory';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function CommunityPage() {
   const navigate = useNavigate();
@@ -32,8 +33,7 @@ export default function CommunityPage() {
   };
 
   if (isPending) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (isError) {

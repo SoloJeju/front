@@ -12,6 +12,7 @@ import useCreateComment from '../../hooks/community/useCreateComment';
 import useDeleteComment from '../../hooks/community/useDeleteComment';
 import { deletePost } from '../../apis/post';
 import toast from 'react-hot-toast';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -108,8 +109,7 @@ export default function PostDetailPage() {
   };
 
   if (isPostDetailLoading || isCommentLoading) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (isPostDetailError || isCommentError) {

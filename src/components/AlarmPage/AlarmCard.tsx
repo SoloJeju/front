@@ -17,7 +17,6 @@ const AlarmCard = ({
   resourceType,
 }: AlarmCardProps) => {
   const navigate = useNavigate();
-  console.log(type);
 
   const handleNavigate = async () => {
     // 메시지 알림일 경우, 해당 동행방으로 이동

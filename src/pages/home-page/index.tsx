@@ -19,6 +19,7 @@ import ExBanner4 from '/src/assets/banner-ex4.png';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
 import useFCM from '../../hooks/alarm/useFCM';
 import { useEffect } from 'react';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 // import { useProfileStore } from '../../stores/profile-store';
 
 export default function HomePage() {
@@ -139,8 +140,7 @@ export default function HomePage() {
     isPendingRecommendedChatRooms ||
     isLoadingMyInfo
   ) {
-    // loading ui
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (
