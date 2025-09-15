@@ -7,13 +7,16 @@ import Location from '/src/assets/location.svg';
 import People from '/src/assets/people.svg';
 import chatApiService from '../../services/chat';
 import type { ChatRoomDetailResponse } from '../../types/chat';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function RoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
 
   const [isJoining, setIsJoining] = useState(false);
-  const [roomData, setRoomData] = useState<ChatRoomDetailResponse['result'] | null>(null);
+  const [roomData, setRoomData] = useState<
+    ChatRoomDetailResponse['result'] | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -57,11 +60,11 @@ export default function RoomPage() {
 
   const handleJoinRoom = async () => {
     if (!roomId || isJoining) return;
-    
-if (!roomId || isNaN(Number(roomId))) {
-  console.error("❌ 잘못된 roomId:", roomId);
-  return;
-}
+
+    if (!roomId || isNaN(Number(roomId))) {
+      console.error('❌ 잘못된 roomId:', roomId);
+      return;
+    }
     setIsJoining(true);
     try {
       const res = await chatApiService.joinChatRoom(Number(roomId));
@@ -87,10 +90,10 @@ if (!roomId || isNaN(Number(roomId))) {
             alert(res.message || '채팅방 입장에 실패했습니다.');
         }
       }
-   } catch (error: unknown) {
-  console.error('채팅방 입장 API 오류:', error);
-  const err = error as { response?: { data?: { code?: string } } };
-  const code = err.response?.data?.code;
+    } catch (error: unknown) {
+      console.error('채팅방 입장 API 오류:', error);
+      const err = error as { response?: { data?: { code?: string } } };
+      const code = err.response?.data?.code;
 
       switch (code) {
         case 'CHAT4002':
@@ -116,17 +119,15 @@ if (!roomId || isNaN(Number(roomId))) {
   };
 
   if (isLoading) {
-    return (
-      <div className="h-full p-5 bg-[#F78938] flex items-center justify-center">
-        <div className="text-white text-lg">로딩 중...</div>
-      </div>
-    );
+    return <LoadingSpinner color="#ffffff" />;
   }
 
   if (isError || !roomData) {
     return (
       <div className="h-full p-5 bg-[#F78938] flex items-center justify-center">
-        <div className="text-white text-lg">채팅방 정보를 불러올 수 없습니다.</div>
+        <div className="text-white text-lg">
+          채팅방 정보를 불러올 수 없습니다.
+        </div>
       </div>
     );
   }
@@ -198,7 +199,6 @@ if (!roomId || isNaN(Number(roomId))) {
           onClick={handleJoinRoom}
         >
           {isJoining ? '입장 중...' : '동행방 입장하기'}
-
         </button>
       </div>
     </div>
