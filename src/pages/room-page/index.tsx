@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Back from '/src/assets/beforeArrow.svg';
-import ExImage from '/src/assets/exampleImage.png';
 import Clock from '/src/assets/clock.svg';
 import Location from '/src/assets/location.svg';
 import People from '/src/assets/people.svg';
@@ -152,11 +151,13 @@ export default function RoomPage() {
       <div className="flex flex-col justify-center items-center px-5 py-6 mt-9 bg-[#FFFFFD] rounded-[20px]">
         {/* 이미지 + 제목 + 인원 */}
         <div className="w-full pb-4 border-b-2 border-[#FFCEAA]">
-          <img
-            src={room.spotImage || ExImage}
-            alt=""
-            className="w-full h-61 object-cover"
-          />
+          {room.spotImage && (
+            <img
+              src={room.spotImage}
+              alt=""
+              className="w-full h-61 object-cover"
+            />
+          )}
           <h1 className="mt-5 mb-4 font-[pretendard] font-semibold text-2xl text-black">
             {room.title}
           </h1>
