@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import BackHeader from '../../components/common/Headers/BackHeader';
 import ChatInput from '../../components/ChatRoomPage/ChatInput';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ChatModal from '../../components/ChatRoomPage/ChatModal';
 import chatApiService from '../../services/chat';
 import websocketService from '../../services/websocket';
@@ -12,7 +12,6 @@ import useGetMyChatRooms from '../../hooks/mypage/useGetMyChatRooms';
 import { useLocation } from 'react-router-dom';
 import ModalPortal from '../../components/ChatRoomPage/ModalPortal';
 import { debounce } from 'lodash';
-
 
 export default function ChatRoomPage() {
   const { roomId } = useParams();
@@ -33,45 +32,58 @@ export default function ChatRoomPage() {
   const [isCompleted, setIsCompleted] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const topSentinelRef = useRef<HTMLDivElement>(null);
-  const HEADER_H = 56;   // BackHeader 실제 높이에 맞춰 조정 (예: 56~64)
+  const HEADER_H = 56; // BackHeader 실제 높이에 맞춰 조정 (예: 56~64)
   const INPUT_BAR_H = 64;
 
-
-const [kb, setKb] = useState(0);
+  const [kb, setKb] = useState(0);
 
   const location = useLocation();
   const isCompletedFromState = location.state?.isCompleted || false;
 
+  // 모바일 키보드 높이 감지 (작은 변동 무시)
+  useEffect(() => {
+    const vv = (
+      window as Window & typeof globalThis & { visualViewport?: VisualViewport }
+    ).visualViewport;
+    if (!vv) return;
 
-// 모바일 키보드 높이 감지 (작은 변동 무시)
-useEffect(() => {
-  const vv = (window as Window & typeof globalThis & { visualViewport?: VisualViewport }).visualViewport;
-  if (!vv) return;
+    const onResize = () => {
+      const raw = Math.max(
+        0,
+        window.innerHeight - vv.height - (vv.offsetTop || 0)
+      );
+      const CLAMP = 80; // 80px 미만 변화는 주소창/툴바로 간주 → 무시
+      setKb(raw > CLAMP ? raw : 0);
+    };
 
-  const onResize = () => {
-    const raw = Math.max(0, window.innerHeight - vv.height - (vv.offsetTop || 0));
-    const CLAMP = 80; // 80px 미만 변화는 주소창/툴바로 간주 → 무시
-    setKb(raw > CLAMP ? raw : 0);
-  };
+    vv.addEventListener('resize', onResize);
+    vv.addEventListener('scroll', onResize);
+    onResize();
 
-  vv.addEventListener('resize', onResize);
-  vv.addEventListener('scroll', onResize);
-  onResize();
+    return () => {
+      vv.removeEventListener('resize', onResize);
+      vv.removeEventListener('scroll', onResize);
+    };
+  }, []);
 
-  return () => {
-    vv.removeEventListener('resize', onResize);
-    vv.removeEventListener('scroll', onResize);
-  };
-}, []);
+  // 외부 영역의 스크롤 없애기
+  useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
 
-useEffect(() => {
-  if (isCompletedFromState) {
-    setIsCompleted(true);
-  }
-}, [isCompletedFromState]);
-  const {
-    data: myChatRooms,
-  } = useGetMyChatRooms();
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isCompletedFromState) {
+      setIsCompleted(true);
+    }
+  }, [isCompletedFromState]);
+
+  const { data: myChatRooms } = useGetMyChatRooms();
 
   // 해당 채팅방 정보 찾기 (roomId로 찾기)
   const room = myChatRooms?.pages?.[0]?.result?.content?.find(
@@ -94,11 +106,15 @@ useEffect(() => {
     }
   }, [roomId, queryClient]);
 
+  // 초기 메시지 로드
   const loadMessages = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await chatApiService.getChatRoomMessages(Number(roomId), undefined, 20);
-
+      const response = await chatApiService.getChatRoomMessages(
+        Number(roomId),
+        undefined,
+        20
+      );
 
       if (response.isSuccess) {
         // 시간 오름차순 정렬(보장)
@@ -108,14 +124,11 @@ useEffect(() => {
         setMessages(sorted);
         setHasNext(response.result.hasNext);
 
-
         // ✅ 초기에는 바로 맨 아래로 (부드럽지 않게 'auto'가 깔끔)
         requestAnimationFrame(() => scrollToBottom(false));
-
       } else {
         setError(response.message || '메시지를 불러오는데 실패했습니다.');
       }
-
     } catch (err: unknown) {
       console.error('채팅 메시지 로드 오류:', err);
       setError('메시지를 불러오는 중 오류가 발생했습니다.');
@@ -124,6 +137,7 @@ useEffect(() => {
     }
   }, [roomId]);
 
+  // WebSocket 연결 및 이벤트 등록
   const connectWebSocket = useCallback(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -141,14 +155,16 @@ useEffect(() => {
       console.error('roomId가 비어있음, WebSocket 연결 불가');
       return;
     }
+
     websocketService.connect(Number(roomId), token);
 
-    // WebSocket 콜백 등록
+    // WebSocket 이벤트 콜백 등록
     websocketService.onConnect(() => {
       setIsConnected(true);
       setError('');
     });
 
+    // 메시지 처리 로직
     websocketService.onMessage((data: WebSocketChatMessage) => {
       // 현재 사용자 정보 가져오기
       const currentUserId = localStorage.getItem('userId');
@@ -158,6 +174,7 @@ useEffect(() => {
         return;
       }
 
+      // 일반 메시지 분기 처리
       if (data.type === 'TALK') {
         const newChatMessage: ChatMessage = {
           id: data.id,
@@ -172,12 +189,14 @@ useEffect(() => {
           isMine: false,
         };
 
+        // 상태 업데이트: 기존 메시지 뒤에 추가
         setMessages((prev) => {
           const combined = [...prev, newChatMessage];
           // id 중복 제거
           return Array.from(new Map(combined.map((m) => [m.id, m])).values());
         });
 
+        // 멤버 입장 메시지 분기 처리
         // 다른 사람의 메시지가 왔을 때는 자동 스크롤하지 않음 (사용자가 스크롤 위치를 유지할 수 있도록)
       } else if (data.type === 'ENTER') {
         const enterMessage: ChatMessage = {
@@ -194,7 +213,9 @@ useEffect(() => {
         };
 
         setMessages((prev) => [...prev, enterMessage]);
-      } else if (data.type === 'EXIT') {
+      }
+      // 멤버 퇴장 메시지 분기 처리
+      else if (data.type === 'EXIT') {
         const exitMessage: ChatMessage = {
           id: data.id,
           content: data.content,
@@ -225,51 +246,50 @@ useEffect(() => {
   }, [roomId, isConnected]);
 
   // 채팅방 입장 시퀀스
-const enterChatRoom = useCallback(async () => {
-  if (!roomId) return;
-  await loadMessages();
-  connectWebSocket();
-  setTimeout(markMessagesAsRead, 300);
-}, [roomId]); 
+  const enterChatRoom = useCallback(async () => {
+    if (!roomId) return;
+    await loadMessages();
+    connectWebSocket();
+    setTimeout(markMessagesAsRead, 300);
+  }, [roomId]);
 
+  useEffect(() => {
+    if (roomId) {
+      enterChatRoom();
+    }
+    return () => {
+      websocketService.disconnect();
+    };
+  }, [roomId]);
 
-useEffect(() => {
-  if (roomId) {
-    enterChatRoom();
-  }
-  return () => {
-    websocketService.disconnect();
-  };
-}, [roomId]);  
-
-
-const debouncedMarkMessagesAsRead = useCallback(
-  debounce(() => {
-    markMessagesAsRead();
-  }, 500), // 0.5초 내 여러 번 스크롤해도 1번만 실행
-  [markMessagesAsRead]
-)
+  // markMessagesAsRead를 디바운스하여 중복 트리거 방지
+  const debouncedMarkMessagesAsRead = useMemo(
+    () =>
+      debounce(() => {
+        markMessagesAsRead();
+      }, 500),
+    [markMessagesAsRead]
+  );
 
   // 메시지 스크롤시 읽음 처리 및 무한 스크롤 (가이드 4.2에 따라 구현)
-const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
-  const target = e.target as HTMLDivElement;
+  const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
 
-  const isNearBottom = () => {
-    if (!listRef.current) return false;
-    const el = listRef.current;
-    return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    const isNearBottom = () => {
+      if (!listRef.current) return false;
+      const el = listRef.current;
+      return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    };
+
+    if (isNearBottom()) {
+      debouncedMarkMessagesAsRead();
+    }
+
+    const isNearTop = target.scrollTop < 100;
+    if (isNearTop && hasNext && !isLoadingMore) {
+      loadMoreMessages();
+    }
   };
-
-  if (isNearBottom()) {
-    debouncedMarkMessagesAsRead();
-  }
-
-  const isNearTop = target.scrollTop < 100;
-  if (isNearTop && hasNext && !isLoadingMore) {
-    loadMoreMessages();
-  }
-};
-
 
   // 초기 로딩 완료 시에만 스크롤을 맨 아래로 이동
   useEffect(() => {
@@ -286,60 +306,64 @@ const handleMessageScroll = (e: React.UIEvent<HTMLDivElement>) => {
   // 스크롤 이벤트 핸들러 (읽음 처리 포함)
   const handleScroll = handleMessageScroll;
 
+  // 이전(과거) 메시지 로드 함수 (무한 스크롤)
+  const loadMoreMessages = useCallback(async () => {
+    if (isLoadingMore || !hasNext) return;
+    if (!listRef.current) return;
 
-const loadMoreMessages = async () => {
-  if (isLoadingMore || !hasNext) return;
-  if (!listRef.current) return;
+    try {
+      setIsLoadingMore(true);
 
-  try {
-    setIsLoadingMore(true);
+      // 스크롤 보정에 사용할 이전 컨테이너 높이와 top 위치 저장
+      const container = listRef.current;
+      const prevScrollHeight = container.scrollHeight;
+      const prevScrollTop = container.scrollTop;
 
-    const container = listRef.current;
-    const prevScrollHeight = container.scrollHeight;
-    const prevScrollTop = container.scrollTop;
+      // 가장 오래된 메시지의 sendAt을 기준으로 그 이전 데이터를 요청
+      const oldestMessageTime = messages[0]?.sendAt;
+      if (!oldestMessageTime) {
+        setIsLoadingMore(false);
+        return;
+      }
 
-    const oldestMessageTime = messages[0]?.sendAt;
-    if (!oldestMessageTime) {
+      const response = await chatApiService.getChatRoomMessages(
+        Number(roomId),
+        oldestMessageTime,
+        20
+      );
 
-      setIsLoadingMore(false);
-      return;
+      if (response.isSuccess) {
+        setMessages((prev) => {
+          const combined = [...response.result.messages, ...prev];
+          const unique = Array.from(
+            new Map(combined.map((m) => [m.id, m])).values()
+          );
+          // 시간 오름차순 정렬 유지
+          return unique.sort(
+            (a, b) =>
+              new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()
+          );
+        });
+        setHasNext(response.result.hasNext);
+
+        // ✅ prepend 후 위치 보정
+        requestAnimationFrame(() => {
+          if (!listRef.current) return;
+          const newScrollHeight = listRef.current.scrollHeight;
+          listRef.current.scrollTop =
+            newScrollHeight - prevScrollHeight + prevScrollTop;
+        });
+      } else {
+        console.error('이전 메시지 로드 실패:', response.message);
+      }
+    } catch (err) {
+      console.error('이전 메시지 로드 오류:', err);
+    } finally {
+      setTimeout(() => setIsLoadingMore(false), 200);
     }
+  }, [isLoadingMore, hasNext, messages, roomId]);
 
-    const response = await chatApiService.getChatRoomMessages(
-      Number(roomId),
-      oldestMessageTime,
-      20
-    );
-
-    if (response.isSuccess) {
-      setMessages((prev) => {
-        const combined = [...response.result.messages, ...prev];
-        const unique = Array.from(new Map(combined.map((m) => [m.id, m])).values());
-        // 시간 오름차순 정렬 유지
-        return unique.sort(
-          (a, b) => new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()
-        );
-      });
-      setHasNext(response.result.hasNext);
-
-      // ✅ prepend 후 위치 보정
-      requestAnimationFrame(() => {
-        if (!listRef.current) return;
-        const newScrollHeight = listRef.current.scrollHeight;
-        listRef.current.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
-      });
-    } else {
-      console.error('이전 메시지 로드 실패:', response.message);
-    }
-  } catch (err) {
-    console.error('이전 메시지 로드 오류:', err);
-  } finally {
-    setIsLoadingMore(false);
-  }
-};
-
-
-
+  // 메시지 전송
   const sendMessage = () => {
     if (!newMessage.trim() || !isConnected) return;
 
@@ -378,6 +402,7 @@ const loadMoreMessages = async () => {
     websocketService.sendMessage(messageData);
   };
 
+  // Enter키 단일 전송 처리
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -386,13 +411,12 @@ const loadMoreMessages = async () => {
   };
 
   const scrollToBottom = (smooth: boolean = true) => {
-  if (messagesEndRef.current) {
-    messagesEndRef.current.scrollIntoView({
-      behavior: smooth ? 'smooth' : 'auto',
-    });
-  }
-};
-
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: smooth ? 'smooth' : 'auto',
+      });
+    }
+  };
 
   const isMyMessage = (message: ChatMessage) => {
     return message.isMine;
@@ -402,6 +426,7 @@ const loadMoreMessages = async () => {
     return message.type === 'ENTER' || message.type === 'EXIT';
   };
 
+  // 시간 포맷팅
   const formatTime = (timeString: string) => {
     const date = new Date(timeString);
     const hours = date.getHours();
@@ -435,6 +460,7 @@ const loadMoreMessages = async () => {
     return currentDate !== previousDate;
   };
 
+  // 채팅방 나가기
   const leaveRoom = async () => {
     try {
       const response = await chatApiService.leaveChatRoom(Number(roomId));
@@ -449,6 +475,7 @@ const loadMoreMessages = async () => {
     }
   };
 
+  // 모달창 참조
   useEffect(() => {
     const handleClickModalBg = (e: MouseEvent) => {
       if (modalBg.current && e.target === modalBg.current) {
@@ -461,27 +488,27 @@ const loadMoreMessages = async () => {
   }, [isModalOpen]);
 
   useEffect(() => {
-  if (!topSentinelRef.current || !listRef.current) return;
+    if (!topSentinelRef.current || !listRef.current) return;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting && hasNext && !isLoadingMore) {
-        // 위에 닿으면 추가 로드
-        loadMoreMessages();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasNext && !isLoadingMore) {
+          // 위에 닿으면 추가 로드
+          loadMoreMessages();
+        }
+      },
+      {
+        root: listRef.current,
+        threshold: 0,
       }
-    },
-    {
-      root: listRef.current,
-      threshold: 0,
-    }
-  );
+    );
 
-  observer.observe(topSentinelRef.current);
-  return () => observer.disconnect();
-}, [hasNext, isLoadingMore, loadMoreMessages]);
+    observer.observe(topSentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasNext, isLoadingMore, loadMoreMessages]);
 
-
+  // 메시지 전송
   const handleSubmit = () => {
     sendMessage();
   };
@@ -494,19 +521,19 @@ const loadMoreMessages = async () => {
     <div className="flex justify-center bg-white h-[100dvh] overflow-x-hidden">
       {/* 내부 컨테이너: 상대위치 필요 (fixed 중앙정렬용) */}
       <div className="relative w-full max-w-[480px] bg-white flex flex-col h-full">
-
-        {/* 헤더 - 고정 */} 
-        <div className="flex-shrink-0 bg-white border-b border-gray-200 sticky top-0 z-90"
-          style={{  paddingTop: `0px`}}> 
+        {/* 헤더 - 고정 */}
+        <div
+          className="flex-shrink-0 bg-white border-b border-gray-200 sticky top-0 z-90"
+          style={{ paddingTop: `0px` }}
+        >
           <div className="mx-auto w-full max-w-[480px]">
-          <BackHeader
-            title={headerTitle}
-            isChatRoom={true}
-            onClick={() => setIsModalOpen(true)}
-          />
+            <BackHeader
+              title={headerTitle}
+              isChatRoom={true}
+              onClick={() => setIsModalOpen(true)}
+            />
+          </div>
         </div>
-        </div>
-
 
         {/* 3) 메시지 영역: 유일한 세로 스크롤러 */}
         <div
@@ -519,13 +546,12 @@ const loadMoreMessages = async () => {
             onScroll={handleScroll}
             className="h-full overflow-y-auto px-4"
             style={{
-                paddingTop: `${HEADER_H+100}px`,
+              paddingTop: `${HEADER_H + 100}px`,
               paddingBottom: `calc(${INPUT_BAR_H}px + ${kb}px + env(safe-area-inset-bottom, 0px) + 8px)`,
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
             }}
           >
-
             {error && (
               <div className="p-4 mt-4 mb-4 mx-0 bg-red-100 border border-red-400 text-red-700 rounded">
                 <p>{error}</p>
@@ -543,7 +569,7 @@ const loadMoreMessages = async () => {
                     다시 연결 시도
                   </button>
                 </div>
-                  <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} />
               </div>
             )}
 
@@ -554,18 +580,26 @@ const loadMoreMessages = async () => {
                 <div className="text-center py-8">
                   <p>아직 메시지가 없습니다.</p>
                   {!isConnected && (
-                    <p className="text-orange-600 mt-2">WebSocket 연결이 필요합니다.</p>
+                    <p className="text-orange-600 mt-2">
+                      WebSocket 연결이 필요합니다.
+                    </p>
                   )}
                 </div>
               ) : (
                 <>
                   {isLoadingMore && (
-                    <div className="text-center py-2">이전 메시지를 불러오는 중...</div>
+                    <div className="text-center py-2" ref={topSentinelRef}>
+                      이전 메시지를 불러오는 중...
+                    </div>
                   )}
 
                   {messages.map((message, index) => {
-                    const previousMessage = index > 0 ? messages[index - 1] : null;
-                    const showDateDivider = shouldShowDateDivider(message, previousMessage);
+                    const previousMessage =
+                      index > 0 ? messages[index - 1] : null;
+                    const showDateDivider = shouldShowDateDivider(
+                      message,
+                      previousMessage
+                    );
 
                     return (
                       <div key={message.id} className="w-full">
@@ -579,12 +613,16 @@ const loadMoreMessages = async () => {
 
                         {isSystemMessage(message) ? (
                           <div className="text-center py-1 mb-1">
-                            <span className="text-xs text-gray-500">{message.content}</span>
+                            <span className="text-xs text-gray-500">
+                              {message.content}
+                            </span>
                           </div>
                         ) : (
                           <div
                             className={`flex items-end gap-1 pb-1 w-full ${
-                              isMyMessage(message) ? 'flex-row-reverse ml-auto' : 'justify-start'
+                              isMyMessage(message)
+                                ? 'flex-row-reverse ml-auto'
+                                : 'justify-start'
                             }`}
                           >
                             {!isMyMessage(message) && (
@@ -597,7 +635,9 @@ const loadMoreMessages = async () => {
 
                             <div
                               className={`flex flex-col gap-1 ${
-                                isMyMessage(message) ? 'items-end' : 'items-start'
+                                isMyMessage(message)
+                                  ? 'items-end'
+                                  : 'items-start'
                               }`}
                             >
                               {!isMyMessage(message) && (
@@ -607,7 +647,9 @@ const loadMoreMessages = async () => {
                               )}
                               <div
                                 className={`flex items-end gap-1 ${
-                                  isMyMessage(message) ? 'flex-row-reverse' : 'flex-row'
+                                  isMyMessage(message)
+                                    ? 'flex-row-reverse'
+                                    : 'flex-row'
                                 }`}
                               >
                                 <p
@@ -636,7 +678,7 @@ const loadMoreMessages = async () => {
           </div>
         </div>
 
-       {/* 고정 입력바 */}
+        {/* 고정 입력바 */}
         <div
           className="fixed inset-x-0 z-[80] bg-white border-t border-gray-200"
           style={{
@@ -644,7 +686,10 @@ const loadMoreMessages = async () => {
             transform: 'translateZ(0)', // iOS 레이어 안정화
           }}
         >
-          <div className="mx-auto w-full max-w-[480px] px-4 py-2" style={{ height: INPUT_BAR_H }}>
+          <div
+            className="mx-auto w-full max-w-[480px] px-4 py-2"
+            style={{ height: INPUT_BAR_H }}
+          >
             <ChatInput
               message={newMessage}
               onChange={setNewMessage}
@@ -655,19 +700,16 @@ const loadMoreMessages = async () => {
           </div>
         </div>
 
-
-
         {isModalOpen && (
           <ModalPortal>
             <ChatModal
-              panelRef={modalBg}          // ← 이름 바뀜 (아래 2번 참고)
+              panelRef={modalBg} // ← 이름 바뀜 (아래 2번 참고)
               roomId={roomId}
               onLeaveRoom={leaveRoom}
               onClose={() => setIsModalOpen(false)}
             />
           </ModalPortal>
         )}
-
       </div>
     </div>
   );

@@ -15,7 +15,8 @@ const SearchBoxPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addPlace } = usePlanStore();
-  const { searchHistory, updateHistory, removeHistoryItem } = useSearchHistory(10);
+  const { searchHistory, updateHistory, removeHistoryItem } =
+    useSearchHistory(10);
   const [searchInput, setSearchInput] = useState('');
   const [isAfterSearch, setIsAfterSearch] = useState(false);
   const [searchResults, setSearchResults] = useState<TouristSpot[]>([]);
@@ -57,7 +58,11 @@ const SearchBoxPage = () => {
     const { from, dayIndex, locationIdToReplace, mode } = location.state || {};
 
     if (from === '/plan') {
-      addPlace({ contentId: Number(spot.contentid), spotName: spot.title, dayIndex });
+      addPlace({
+        contentId: Number(spot.contentid),
+        spotName: spot.title,
+        dayIndex,
+      });
       return navigate(from);
     }
 
@@ -88,7 +93,11 @@ const SearchBoxPage = () => {
       });
       return navigate(from);
     }
-    navigate(`/search-detail/${spot.contentid}`);
+    navigate(`/search-detail/${spot.contentid}`, {
+      state: {
+        contentTypeId: spot.contenttypeid,
+      },
+    });
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -97,13 +106,14 @@ const SearchBoxPage = () => {
 
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen">
-      <div className="w-full max-w-[480px] pb-10 px-4 font-[Pretendard]">
+      <div className="w-full max-w-[480px] pb-10 font-[Pretendard]">
         <div className="flex items-center w-full gap-2 mt-5">
           <button
             type="button"
             className="cursor-pointer w-6 h-6 z-20"
-            onClick={() => navigate(-1)}>
-            <BackIcon/>
+            onClick={() => navigate(-1)}
+          >
+            <BackIcon />
           </button>
           <div className="flex-1 h-[40px] flex items-center border border-[#F78938] rounded-[20px] bg-[#FFFFFD] px-4">
             <input
@@ -117,12 +127,15 @@ const SearchBoxPage = () => {
           </div>
           <SearchIcon
             className="w-[30px] h-[30px] text-[#F78938] cursor-pointer"
-            onClick={handleSearch} />
+            onClick={handleSearch}
+          />
         </div>
 
         {!isAfterSearch ? (
           <div className="mt-5">
-            <p className="text-black text-base font-semibold mb-4">최근 검색어</p>
+            <p className="text-black text-base font-semibold mb-4">
+              최근 검색어
+            </p>
             <ul className="flex flex-col gap-3">
               {searchHistory.map((item, index) => (
                 <li
@@ -133,7 +146,9 @@ const SearchBoxPage = () => {
                     handleSearch();
                   }}
                 >
-                  <span className="text-sm text-[#5D5D5D] cursor-pointer">{item}</span>
+                  <span className="text-sm text-[#5D5D5D] cursor-pointer">
+                    {item}
+                  </span>
                   <button
                     type="button"
                     className="w-4 h-4 flex items-center justify-center"
@@ -151,11 +166,14 @@ const SearchBoxPage = () => {
         ) : (
           <div className="mt-5">
             {searchResults.length > 0 ? (
-               <PlaceList spots={searchResults} onCardClick={handleCardClick} />
+              <PlaceList spots={searchResults} onCardClick={handleCardClick} />
             ) : (
-              <p className="text-center text-gray-500 mt-10">검색 결과가 없습니다.</p>
+              <p className="text-center text-gray-500 mt-10">
+                검색 결과가 없습니다.
+              </p>
             )}
-          </div>)}
+          </div>
+        )}
       </div>
     </div>
   );

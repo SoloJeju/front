@@ -5,7 +5,6 @@ import type {
   LoginResponse,
   SignupRequest,
   SignupResponse,
-  SendEmailCodeRequest,
   CheckEmailCodeRequest,
   CheckEmailRequest,
   CheckNicknameRequest,
@@ -14,8 +13,7 @@ import type {
   ChangePasswordRequest,
 } from '../types/auth';
 
-
-// publicAxios (토큰 불필요) 
+// publicAxios (토큰 불필요)
 
 // 로그인 API
 export const login = async (
@@ -29,11 +27,15 @@ export const login = async (
 };
 
 // 토큰 갱신 API
-export const reissueToken = async (refreshToken: string): Promise<CommonResponse<{ accessToken: string }>> => {
-  const { data } = await publicAxios.post<CommonResponse<{ accessToken: string }>>('/api/auth/reissue', {
+export const reissueToken = async (
+  refreshToken: string
+): Promise<CommonResponse<{ accessToken: string }>> => {
+  const { data } = await publicAxios.post<
+    CommonResponse<{ accessToken: string }>
+  >('/api/auth/reissue', {
     refreshToken,
   });
-  
+
   // 토큰 갱신 성공 시 새로운 accessToken 저장 (기존 로직 유지)
   if (data.isSuccess && data.result) {
     const currentRefreshToken = localStorage.getItem('refreshToken');
@@ -50,7 +52,9 @@ export const reissueToken = async (refreshToken: string): Promise<CommonResponse
 };
 
 // 사용자 회원가입 API
-export const signup = async (signupData: SignupRequest): Promise<CommonResponse<SignupResponse>> => {
+export const signup = async (
+  signupData: SignupRequest
+): Promise<CommonResponse<SignupResponse>> => {
   const { data } = await publicAxios.post<CommonResponse<SignupResponse>>(
     '/api/auth/userSignup',
     signupData
@@ -60,14 +64,19 @@ export const signup = async (signupData: SignupRequest): Promise<CommonResponse<
 
 // 이메일 인증코드 전송 API
 export const sendEmailCode = async (
-  requestData: SendEmailCodeRequest
-) : Promise<CommonResponse<string>> => {
+  email: string
+): Promise<CommonResponse<string>> => {
   const { data } = await publicAxios.post<CommonResponse<string>>(
     '/api/auth/send-email',
-    requestData
+    email,
+    {
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }
   );
   return data;
-}
+};
 
 // 이메일 인증코드 번호 체크 API
 export const checkEmailCode = async (
@@ -89,7 +98,7 @@ export const checkEmail = async (
     { params: requestData }
   );
   return data;
-}
+};
 
 // 닉네임 중복확인 API
 export const checkNickname = async (
@@ -113,16 +122,16 @@ export const validatePassword = async (
   return data;
 };
 
-
 // authAxios (토큰 필요)
 
 // 로그아웃 API
 export const logout = async (): Promise<CommonResponse<string>> => {
-  const { data } = await authAxios.delete<CommonResponse<string>>('/api/auth/logout');  
+  const { data } =
+    await authAxios.delete<CommonResponse<string>>('/api/auth/logout');
   return data;
 };
 
-// 카카오 프로필 API 
+// 카카오 프로필 API
 export const createKakaoProfile = async (
   body: KakaoProfileRequest
 ): Promise<CommonResponse<KakaoProfileResponse>> => {
@@ -131,16 +140,16 @@ export const createKakaoProfile = async (
     body
   );
   return data;
-}
+};
 
 // 비밀번호 변경 API
 export const changePassword = async (
-  requestData: ChangePasswordRequest,
+  requestData: ChangePasswordRequest
 ): Promise<CommonResponse<string>> => {
   const { data } = await authAxios.patch<CommonResponse<string>>(
     '/api/auth/password',
-    null, 
-    { params: requestData }, 
+    null,
+    { params: requestData }
   );
   return data;
 };

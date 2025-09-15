@@ -9,6 +9,8 @@ import PostNone from '../../assets/post-none.svg';
 import { useGetTouristList } from '../../hooks/tourist/useGetTouristList';
 import type { ContentTypeId, Difficulty } from '../../types/tourist';
 import ScrollTopButton from '../../components/SearchPage/ScrollTopButton';
+import SkeletonPlaceList from '../../components/SkeletonUI/SkeletonPlaceList';
+import type { Category } from '../../types/searchmap';
 
 const SIGUNGU_CODE_MAP: { [key: string]: number | undefined } = {
   '전체': undefined, '남제주군': 1, '북제주군': 2, '서귀포시': 3, '제주시': 4,
@@ -23,7 +25,7 @@ const SearchPage = () => {
   const loader = useRef<HTMLDivElement | null>(null);
 
   const [selectedRegion, setSelectedRegion] = useState('전체');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('전체');
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('NONE');
 
   const getContentTypeIdForFilter = () => {
@@ -80,10 +82,6 @@ const SearchPage = () => {
       },
     });
   };
-  // 로딩 스피너 만들어!!!!
-  if (isLoading) return <div className="text-center p-4">로딩 중...</div>;
-  if (isError)
-    return <div className="text-center p-4">오류가 발생했습니다.</div>;
 
   return (
     <div>
@@ -107,7 +105,11 @@ const SearchPage = () => {
           selectedDifficulty={selectedDifficulty}
           onDifficultyChange={setSelectedDifficulty}
         />
-        {isEmpty ? (
+        {isLoading ? (
+          <SkeletonPlaceList />
+        ) : isError ? (
+          <div className="text-center p-4">오류가 발생했습니다.</div>
+        ) : isEmpty ? (
           <div className="pt-20 pb-20 text-center flex flex-col items-center text-gray-500 font-[Pretendard]">
             <img
               src={PostNone}
@@ -120,13 +122,8 @@ const SearchPage = () => {
         ) : (
           <>
             <PlaceList spots={spots} onCardClick={handleCardClick} />
-            <div ref={loader} style={{ height: 50 }} />
-            {isFetchingNextPage && (
-              <p className="text-center p-4 text-[#F78938]">
-                더 불러오는 중...
-              </p>
-            )}
-            
+            <div ref={loader}/>
+            {isFetchingNextPage && <SkeletonPlaceList />}
           </>
         )}
       </div>

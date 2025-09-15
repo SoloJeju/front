@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 type RoomCardProps = {
   id: number | undefined;
-  isEnd: boolean; // true: 모집완료, false: 모집중
   title: string | undefined;
   location: string | undefined;
   date: Date | string | undefined;
@@ -21,7 +20,6 @@ type RoomCardProps = {
 
 const RoomCard = ({
   id,
-  isEnd,
   title,
   location,
   date,
@@ -30,7 +28,7 @@ const RoomCard = ({
   imageUrl,
   imageName,
   gender,
-  hasUnreadMessages
+  hasUnreadMessages,
 }: RoomCardProps) => {
   const navigate = useNavigate();
 
@@ -58,14 +56,14 @@ const RoomCard = ({
           <div className="flex items-center gap-1">
             <div
               className={`text-xs font-medium font-['Pretendard'] leading-3 ${
-                isEnd
+                pre === all
                   ? 'text-[#666666]'
                   : hasUnreadMessages
                     ? 'text-[#F78938] font-bold'
                     : 'text-[#F78938]'
               }`}
             >
-              {isEnd ? '모집완료' : '모집중'}
+              {pre === all ? '모집완료' : '모집중'}
             </div>
             <div
               className={`px-1 py-0.5 rounded-sm text-xs font-medium font-['Pretendard'] ${

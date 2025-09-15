@@ -59,6 +59,7 @@ import InquiryDetailPage from './pages/inquiry-page/inquiry-detail';
 
 import SafetyCheckPage from './pages/safety-check-page';
 import StatsPage from './pages/safety-check-page/stats-page';
+import EditReviewPage from './pages/plus-page/edit-review-page';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const queryClient = new QueryClient();
@@ -84,7 +85,7 @@ const publicRoutes: RouteObject[] = [
       { path: 'report/:id', element: <ReportDetailPage /> },
       { path: 'inquiry/:id', element: <InquiryDetailPage /> },
 
-      { path: 'oauth2/code/kakao', element: <KakaoCallbackPage /> },
+      { path: 'auth/kakao/callback', element: <KakaoCallbackPage /> },
     ],
   },
 ];
@@ -97,6 +98,7 @@ const protectedRoutes: RouteObject[] = [
       { path: 'alarm', element: <AlarmPage /> },
 
       { path: 'write-review', element: <WriteReviewPage /> },
+      { path: 'edit-review/:reviewId', element: <EditReviewPage /> },
       { path: 'plan', element: <PlanPage /> },
       { path: 'plan/:planId', element: <PlanDetailPage /> },
       { path: 'plan/ai-plan', element: <AIPlanPage /> },
@@ -141,7 +143,13 @@ const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          style: { wordBreak: 'keep-all', whiteSpace: 'pre-wrap' },
+        }}
+      />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );

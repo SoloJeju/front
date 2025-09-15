@@ -258,7 +258,7 @@ const InquiryPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center font-Pretendard">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center font-[Pretendard]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F78938] mx-auto"></div>
           <p className="mt-4 text-[#666666]">문의 카테고리를 불러오는 중...</p>
@@ -268,7 +268,7 @@ const InquiryPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-Pretendard">
+    <div className="min-h-screen bg-white font-[Pretendard]">
       {/* 헤더 */}
       <header className="relative bg-[#F78938]">
         <div className="px-4 pt-4 pb-2">
@@ -370,7 +370,7 @@ const InquiryPage: React.FC = () => {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="문의 제목을 입력해주세요 (최대 200자)"
               maxLength={200}
-              className="w-full px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] font-Pretendard"
+              className="w-full px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] font-[Pretendard]"
               required
             />
             <div className="flex justify-between items-center mt-2">
@@ -392,7 +392,7 @@ const InquiryPage: React.FC = () => {
               placeholder="문의 내용을 자세히 입력해주세요 (최대 5000자)"
               maxLength={5000}
               rows={6}
-              className="w-full px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] resize-none font-Pretendard"
+              className="w-full px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] resize-none font-[Pretendard]"
               required
             />
             <div className="flex justify-between items-center mt-2">
@@ -495,7 +495,7 @@ const InquiryPage: React.FC = () => {
                     value={url}
                     onChange={(e) => updateAttachmentUrl(index, e.target.value)}
                     placeholder="파일 URL을 입력해주세요 (예: 이미지, 문서 등)"
-                    className="flex-1 px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] font-Pretendard"
+                    className="flex-1 px-4 py-3 border border-[#FFCEAA] rounded-xl focus:ring-2 focus:ring-[#F78938] focus:border-[#F78938] font-[Pretendard]"
                   />
                   {attachmentUrls.length > 1 && (
                     <button
@@ -527,7 +527,7 @@ const InquiryPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="flex-1 px-4 py-3 border border-[#FFCEAA] text-[#666666] rounded-xl hover:bg-[#FFF8F0] transition-colors font-Pretendard"
+                className="flex-1 px-4 py-3 border border-[#FFCEAA] text-[#666666] rounded-xl hover:bg-[#FFF8F0] transition-colors font-[Pretendard]"
               >
                 취소
               </button>
@@ -539,7 +539,7 @@ const InquiryPage: React.FC = () => {
                   !title.trim() ||
                   !content.trim()
                 }
-                className="flex-1 px-4 py-3 bg-[#F78938] text-white rounded-xl hover:bg-[#F78938]/90 disabled:bg-[#B4B4B4] disabled:cursor-not-allowed transition-colors font-Pretendard"
+                className="flex-1 px-4 py-3 bg-[#F78938] text-white rounded-xl hover:bg-[#F78938]/90 disabled:bg-[#B4B4B4] disabled:cursor-not-allowed transition-colors font-[Pretendard]"
               >
                 {isSubmitting ? '문의 등록 중...' : '문의 등록'}
               </button>

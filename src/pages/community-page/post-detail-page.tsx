@@ -140,7 +140,6 @@ export default function PostDetailPage() {
               isScraped={postDetail.isScraped}
               chatRoomId={postDetail.chatRoomId}
               chatRoomTitle={postDetail.title}
-              isEnd={postDetail.recruitmentStatus}
               location={postDetail.spotName}
               date={postDetail.joinDate}
               pre={postDetail.currentMembers}

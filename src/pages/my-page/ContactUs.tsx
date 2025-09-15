@@ -47,7 +47,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="font-Pretendard bg-white min-h-screen">
+    <div className="font-[Pretendard] bg-white min-h-screen">
       {/* 헤더 영역 */}
       <div className="w-full max-w-[480px] mx-auto">
         <BackHeader title="1:1 문의하기" />

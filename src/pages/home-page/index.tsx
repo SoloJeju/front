@@ -153,7 +153,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 px-4">
+    <div className="flex flex-col flex-1">
       <div className="w-full h-60 relative">
         <Swiper
           loop={true}
@@ -252,6 +252,7 @@ export default function HomePage() {
               <RecommendPlace
                 key={spot.contentId}
                 id={spot.contentId}
+                typeId={spot.contentTypeId}
                 title={spot.title}
                 image={spot.firstImage}
                 level={spot.difficulty}
@@ -271,6 +272,7 @@ export default function HomePage() {
               <RecentReviewCard
                 key={review.contentId}
                 id={review.contentId}
+                typeId={review.contentTypeId}
                 name={review.spotName}
                 image={review.spotImage}
                 comment={review.content}
@@ -297,7 +299,6 @@ export default function HomePage() {
               <RoomCard
                 key={room.roomId}
                 id={room.roomId}
-                isEnd={room.currentParticipants === room.maxParticipants}
                 title={room.title}
                 location={room.spotName}
                 date={room.scheduledDate}

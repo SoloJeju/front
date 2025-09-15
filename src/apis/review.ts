@@ -1,5 +1,5 @@
 import { authAxios } from './axios';
-import type { ReviewTagsResponse, CreateReviewPayload, CreateReviewResponse } from '../types/review';
+import type { ReviewTagsResponse, CreateReviewPayload, CreateReviewResponse, ReviewDetailResponse, UpdateReviewPayload, UpdateReviewResponse } from '../types/review';
 import type { CommonResponse } from '../types/common'; 
 
 export const getReviewTags = async (contentTypeId: number): Promise<ReviewTagsResponse> => {
@@ -25,5 +25,20 @@ export const verifyReceipt = async (contentId: number, file: File): Promise<Comm
       },
     },
   );
+  return data;
+};
+
+export const getReviewDetail = async (reviewId: number): Promise<ReviewDetailResponse> => {
+  const { data } = await authAxios.get(`/api/reviews/${reviewId}/detail`);
+  return data;
+};
+
+export const updateReview = async (reviewId: number, payload: UpdateReviewPayload): Promise<UpdateReviewResponse> => {
+  const { data } = await authAxios.patch(`/api/reviews/${reviewId}`, payload);
+  return data;
+};
+
+export const deleteReview = async (reviewId: number): Promise<CommonResponse<string>> => {
+  const { data } = await authAxios.delete(`/api/reviews/${reviewId}`);
   return data;
 };

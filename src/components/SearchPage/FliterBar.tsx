@@ -11,6 +11,7 @@ import LeisureIcon from '../../assets/category-leisure.svg?react';
 import ShoppingIcon from '../../assets/category-shopping.svg?react';
 import CourseIcon from '../../assets/category-course.svg?react';
 import CultureIcon from '../../assets/category-culture.svg?react';
+import type { Category } from '../../types/searchmap';
 
 const defaultRegions = ['전체', '남제주군', '북제주군', '서귀포시', '제주시'];
 const defaultCategories = [
@@ -28,8 +29,9 @@ const defaultCategories = [
 interface FilterBarProps {
   selectedRegion: string;
   onRegionChange: React.Dispatch<React.SetStateAction<string>>;
-  selectedCategory: string;
-  onCategoryChange: React.Dispatch<React.SetStateAction<string>>;
+  
+  selectedCategory: Category;
+  onCategoryChange: React.Dispatch<React.SetStateAction<Category>>;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -43,7 +45,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div>
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between py-2">
         <div className="flex items-center relative">
           <span className="text-black font-[Pretendard] text-2xl font-bold leading-[26px] tracking-[-0.48px]">
             {selectedRegion === '전체' ? '제주도' : selectedRegion}
@@ -53,7 +55,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
             className="ml-2"
             aria-label="지역 선택"
           >
-            <DropdownIcon className="w-6 h-6" />
+            <DropdownIcon className={`w-6 h-6 transform transition-transform ${showRegionDropdown ? 'rotate-180' : ''}`} />
           </button>
 
           {showRegionDropdown && (
@@ -64,7 +66,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
               {defaultRegions.map((region) => (
                 <button
                   key={region}
-                  className={`w-full px-4 py-2 text-left font-[Pretendard] text-base font-medium leading-[18px] tracking-[-0.32px] hover:bg-gray-100
+                  className={`w-full py-2 text-left font-[Pretendard] text-base font-medium leading-[18px] tracking-[-0.32px] hover:bg-gray-100
                     ${selectedRegion === region ? 'text-black' : 'text-[#666]'}`}
                   onClick={() => {
                     onRegionChange(region);
@@ -85,14 +87,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
         </div>
       </div>
 
-      <div className="flex gap-4 px-4 py-3 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-4 py-3 overflow-x-auto scrollbar-hide">
         {defaultCategories.map((category, index) => {
           const IconComponent = category.icon;
           return (
             <button
               key={category.label + index}
-              onClick={() => onCategoryChange(category.label)}
-            >
+              onClick={() => onCategoryChange(category.label as Category)}>
+
               <IconComponent
                 className={`w-16 h-16 ${selectedCategory === category.label ? 'opacity-100' : 'opacity-60'}`}
                 style={{ color: selectedCategory === category.label ? '#FFF7D1' : '#FFFFFD' }}

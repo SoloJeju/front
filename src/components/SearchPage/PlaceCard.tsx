@@ -21,7 +21,7 @@ const PlaceCard = ({
 
   return (
     <div
-      className="flex w-full h-[92px] bg-[var(--white-2,#FFFFFD)] items-center px-4 font-[Pretendard] cursor-pointer"
+      className="flex w-full h-[92px] bg-[var(--white-2,#FFFFFD)] items-center font-[Pretendard] cursor-pointer"
       style={{ borderBottom: '1px solid #F78938' }}
       onClick={() => onClick(contentid, contenttypeid)}
     >
@@ -49,14 +49,14 @@ const PlaceCard = ({
               className={`px-1 py-0.5 font-bold text-[10px] rounded-sm ${
                 difficulty === 'EASY'
                   ? 'text-[#006259] bg-[#C8F5DA]'
-                  : difficulty === 'NORMAL'
-                    ? 'text-[#FFC32A] bg-[#FFEE8C]'
+                  : difficulty === 'MEDIUM'
+                    ? 'text-[#F78937] bg-[#FFED8C]'
                     : difficulty === 'HARD'
                       ? 'text-[#FF3E3E] bg-[#FFBBBB]'
                       : 'text-[#707070] bg-[#C2C6C4]'
               }`}
             >
-              {difficulty}
+              {difficulty === 'MEDIUM' ? 'NORMAL' : difficulty}
             </span>
           )}
         </div>

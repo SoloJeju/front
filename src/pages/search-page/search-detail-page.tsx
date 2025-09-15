@@ -20,6 +20,7 @@ import useGetInfiniteSpotImages from '../../hooks/tourist/useGetInfiniteSpotImag
 import { useInView } from 'react-intersection-observer';
 import useGetInfiniteReveiws from '../../hooks/tourist/useGetInfiniteReveiws';
 import useGetChatRooms from '../../hooks/tourist/useGetChatRooms';
+import PostNone from '/src/assets/post-none.svg';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -194,9 +195,9 @@ export default function SearchDetailPage() {
           </div>
         )}
 
-        <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6">
+        <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6  font-[pretendard]">
           <p
-            className={`w-fit px-0.5 py-1 font-[pretendard] font-bold text-[10px] rounded-sm   ${spotDetailData?.difficulty === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : spotDetailData?.difficulty === 'NORMAL' ? 'text-[#FFC32A] bg-[#FFEE8C]' : spotDetailData?.difficulty === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
+            className={`w-fit px-1 py-0.5 font-bold text-[10px] rounded-sm   ${spotDetailData?.difficulty === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : spotDetailData?.difficulty === 'NORMAL' ? 'text-[#FFC32A] bg-[#FFEE8C]' : spotDetailData?.difficulty === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
           >
             {spotDetailData?.difficulty}
           </p>
@@ -227,8 +228,8 @@ export default function SearchDetailPage() {
               <span
                 className={
                   activeTab === t.label
-                    ? 'text-neutral-900 font-Pretendard text-[14px] font-medium leading-[16px] tracking-[-0.28px]'
-                    : 'text-[#666] font-Pretendard text-[14px] font-medium leading-[16px] tracking-[-0.28px]'
+                    ? 'text-neutral-900 font-[Pretendard] text-[14px] font-medium leading-[16px] tracking-[-0.28px]'
+                    : 'text-[#666] font-[Pretendard] text-[14px] font-medium leading-[16px] tracking-[-0.28px]'
                 }
               >
                 {t.label}
@@ -294,28 +295,41 @@ export default function SearchDetailPage() {
 
         {activeTab === '사진' && (
           <>
-            <div className="columns-2 gap-2">
-              {spotImages.pages.flatMap((page) => {
-                const spotImage = page.result.images ?? [];
-                const heights = ['h-40', 'h-48', 'h-60'];
-                return spotImage?.map((img, idx) => {
-                  const heightClass =
-                    heights[Math.floor(Math.random() * heights.length)];
-                  return (
-                    <div
-                      key={idx}
-                      className={`mb-2 rounded-lg overflow-hidden ${heightClass}`}
-                    >
-                      <img
-                        src={img.imageUrl}
-                        alt={img.imageName}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  );
-                });
-              })}
-            </div>
+            {spotImages.pages.flatMap((page, idx) => {
+              const spotImage = page.result.images ?? [];
+              const heights = ['h-40', 'h-48', 'h-60'];
+
+              return spotImage.length > 0 ? (
+                <div key={idx} className="columns-2 gap-2">
+                  {spotImage.map((img, idx) => {
+                    const heightClass =
+                      heights[Math.floor(Math.random() * heights.length)];
+                    return (
+                      <div
+                        key={idx}
+                        className={`mb-2 rounded-lg overflow-hidden ${heightClass}`}
+                      >
+                        <img
+                          src={img.imageUrl}
+                          alt={img.imageName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  key={idx}
+                  className="pt-15 flex flex-col justify-center items-center w-full max-w-[480px] h-full"
+                >
+                  <img src={PostNone} className="w-20 h-20" />
+                  <p className="font-[pretendard] font-medium text-[#B4B4B4]">
+                    사진이 아직 없어요
+                  </p>
+                </div>
+              );
+            })}
 
             <div ref={imageRef}></div>
           </>
@@ -327,7 +341,7 @@ export default function SearchDetailPage() {
               <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
                 <span className="text-[#F78938]">
                   {spotDetailData?.basic.title}
-                </span>{' '}
+                </span>
                 다녀오셨다면,
               </h2>
               <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
@@ -344,7 +358,7 @@ export default function SearchDetailPage() {
             </div>
             {reviews.pages.flatMap((page, idx) => {
               const reviewStats = page.result.spotAgg;
-              return (
+              return reviewStats.averageRating ? (
                 <ReviewStats
                   key={idx}
                   easy={reviewStats.easyPct}
@@ -352,6 +366,13 @@ export default function SearchDetailPage() {
                   hard={reviewStats.hardPct}
                   topTags={reviewStats.topTags}
                 />
+              ) : (
+                <div className="pt-15 flex flex-col justify-center items-center h-full w-full max-w-[480px]">
+                  <img src={PostNone} className="w-20 h-20" />
+                  <p className="font-[pretendard] font-medium text-[#B4B4B4]">
+                    리뷰가 아직 없어요
+                  </p>
+                </div>
               );
             })}
 
@@ -385,7 +406,16 @@ export default function SearchDetailPage() {
               <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
                 지금 열려있는 동행방
               </p>
-              <RoomCardList chatRooms={chatRooms} />
+              {chatRooms.length > 0 ? (
+                <RoomCardList chatRooms={chatRooms} />
+              ) : (
+                <div className="flex flex-col justify-center items-center h-full w-full max-w-[480px]">
+                  <img src={PostNone} className="w-20 h-20" />
+                  <p className="font-[pretendard] font-medium text-[#B4B4B4]">
+                    현재 진행중인 동행방이 없어요
+                  </p>
+                </div>
+              )}
             </div>
             <div className="w-full pt-6 pb-3 border-t-8 border-[#F5F5F5]">
               <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">

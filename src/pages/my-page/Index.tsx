@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useProfileStore } from '../../stores/profile-store';
 import LogoutModal from './modal/LogoutModal';
 import DeleteAccountModal from './modal/DeleteAccountModal';
 import { logout } from '../../apis/auth';
 import toast from 'react-hot-toast';
 import { useUnreadMessages } from '../../hooks/mypage/useUnreadMessages';
+import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
+import { useDeleteProfile } from '../../hooks/mypage/useDeleteAccount';
 
 type MenuItemProps = {
   to?: string;
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
@@ -34,90 +36,64 @@ const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { nickName, userType, profileImage } = useProfileStore();
+  const { data: myInfoResponse, isLoading, isError } = useGetMyInfo();
   const { data: unreadMessagesData } = useUnreadMessages();
+  const profile = myInfoResponse?.result;
+
+  const DEFAULT_PROFILE = '/default-profile.svg';
+  const imageUrl = profile?.imageUrl || DEFAULT_PROFILE;
+  const userType = profile?.userType ?? '—';
+  const nickName = profile?.nickName ?? '—';
+  const soloCount = profile?.soloPlanCount ?? 0;
+  const groupCount = profile?.groupChatCount ?? 0;
+
   const hasUnreadMessages = unreadMessagesData?.result;
 
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const openLogout = () => setLogoutOpen(true);
   const closeLogout = () => setLogoutOpen(false);
+
   const handleLogoutConfirm = async () => {
     setIsLoggingOut(true);
     try {
-      // 토큰 존재 여부 확인
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
-        // 토큰이 없는 경우 로컬 정리만 수행
-        toast.success('이미 로그아웃된 상태입니다.');
-        localStorage.removeItem('refreshToken');
-        useProfileStore.getState().reset();
-        closeLogout();
-        navigate('/login');
-        return;
-      }
-
-      // 로그아웃 API 호출
       await logout();
-
-      // 로컬 스토리지 정리
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-
-      // 프로필 스토어 초기화
-      useProfileStore.getState().reset();
-
-      // 성공 메시지 표시
       toast.success('로그아웃되었습니다.');
-
-      // 로그인 페이지로 이동
-      closeLogout();
-      navigate('/login');
-    } catch (error: unknown) {
-      // API 호출 실패 시에도 로컬 정리 후 로그인 페이지로 이동
-      console.error('로그아웃 API 실패, 로컬 정리 후 이동:', error);
-
-      // 사용자에게 구체적인 에러 메시지 표시
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : '로그아웃 중 오류가 발생했습니다.';
-      toast.error(errorMessage);
-
-      // 로컬 데이터 정리
+    } catch (error) {
+      console.error('로그아웃 API 실패:', error);
+      toast.error('로그아웃 중 오류가 발생했습니다.');
+    } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      useProfileStore.getState().reset();
-
+      setIsLoggingOut(false);
       closeLogout();
       navigate('/login');
-    } finally {
-      setIsLoggingOut(false);
     }
   };
+
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteProfile();
   const openDelete = () => setDeleteOpen(true);
   const closeDelete = () => setDeleteOpen(false);
-
-  // 컴포넌트 마운트 시 탈퇴 모달 상태 초기화
-  useEffect(() => {
-    // 혹시 탈퇴 모달이 열려있다면 닫기
-    setDeleteOpen(false);
-  }, []);
 
   const handleDeleteConfirm = (payload: {
     reason: string;
     detail?: string;
   }) => {
-    // TODO: 탈퇴 API 호출 (payload.reason / payload.detail 전달)
-    // 성공 시: 세션 정리 후 리다이렉트
-    void payload; //임시로 사용 처리
-    closeDelete();
-    navigate('/goodbye'); // 혹은 /login
+    console.log('탈퇴 사유:', payload);
+    deleteAccount();
   };
 
+  if (isLoading) {
+    return <div>내 정보를 불러오는 중입니다...</div>;
+  }
+
+  if (isError) {
+    return <div>오류가 발생하여 정보를 불러올 수 없습니다.</div>;
+  }
+
   return (
-    <div className="relative min-h-screen bg-white font-Pretendard">
+    <div className="relative min-h-screen bg-white font-[Pretendard]">
       <header className="relative bg-[#F78938]">
         <div className="px-4 pt-4 pb-2">
           <Link
@@ -133,16 +109,19 @@ const MyPage = () => {
         <div className="px-4 pb-4 flex flex-col items-center text-center">
           <div className="w-[88px] h-[88px] mb-2">
             <img
-              src={profileImage}
+              src={imageUrl}
               alt="프로필 이미지"
               className="w-full h-full rounded-full object-cover"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = DEFAULT_PROFILE;
+              }}
             />
           </div>
           <span className="text-[13px] text-white/90 tracking-[-0.02em]">
-            {userType || '감성 여유형 여행자'}
+            {userType}
           </span>
           <h2 className="mt-0.5 text-[20px] font-semibold text-white">
-            {nickName || '홍길동'}
+            {nickName}
           </h2>
         </div>
 
@@ -153,7 +132,7 @@ const MyPage = () => {
               혼행
             </span>
             <span className="ml-2 text-[14px] font-medium align-middle">
-              16회
+              {soloCount}회
             </span>
           </div>
           <div className="py-[10px] text-center">
@@ -161,14 +140,14 @@ const MyPage = () => {
               동행방
             </span>
             <span className="ml-2 text-[14px] font-medium align-middle">
-              4회
+              {groupCount}회
             </span>
           </div>
         </nav>
       </header>
 
       {/* 본문 */}
-      <main className="mx-4 pb-12">
+      <main className="px-6 pb-12">
         {/* 내 활동 */}
         <section className="mt-6 border-b border-[#EDEDED]">
           <h3 className="text-[#737373] text-sm mb-2 font-medium tracking-[-0.02em] cursor-default">
@@ -217,7 +196,7 @@ const MyPage = () => {
           <MenuItem to="/mypage/terms">서비스 이용약관</MenuItem>
           <MenuItem to="/mypage/privacy">개인정보 처리방침</MenuItem>
           <MenuItem onClick={openLogout}>로그아웃</MenuItem>
-          <MenuItem to={undefined} onClick={openDelete}>
+          <MenuItem onClick={openDelete} disabled={isDeleting}>
             탈퇴하기
           </MenuItem>
         </section>

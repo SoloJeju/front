@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import logoImage from '../../assets/logo-sernam.svg';
@@ -67,6 +67,7 @@ function EyeAdornment({
 }
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
@@ -88,10 +89,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6 font-Pretendard bg-white">
+    <div className="flex flex-col items-center justify-center min-h-screen font-[Pretendard] bg-white">
       <main className="w-full mx-auto mb-20">
         <div className="my-16 text-center">
-          <img src={logoImage} alt="혼자옵서예 로고" className="w-65 mx-auto" />
+          <img src={logoImage} alt="혼자옵서예 로고" className="w-65 mx-auto cursor-pointer" onClick={()=>navigate('/')} />
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
