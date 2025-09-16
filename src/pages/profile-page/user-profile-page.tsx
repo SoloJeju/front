@@ -10,44 +10,23 @@ import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
 
 export default function UserProfilePage() {
   const { userId } = useParams();
-  console.log(userId);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalBg = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
-  const handleNavigate = () => navigate(-1);
+  const numericUserId = Number(userId);
 
   const {
     data: myInfoData,
     isLoading: isMyLoading,
     isError: isMyError,
   } = useGetMyInfo();
-  const myUserId = myInfoData?.result?.userId;
-
-  const numericUserId = Number(userId);
-  const hasValidParamId = Number.isFinite(numericUserId);
-
-  if (!hasValidParamId) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        잘못된 접근입니다.
-      </div>
-    );
-  }
-
-  const isMyProfile = !!myUserId && myUserId === numericUserId;
 
   const {
     data: otherUserData,
     isLoading: isOtherUserLoading,
     isError: isOtherUserError,
   } = useOtherUserProfile(numericUserId);
-
-  const userProfile = isMyProfile ? myInfoData?.result : otherUserData?.result;
-
-  const isLoading = isMyProfile ? isMyLoading : isOtherUserLoading;
-  const isError = isMyProfile ? isMyError : isOtherUserError;
 
   useEffect(() => {
     const handleClickModalBg = (e: MouseEvent) => {
@@ -63,6 +42,25 @@ export default function UserProfilePage() {
     return () => document.removeEventListener('mousedown', handleClickModalBg);
   }, [isModalOpen]);
 
+  console.log(userId);
+
+  const hasValidParamId = Number.isFinite(numericUserId);
+
+  if (!hasValidParamId) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        잘못된 접근입니다.
+      </div>
+    );
+  }
+
+  const myUserId = myInfoData?.result?.userId;
+  const isMyProfile = !!myUserId && myUserId === numericUserId;
+  const userProfile = isMyProfile ? myInfoData?.result : otherUserData?.result;
+  const isLoading = isMyProfile ? isMyLoading : isOtherUserLoading;
+  const isError = isMyProfile ? isMyError : isOtherUserError;
+
+  const handleNavigate = () => navigate(-1);
   const handleModify = () => {
     navigate('/mypage/profile-edit');
   };

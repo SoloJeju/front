@@ -19,8 +19,8 @@ const ProfileModal = ({
   const targetId = Number(userId);
 
   const { data: myInfo } = useGetMyInfo();
-  const myIdRaw = myInfo?.result?.userId ?? (myInfo?.result as any)?.id;
-  const myId = typeof myIdRaw === 'string' ? Number(myIdRaw) : myIdRaw;
+
+  const myId = myInfo?.result?.userId;
 
   const isMine =
     Number.isFinite(targetId) &&
