@@ -178,7 +178,6 @@ export default function ProfileEdit() {
       const isDefault = profileImage === initialState.profileImage;
       if (isDefault) {
         payload.imageName = 'default-profile.svg';
-        payload.imageUrl = '';
       } else if (profileImage) {
         payload.imageUrl = profileImage;
         payload.imageName = profileImage.split('/').pop() || 'profile.jpg';
