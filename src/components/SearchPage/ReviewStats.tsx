@@ -31,13 +31,25 @@ export default function ReviewStats({
 
         <div className="w-full h-8 flex overflow-hidden mt-4">
           <div className="h-full" style={{ width: `${easy}%` }}>
-            <div className="h-full bg-[#F7C999]" style={{ width: '100%' }} />
+            <div className="h-full bg-[#F7C999]" style={{ width: '100%' }}>
+              {easy > 0 && (
+                <span className="flex justify-center items-center">EASY</span>
+              )}
+            </div>
           </div>
           <div className="h-full" style={{ width: `${meduim}%` }}>
-            <div className="h-full bg-[#FAA14B]" style={{ width: '100%' }} />
+            <div className="h-full bg-[#FAA14B]" style={{ width: '100%' }}>
+              {meduim > 0 && (
+                <span className="flex justify-center items-center">NORMAL</span>
+              )}
+            </div>
           </div>
           <div className="h-full" style={{ width: `${hard}%` }}>
-            <div className="h-full bg-[#F78938]" style={{ width: '100%' }} />
+            <div className="h-full bg-[#F78938]" style={{ width: '100%' }}>
+              {hard > 0 && (
+                <span className="flex justify-center items-center">HARD</span>
+              )}
+            </div>
           </div>
         </div>
         <h4 className="mt-2 font-[Pretendard] text-[14px] font-not-italic leading-[20px] tracking-[-0.36px]">
@@ -58,7 +70,7 @@ export default function ReviewStats({
               className="w-full h-[48px] flex-shrink-0 border border-gray-300 rounded-xl relative flex items-center"
             >
               <div
-                className="h-full bg-orange-500 flex items-center px-2 rounded-xl text-[#262626] font-[Pretendard] text-[12px] not-italic font-medium leading-[16px] break-keep"
+                className="h-full bg-orange-500 flex items-center px-2 rounded-xl text-[#262626] font-[Pretendard] text-[12px] not-italic font-medium leading-[16px] text-nowrap"
                 style={{
                   width: `${tag.pct}%`,
                   backgroundColor: colors[tag.tagCode % colors.length],
