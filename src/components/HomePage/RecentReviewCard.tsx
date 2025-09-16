@@ -34,12 +34,12 @@ const RecentReviewCard = ({
         alt={name}
         className="h-[158px] rounded-xl brightness-75"
       />
-      <figcaption className="absolute bottom-2 w-full flex flex-col pl-3">
+      <figcaption className="absolute bottom-2 w-full flex flex-col p-3 pb-1">
         <div className="text-left">
           <p className="font-[pretendard] font-semibold text-[#ECECEC]">
             {name}
           </p>
-          <p className="font-[pretendard] font-normal text-[12px] text-[#CBCBCB]">
+          <p className="font-[pretendard] font-normal text-[12px] text-[#CBCBCB] line-clamp-2">
             {comment}
           </p>
         </div>
