@@ -33,25 +33,32 @@ export default function ReviewStats({
           <div className="h-full" style={{ width: `${easy}%` }}>
             <div className="h-full bg-[#F7C999]" style={{ width: '100%' }}>
               {easy > 0 && (
-                <span className="flex justify-center items-center">EASY</span>
+                <span className="h-full flex justify-center items-center text-gray-50 text-xs">
+                  EASY
+                </span>
               )}
             </div>
           </div>
           <div className="h-full" style={{ width: `${meduim}%` }}>
             <div className="h-full bg-[#FAA14B]" style={{ width: '100%' }}>
               {meduim > 0 && (
-                <span className="flex justify-center items-center">NORMAL</span>
+                <span className="h-full flex justify-center items-center text-gray-50 text-xs">
+                  NORMAL
+                </span>
               )}
             </div>
           </div>
           <div className="h-full" style={{ width: `${hard}%` }}>
             <div className="h-full bg-[#F78938]" style={{ width: '100%' }}>
               {hard > 0 && (
-                <span className="flex justify-center items-center">HARD</span>
+                <span className="h-full flex justify-center items-center text-gray-50 text-xs">
+                  HARD
+                </span>
               )}
             </div>
           </div>
         </div>
+
         <h4 className="mt-2 font-[Pretendard] text-[14px] font-not-italic leading-[20px] tracking-[-0.36px]">
           {reviewText?.[0]}
           <br />
