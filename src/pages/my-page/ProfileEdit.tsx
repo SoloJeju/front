@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useProfileStore, initialState } from '../../stores/profile-store';
@@ -22,6 +23,8 @@ export default function ProfileEdit() {
   const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
     useProfileStore();
   const qc = useQueryClient();
+
+  const navigate = useNavigate();
 
   const { data: myInfoResponse, isLoading, isError } = useGetMyInfo();
 
@@ -175,7 +178,6 @@ export default function ProfileEdit() {
       const isDefault = profileImage === initialState.profileImage;
       if (isDefault) {
         payload.imageName = 'default-profile.svg';
-        payload.imageUrl = '';
       } else if (profileImage) {
         payload.imageUrl = profileImage;
         payload.imageName = profileImage.split('/').pop() || 'profile.jpg';
@@ -196,7 +198,8 @@ export default function ProfileEdit() {
       const res = await updateMyProfile(payload);
       if (res.isSuccess) {
         toast.success('프로필이 수정되었습니다.');
-        await qc.invalidateQueries({ queryKey: ['myProfile'] });
+        await qc.invalidateQueries({ queryKey: ['myInfo'] });
+        navigate('/mypage');
       } else {
         toast.error(res.message || '수정에 실패했습니다.');
       }
@@ -254,14 +257,14 @@ export default function ProfileEdit() {
           <div
             ref={menuRef}
             role="menu"
-            className="absolute left-1/2 top-full mt-2 -translate-x-1/2 w-45 rounded-xl bg-white/90 backdrop-blur-sm ring-1 ring-black/5 shadow-md overflow-hidden z-10"
+            className="absolute left-1/2 top-full mt-2 -translate-x-1/2 w-40 rounded-xl bg-white/90 backdrop-blur-sm ring-1 ring-black/5 shadow-md overflow-hidden z-10"
           >
             <button
               type="button"
               onClick={handleUploadFromMenu}
               role="menuitem"
               autoFocus
-              className="w-full text-left px-4 py-3 text-[#262626] outline-none focus:bg-gray-50 cursor-pointer"
+              className="w-full text-left px-4 py-3 text-sm text-[#262626] outline-none hover:bg-gray-50 cursor-pointer"
             >
               사진 변경
             </button>
@@ -275,10 +278,10 @@ export default function ProfileEdit() {
               }
               disabled={profileImage === initialState.profileImage}
               role="menuitem"
-              className={`w-full text-left px-4 py-3 outline-none ${
+              className={`w-full text-left px-4 py-3 text-sm outline-none ${
                 profileImage === initialState.profileImage
                   ? 'text-[#262626]/40 cursor-default'
-                  : 'text-[#262626] focus:bg-gray-50 cursor-pointer'
+                  : 'text-[#262626] hover:bg-gray-50 cursor-pointer'
               }`}
             >
               기본 이미지로 변경
