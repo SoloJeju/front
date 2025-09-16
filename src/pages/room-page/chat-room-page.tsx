@@ -36,8 +36,8 @@ export default function ChatRoomPage() {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const [isConnected, setIsConnected] = useState(false);
-  const isConnectedRef = useRef(false);           // 연결 상태 ref (중복 connect 방지)
-  const wsHandlersBoundRef = useRef(false);       // 핸들러 1회만 바인딩
+  const isConnectedRef = useRef(false); // 연결 상태 ref (중복 connect 방지)
+  const wsHandlersBoundRef = useRef(false); // 핸들러 1회만 바인딩
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -48,10 +48,15 @@ export default function ChatRoomPage() {
   const [kb, setKb] = useState(0);
 
   const location = useLocation();
-  const isCompletedFromState = (location.state as any)?.isCompleted || false;
+  type LocationState = { isCompleted?: boolean } | null | undefined;
+  const isCompletedFromState = Boolean(
+    (location.state as LocationState)?.isCompleted
+  );
 
   // ---- 참여자 목록 (아바타/닉네임 매핑) ----
-  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(null);
+  const [usersData, setUsersData] = useState<ChatRoomUsersResponse | null>(
+    null
+  );
   const [isUsersLoading, setIsUsersLoading] = useState(true);
 
   const loadChatRoomUsers = useCallback(async () => {
@@ -70,7 +75,10 @@ export default function ChatRoomPage() {
   }, [roomId]);
 
   const userProfileMap = useMemo(() => {
-    const map = new Map<number, { profileImage: string | null; username: string }>();
+    const map = new Map<
+      number,
+      { profileImage: string | null; username: string }
+    >();
     if (usersData?.users) {
       for (const member of usersData.users) {
         map.set(member.userId, {
@@ -98,10 +106,14 @@ export default function ChatRoomPage() {
 
   // ---- 키보드/스크롤 환경 ----
   useEffect(() => {
-    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    type WindowWithVV = Window & { visualViewport?: VisualViewport };
+    const vv = (window as WindowWithVV).visualViewport;
     if (!vv) return;
     const onResize = () => {
-      const raw = Math.max(0, window.innerHeight - vv.height - (vv.offsetTop || 0));
+      const raw = Math.max(
+        0,
+        window.innerHeight - vv.height - (vv.offsetTop || 0)
+      );
       const CLAMP = 80;
       setKb(raw > CLAMP ? raw : 0);
     };
@@ -152,7 +164,11 @@ export default function ChatRoomPage() {
   const loadMessages = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await chatApiService.getChatRoomMessages(Number(roomId), undefined, 20);
+      const response = await chatApiService.getChatRoomMessages(
+        Number(roomId),
+        undefined,
+        20
+      );
       if (response.isSuccess) {
         const sorted = [...response.result.messages].sort(
           (a, b) => new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()
@@ -185,7 +201,11 @@ export default function ChatRoomPage() {
       const currentUserId = localStorage.getItem('userId');
       if (data.senderId === Number(currentUserId)) return;
 
-      if (data.type === 'TALK' || data.type === 'ENTER' || data.type === 'EXIT') {
+      if (
+        data.type === 'TALK' ||
+        data.type === 'ENTER' ||
+        data.type === 'EXIT'
+      ) {
         const newChatMessage: ChatMessage = {
           id: data.id,
           content: data.content,
@@ -199,9 +219,9 @@ export default function ChatRoomPage() {
           isMine: false,
         };
 
-        setMessages(prev => {
+        setMessages((prev) => {
           const combined = [...prev, newChatMessage];
-          return Array.from(new Map(combined.map(m => [m.id, m])).values());
+          return Array.from(new Map(combined.map((m) => [m.id, m])).values());
         });
 
         // 참여자 변동 가능성 있을 때 갱신 (선택)
@@ -257,7 +277,13 @@ export default function ChatRoomPage() {
     await Promise.all([loadMessages(), loadChatRoomUsers()]);
     connectWebSocket();
     setTimeout(markMessagesAsRead, 300);
-  }, [roomId, loadMessages, loadChatRoomUsers, connectWebSocket, markMessagesAsRead]);
+  }, [
+    roomId,
+    loadMessages,
+    loadChatRoomUsers,
+    connectWebSocket,
+    markMessagesAsRead,
+  ]);
 
   useEffect(() => {
     if (roomId) {
@@ -328,11 +354,14 @@ export default function ChatRoomPage() {
       );
 
       if (response.isSuccess) {
-        setMessages(prev => {
+        setMessages((prev) => {
           const combined = [...response.result.messages, ...prev];
-          const unique = Array.from(new Map(combined.map(m => [m.id, m])).values());
+          const unique = Array.from(
+            new Map(combined.map((m) => [m.id, m])).values()
+          );
           return unique.sort(
-            (a, b) => new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()
+            (a, b) =>
+              new Date(a.sendAt).getTime() - new Date(b.sendAt).getTime()
           );
         });
         setHasNext(response.result.hasNext);
@@ -340,7 +369,8 @@ export default function ChatRoomPage() {
         requestAnimationFrame(() => {
           if (!listRef.current) return;
           const newScrollHeight = listRef.current.scrollHeight;
-          listRef.current.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
+          listRef.current.scrollTop =
+            newScrollHeight - prevScrollHeight + prevScrollTop;
         });
       } else {
         console.error('이전 메시지 로드 실패:', response.message);
@@ -362,7 +392,9 @@ export default function ChatRoomPage() {
       content: newMessage.trim(),
     };
 
-    const currentUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const currentUserInfo = JSON.parse(
+      localStorage.getItem('userInfo') || '{}'
+    );
     const myMessage: ChatMessage = {
       id: Date.now().toString(),
       content: newMessage.trim(),
@@ -376,7 +408,7 @@ export default function ChatRoomPage() {
       isMine: true,
     };
 
-    setMessages(prev => [...prev, myMessage]);
+    setMessages((prev) => [...prev, myMessage]);
     setNewMessage('');
     setTimeout(() => {
       scrollToBottom();
@@ -465,7 +497,10 @@ export default function ChatRoomPage() {
         </div>
 
         {/* 메시지 영역 */}
-        <div className="flex-1 min-h-0" style={{ overscrollBehavior: 'contain' }}>
+        <div
+          className="flex-1 min-h-0"
+          style={{ overscrollBehavior: 'contain' }}
+        >
           <div
             ref={listRef}
             onScroll={handleMessageScroll}
@@ -505,8 +540,12 @@ export default function ChatRoomPage() {
                   )}
 
                   {messages.map((message, index) => {
-                    const previousMessage = index > 0 ? messages[index - 1] : null;
-                    const showDateDivider = shouldShowDateDivider(message, previousMessage);
+                    const previousMessage =
+                      index > 0 ? messages[index - 1] : null;
+                    const showDateDivider = shouldShowDateDivider(
+                      message,
+                      previousMessage
+                    );
 
                     const { name: displayName, avatar } = getSenderMeta(
                       message.senderId,
@@ -526,12 +565,16 @@ export default function ChatRoomPage() {
 
                         {isSystemMessage(message) ? (
                           <div className="text-center py-1 mb-1">
-                            <span className="text-xs text-gray-500">{message.content}</span>
+                            <span className="text-xs text-gray-500">
+                              {message.content}
+                            </span>
                           </div>
                         ) : (
                           <div
                             className={`flex items-end gap-1 pb-1 w-full ${
-                              isMyMessage(message) ? 'flex-row-reverse ml-auto' : 'justify-start'
+                              isMyMessage(message)
+                                ? 'flex-row-reverse ml-auto'
+                                : 'justify-start'
                             }`}
                           >
                             {!isMyMessage(message) && (
@@ -540,14 +583,17 @@ export default function ChatRoomPage() {
                                 alt={`${displayName}님의 프로필`}
                                 className="w-8 h-8 rounded-full object-cover shrink-0"
                                 onError={(e) => {
-                                  (e.currentTarget as HTMLImageElement).src = BasicProfile;
+                                  (e.currentTarget as HTMLImageElement).src =
+                                    BasicProfile;
                                 }}
                               />
                             )}
 
                             <div
                               className={`flex flex-col gap-1 ${
-                                isMyMessage(message) ? 'items-end' : 'items-start'
+                                isMyMessage(message)
+                                  ? 'items-end'
+                                  : 'items-start'
                               }`}
                             >
                               {!isMyMessage(message) && (
@@ -557,7 +603,9 @@ export default function ChatRoomPage() {
                               )}
                               <div
                                 className={`flex items-end gap-1 ${
-                                  isMyMessage(message) ? 'flex-row-reverse' : 'flex-row'
+                                  isMyMessage(message)
+                                    ? 'flex-row-reverse'
+                                    : 'flex-row'
                                 }`}
                               >
                                 <p
@@ -595,7 +643,10 @@ export default function ChatRoomPage() {
             transform: 'translateZ(0)',
           }}
         >
-          <div className="mx-auto w-full max-w-[480px] px-4 py-2" style={{ height: INPUT_BAR_H }}>
+          <div
+            className="mx-auto w-full max-w-[480px] px-4 py-2"
+            style={{ height: INPUT_BAR_H }}
+          >
             <ChatInput
               message={newMessage}
               onChange={setNewMessage}
@@ -623,4 +674,3 @@ export default function ChatRoomPage() {
     </div>
   );
 }
-
