@@ -1,33 +1,7 @@
 import ReviewCard from './ReviewCard';
-// import ExampleImage from '../../assets/exampleImage.png';
-import StarIcon from '../../assets/Star.svg?react';
-import StarEmptyIcon from '../../assets/StarEmpty.svg?react';
+import StarIcon from '/src/assets/Star.svg?react';
+import StarEmptyIcon from '/src/assets/StarEmpty.svg?react';
 import type { SpotReview } from '../../types/tourist';
-
-// const dummyReviews = [
-//   {
-//     user: '홍길동',
-//     date: '2025.04.28',
-//     level: 'NORMAL' as const,
-//     content:
-//       '웨이팅도 없고 혼자가기 딱 좋은 분위기였어요!\n음식도 너무 맛있었습니다~\n또 가고싶어요!',
-//     image: ExampleImage,
-//     receipt: '영수증',
-//   },
-//   {
-//     user: '홍길동',
-//     date: '2025.04.28',
-//     level: 'NORMAL' as const,
-//     content:
-//       '웨이팅도 없고 혼자가기 딱 좋은 분위기였어요!!\n음식도 너무 맛있었습니다~\n또 가고싶어요!',
-//   },
-//   {
-//     user: '홍길동',
-//     date: '2025.04.28',
-//     level: 'NORMAL' as const,
-//     content: '웨이팅도 없고 혼자가기 딱 좋은 분위기였어요!\n또 가고싶어요!',
-//   },
-// ];
 
 interface ReviewListProps {
   reviewList: SpotReview[];
@@ -62,18 +36,19 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
         </div>
       </div>
       <div className="w-full pb-3">
-        {reviewList.map((review, idx) => (
-          <ReviewCard
-            key={idx}
-            user={review.userNickname}
-            date={review.createdAt}
-            level={review.difficulty}
-            rating={review.rating}
-            content={review.text}
-            profile={review.userProfileImageUrl}
-            images={review.imageUrls}
-          />
-        ))}
+        {reviewList.length > 0 &&
+          reviewList.map((review, idx) => (
+            <ReviewCard
+              key={idx}
+              user={review.userNickname}
+              date={review.createdAt}
+              level={review.difficulty}
+              rating={review.rating}
+              content={review.text}
+              profile={review.userProfileImageUrl}
+              images={review.imageUrls}
+            />
+          ))}
       </div>
     </div>
   );

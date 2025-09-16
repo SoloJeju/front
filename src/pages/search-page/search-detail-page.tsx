@@ -389,8 +389,8 @@ export default function SearchDetailPage() {
 
             {showAllReviews && (
               <>
-                {reviews.pages.flatMap((page, idx) => {
-                  const reivewList = page.result.reviews;
+                {reviews?.pages.flatMap((page, idx) => {
+                  const reivewList = page.result.reviews || [];
 
                   return <ReviewList key={idx} reviewList={reivewList} />;
                 })}
