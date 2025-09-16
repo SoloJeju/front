@@ -4,7 +4,7 @@ import FilterBar from '../../components/SearchPage/FliterBar';
 import PlaceList from '../../components/SearchPage/PlaceList';
 import DifficultyFilter from '../../components/SearchPage/DifficultyFilter';
 import Menu from '../../assets/menu.svg?react';
-import Cart from '../../assets/cartIcon.svg';
+import Cart from '../../assets/cartIcon.svg?react';
 import PostNone from '../../assets/post-none.svg';
 import { useGetTouristList } from '../../hooks/tourist/useGetTouristList';
 import type { ContentTypeId, Difficulty } from '../../types/tourist';
@@ -134,7 +134,7 @@ const SearchPage = () => {
           className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
           onClick={handleAddCart}
         >
-          <img src={Cart} alt="담은 장소 리스트" />
+          <Cart className='w-9 h-9'/>
         </button>
       </div>
     </div>

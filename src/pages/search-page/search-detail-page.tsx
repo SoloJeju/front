@@ -10,7 +10,7 @@ import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import Cart from '../../assets/cartIcon.svg';
+import Cart from '../../assets/cartIcon.svg?react';
 import { addToCart } from '../../apis/cart';
 import toast from 'react-hot-toast';
 import { getTouristDetail } from '../../apis/tourist';
@@ -135,13 +135,15 @@ export default function SearchDetailPage() {
     try {
       const response = await addToCart(contentId);
       if (response.isSuccess) {
-        navigate('/cart');
-      } else {
-        alert(response.message);
+        alert("장바구니에 추가되었습니다!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('장소 담기에 실패했습니다.');
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -464,13 +466,13 @@ export default function SearchDetailPage() {
           </div>
         )}
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end p-6">
         <button
           type="button"
           className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
           onClick={handleAddCart}
         >
-          <img src={Cart} alt="장소 담기" />
+          <Cart className="w-9 h-9" />
         </button>
       </div>
     </div>
