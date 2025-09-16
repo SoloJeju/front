@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlarmHeader from '../../components/common/Headers/AlarmHeader';
-import ShieldCheck from '../../../assets/shieldCheck.svg';
-import Alarm from '../../../assets/alarmIcon.svg';
+import ShieldCheck from '../../assets/shieldCheck.svg';
+import Alarm from '../../assets/alarmIcon.svg';
 import sirenSound from '../../assets/siren.wav';
 
 import {
