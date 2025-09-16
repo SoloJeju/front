@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlarmHeader from '../../components/common/Headers/AlarmHeader';
+import ShieldCheck from '../../../assets/shieldCheck.svg';
+import Alarm from '../../../assets/alarmIcon.svg';
+import sirenSound from '../../assets/siren.wav';
+
 import {
   loadSafetyCheckData,
   saveSafetyCheckData,
@@ -11,7 +15,7 @@ import {
 } from '../../utils/safetyCheckData';
 
 // 사이렌 소리 파일 경로
-const sirenSound = '/src/assets/siren.wav';
+// const sirenSound = '/src/assets/siren.wav';
 
 // 전역 오디오 관리자
 class AudioManager {
@@ -340,14 +344,14 @@ const SafetyCheckPage = () => {
             className="cursor-pointer"
             onClick={() => navigate('/safety-check')}
           >
-            <img src="/src/assets/shieldCheck.svg" alt="Shield Check" />
+            <img src={ShieldCheck} alt="Shield Check" />
           </button>
           <button
             type="button"
             className="cursor-pointer w-6 h-6 relative"
             onClick={() => navigate('/alarm')}
           >
-            <img src="/src/assets/alarmIcon.svg" alt="알람" />
+            <img src={Alarm} alt="알람" />
           </button>
         </div>
       </div>
