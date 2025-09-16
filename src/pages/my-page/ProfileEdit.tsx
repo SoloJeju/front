@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { useProfileStore, initialState } from '../../stores/profile-store';
@@ -22,6 +23,8 @@ export default function ProfileEdit() {
   const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
     useProfileStore();
   const qc = useQueryClient();
+
+  const navigate = useNavigate();
 
   const { data: myInfoResponse, isLoading, isError } = useGetMyInfo();
 
@@ -196,7 +199,8 @@ export default function ProfileEdit() {
       const res = await updateMyProfile(payload);
       if (res.isSuccess) {
         toast.success('프로필이 수정되었습니다.');
-        await qc.invalidateQueries({ queryKey: ['myProfile'] });
+        await qc.invalidateQueries({ queryKey: ['myInfo'] });
+        navigate('/mypage');
       } else {
         toast.error(res.message || '수정에 실패했습니다.');
       }
