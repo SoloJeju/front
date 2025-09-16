@@ -1,4 +1,6 @@
+import React from 'react';
 import { useParams } from 'react-router-dom';
+import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
 
 interface ProfileModalProps {
   ref: React.RefObject<HTMLDivElement | null>;
@@ -13,47 +15,55 @@ const ProfileModal = ({
   onReport,
   onBlock,
 }: ProfileModalProps) => {
-  // zustand store
-  const myId = 50;
   const { userId } = useParams();
+  const targetId = Number(userId);
 
-  const isMine = myId === Number(userId);
+  const { data: myInfo } = useGetMyInfo();
+  const myIdRaw = myInfo?.result?.userId ?? (myInfo?.result as any)?.id;
+  const myId = typeof myIdRaw === 'string' ? Number(myIdRaw) : myIdRaw;
+
+  const isMine =
+    Number.isFinite(targetId) &&
+    Number.isFinite(myId) &&
+    (myId as number) === targetId;
 
   return (
-    <div>
+    <div
+      ref={ref}
+      role="menu"
+      className="w-40 rounded-xl bg-white/90 backdrop-blur-sm ring-1 ring-black/5 shadow-md overflow-hidden z-50"
+    >
       {isMine ? (
-        <div
-          className="flex flex-col gap-4 px-4 py-5 bg-[#FFFFFD] rounded-xl shadow-md z-50"
-          ref={ref}
+        <button
+          type="button"
+          role="menuitem"
+          autoFocus
+          onClick={onModify}
+          className="w-full text-left px-4 py-3 text-sm text-[#262626] outline-none hover:bg-gray-50 cursor-pointer"
         >
-          <button
-            type="button"
-            className="font-[pretendard] font-normal text-[#666666]"
-            onClick={() => onModify?.()}
-          >
-            수정하기
-          </button>
-        </div>
+          프로필 수정하기
+        </button>
       ) : (
-        <div
-          className="flex flex-col gap-4 px-4 py-5 bg-[#FFFFFD] rounded-xl shadow-md z-50"
-          ref={ref}
-        >
+        <>
           <button
             type="button"
-            className="font-[pretendard] font-normal text-[#666666]"
-            onClick={() => onReport?.()}
+            role="menuitem"
+            autoFocus
+            onClick={onReport}
+            className="w-full text-left px-4 py-3 text-sm text-[#262626] outline-none hover:bg-gray-50 cursor-pointer"
           >
             프로필 신고하기
           </button>
+          <div className="h-px bg-[#EDEDED]" />
           <button
             type="button"
-            className="font-[pretendard] font-normal text-[#666666]"
-            onClick={() => onBlock?.()}
+            role="menuitem"
+            onClick={onBlock}
+            className="w-full text-left px-4 py-3 text-sm text-[#262626] outline-none hover:bg-gray-50 cursor-pointer"
           >
             프로필 차단하기
           </button>
-        </div>
+        </>
       )}
     </div>
   );
