@@ -52,7 +52,7 @@ export default function MyBookmarks() {
             <p className="mt-2 text-sm">마음에 드는 글을 스크랩해보세요!</p>
           </div>
         ) : (
-          <div className="p-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {list.map((post) => (
               <PostCard
                 key={post.postId}

@@ -7,6 +7,7 @@ import People from '/src/assets/people.svg';
 import chatApiService from '../../services/chat';
 import type { ChatRoomDetailResponse } from '../../types/chat';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ExImage from '/src/assets/exampleImage.svg';
 
 export default function RoomPage() {
   const { roomId } = useParams();
@@ -151,13 +152,11 @@ export default function RoomPage() {
       <div className="flex flex-col justify-center items-center px-5 py-6 mt-9 bg-[#FFFFFD] rounded-[20px]">
         {/* 이미지 + 제목 + 인원 */}
         <div className="w-full pb-4 border-b-2 border-[#FFCEAA]">
-          {room.spotImage && (
-            <img
-              src={room.spotImage}
-              alt=""
-              className="w-full h-61 object-cover"
-            />
-          )}
+          <img
+            src={room.spotImage || ExImage}
+            alt=""
+            className="w-full h-61 object-cover"
+          />
           <h1 className="mt-5 mb-4 font-[pretendard] font-semibold text-2xl text-black">
             {room.title}
           </h1>
