@@ -1,3 +1,4 @@
+// src/pages/auth/LoginPage.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Input from '../../components/common/Input';
@@ -88,11 +89,24 @@ const LoginPage = () => {
     executeLogin({ email, password });
   };
 
+  // >>> 프로덕션은 https 도메인으로 고정, 로컬은 VITE_API_URL 사용
+  const AUTH_BASE =
+    import.meta.env.MODE === 'production'
+      ? 'https://soloj.store'
+      : import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const KAKAO_AUTH_URL = `${AUTH_BASE}/oauth2/authorization/kakao`;
+  // <<<
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen font-[Pretendard] bg-white">
       <main className="w-full mx-auto mb-20">
         <div className="my-16 text-center">
-          <img src={logoImage} alt="혼자옵서예 로고" className="w-65 mx-auto cursor-pointer" onClick={()=>navigate('/')} />
+          <img
+            src={logoImage}
+            alt="혼자옵서예 로고"
+            className="w-65 mx-auto cursor-pointer"
+            onClick={() => navigate('/')}
+          />
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -130,7 +144,7 @@ const LoginPage = () => {
         </div>
 
         <a
-          href={`${import.meta.env.VITE_API_URL}/oauth2/authorization/kakao`}
+          href={KAKAO_AUTH_URL}
           className="flex items-center justify-center w-full py-3 bg-[#FEE500] rounded-[10px] hover:opacity-75"
         >
           <img src={kakaoLogo} alt="카카오 로고" className="w-5 h-5" />
