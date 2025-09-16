@@ -5,6 +5,7 @@ import ExImage from '../../assets/ex-place.svg';
 
 const PlaceCard = ({
   contentid,
+  contenttypeid,
   firstimage,
   title,
   addr1,
@@ -18,7 +19,7 @@ const PlaceCard = ({
     if (isEditMode) {
       onSelectToggle?.();
     } else {
-      navigate(`/search-detail/${contentid}`);
+      navigate(`/search-detail/${contentid}`,{ state: {contentTypeId:contenttypeid} });
     }
   };
   return (
