@@ -178,7 +178,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
     !!name && !!nickName && !!gender && birthIsValid && isNicknameChecked;
 
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-[Pretendard]">
+    <div className="bg-white relative flex flex-col items-center pb-6 font-[Pretendard]">
       <input
         type="file"
         ref={fileInputRef}

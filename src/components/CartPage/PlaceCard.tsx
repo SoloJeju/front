@@ -1,6 +1,7 @@
 import type { PlaceCardProps } from '../../types/cart';
 import { useNavigate } from 'react-router-dom';
 import WithIcon from '../../assets/with.svg?react';
+import ExImage from '../../assets/ex-place.svg';
 
 const PlaceCard = ({
   contentid,
@@ -36,7 +37,11 @@ const PlaceCard = ({
             className="absolute inset-0 w-full h-full object-cover rounded-[12px]"
           />
         ) : (
-          <div className="absolute inset-0 w-full h-full bg-gray-200 rounded-[12px]" />
+          <img
+            src={ExImage}
+            alt="이미지 없음"
+            className="absolute inset-0 w-full h-full object-cover rounded-[12px]"
+          />
         )}
       </div>
 

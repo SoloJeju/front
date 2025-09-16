@@ -86,7 +86,7 @@ export default function ResultStep() {
   };
 
   return (
-    <div className="px-6 pb-6 flex flex-col h-full font-[Pretendard]">
+    <div className="pb-6 flex flex-col h-full font-[Pretendard]">
       <div className="flex-grow flex flex-col items-center justify-center text-center pt-12">
         <h2 className="text-xl text-center mb-8 leading-snug">
           <span className="font-bold text-3xl">{nickName}</span> 님의

@@ -53,7 +53,7 @@ const MyComments = () => {
             <p className="mt-2 text-sm">관심 있는 글에 댓글을 남겨보세요!</p>
           </div>
         ) : (
-          <div className="p-4 flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {list.map((post) => (
               <PostCard
                 key={post.postId}

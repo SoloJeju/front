@@ -145,7 +145,7 @@ export default function PasswordStep({ onNext }: { onNext: () => void }) {
     isCheckingPassword;
 
   return (
-    <div className="px-6 pt-15 pb-6">
+    <div className="pt-15 pb-6 font-[Pretendard]">
       <h1 className="text-[24px] font-bold mb-6">비밀번호 설정</h1>
 
       <div className="flex flex-col space-y-5">
