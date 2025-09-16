@@ -8,7 +8,7 @@ interface ChatMemberCardProps {
   id: number;
   isMine?: boolean;
   isActive?: boolean;
-  isOwner?: boolean; 
+  isOwner?: boolean;
 }
 
 
@@ -20,7 +20,7 @@ const ChatMemberCard = ({ profileUrl, name, id, isMine = false, isActive = true,
     navigate(`/profile/${id}`);
   };
 
-  
+
 
   return (
     <div
