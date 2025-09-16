@@ -11,6 +11,7 @@ import { usePlanStore, type DayPlan } from '../../stores/plan-store';
 import Modal from '../../components/common/Modal';
 import CartIcon from '../../assets/cartAdd.svg?react';
 import SearchIcon from '../../assets/searchIcon.svg?react';
+import LoadingImg from '../../assets/loading.gif';
 
 dayjs.locale('ko');
 
@@ -174,7 +175,8 @@ const PlanPage = () => {
   return (
     <div className="flex justify-center bg-[#FFFFFD] min-h-screen font-['Pretendard']">
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 z-[100] flex justify-center items-center">
+        <div className="flex-col fixed inset-0 bg-black/50 z-[100] flex justify-center items-center">
+          <img src={LoadingImg} alt="Loading" className="w-48" />
           <div className="text-white text-xl">AI가 열심히 계획을 짜고 있어요...🍊</div>
         </div>
       )}
