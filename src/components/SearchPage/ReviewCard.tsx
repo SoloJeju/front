@@ -1,10 +1,10 @@
-import ProfileDefImg from '../../assets/profileDefault.svg?react';
-import EASYIcon from '../../assets/TagEASY.svg?react';
-import NORMALIcon from '../../assets/TagNORMAL.svg?react';
-import HARDIcon from '../../assets/TagHARD.svg?react';
-import StarIcon from '../../assets/Star.svg?react';
-import StarEmptyIcon from '../../assets/StarEmpty.svg?react';
-import ReceiptIcon from '../../assets/receipt.svg?react';
+import ProfileDefImg from '/src/assets/profileDefault.svg?react';
+import EASYIcon from '/src/assets/TagEASY.svg?react';
+import NORMALIcon from '/src/assets/TagNORMAL.svg?react';
+import HARDIcon from '/src/assets/TagHARD.svg?react';
+import StarIcon from '/src/assets/Star.svg?react';
+import StarEmptyIcon from '/src/assets/StarEmpty.svg?react';
+import ReceiptIcon from '/src/assets/receipt.svg?react';
 
 type ReviewCardProps = {
   user: string;
@@ -42,7 +42,7 @@ export default function ReviewCard({
   const StarEmpty = 5 - Star;
 
   return (
-    <div className="w-full rounded-[12px] border border-[#D9D9D9] shadow-[0_2px_4px_rgba(0,0,0,0.1)] p-4 bg-white">
+    <div className="w-full rounded-[12px] border border-[#D9D9D9] shadow-[0_2px_4px_rgba(0,0,0,0.1)] p-4 bg-white mb-4">
       <div className="flex items-center justify-between w-full mb-2">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8">
@@ -71,7 +71,7 @@ export default function ReviewCard({
           </div>
         </div>
         <div className="flex items-center">
-          <LevelIcon className="w-14 h-12" />
+          {LevelIcon && <LevelIcon className="w-14 h-12" />}
         </div>
       </div>
       {images &&

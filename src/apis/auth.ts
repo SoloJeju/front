@@ -147,7 +147,7 @@ export const changePassword = async (
   requestData: ChangePasswordRequest
 ): Promise<CommonResponse<string>> => {
   const { data } = await authAxios.patch<CommonResponse<string>>(
-    '/api/auth/password',
+    '/api/auth/change-password',
     null,
     { params: requestData }
   );
