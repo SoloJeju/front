@@ -23,6 +23,8 @@ import useGetChatRooms from '../../hooks/tourist/useGetChatRooms';
 import PostNone from '/src/assets/post-none.svg';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ExImage from '../../assets/ex-place.svg';
+import { useWriteReviewStore } from '../../stores/writereview-store';
+import { useCreateRoomStore } from '../../stores/createroom-store';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -37,6 +39,8 @@ export default function SearchDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
+  const setReviewData = useWriteReviewStore((state) => state.setFormData);
+  const setCreateRoomData = useCreateRoomStore((state) => state.setFormData);
   const contentTypeId = Number(location.state?.contentTypeId);
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
@@ -185,7 +189,6 @@ export default function SearchDetailPage() {
           <QuestionIcon className="w-6 h-6 text-white" />
         </button>
 
-        {/*문의 팝업*/}
         {showPopup && (
           <div className="absolute top-12 right-3 flex flex-col items-center gap-1 p-4 rounded-[12px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.25)] z-10">
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
@@ -211,14 +214,12 @@ export default function SearchDetailPage() {
               {filterSpotType(spotDetailData?.basic.contenttypeid || '')}
             </span>
           </div>
-          {/* 주소 */}
           <p className="text-white font-Pretendard text-[14px] font-medium leading-[16px] tracking-[-0.28px]">
             {spotDetailData?.basic.addr1 || spotDetailData?.basic.addr2}
           </p>
         </div>
       </div>
 
-      {/* Tabs */}
       <nav className="px-2">
         <div className="flex justify-around">
           {tabs.map((t) => (
@@ -244,7 +245,6 @@ export default function SearchDetailPage() {
         </div>
       </nav>
 
-      {/* Content Area */}
       <div className="p-6">
         {activeTab === '홈' && (
           <div className="flex flex-col gap-4">
@@ -272,9 +272,20 @@ export default function SearchDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               <WebIcon className="w-4 h-4" />
-              <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                {spotDetailData?.basic.homepage || '--'}
-              </p>
+              {spotDetailData?.basic.homepage ? (
+                <a
+                  href={spotDetailData.basic.homepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#033C81] hover:underline"
+                >
+                  {spotDetailData.basic.homepage.replace(/<[^>]*>?/gm, '')}
+                </a>
+              ) : (
+                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+                  --
+                </p>
+              )}
             </div>
             {spotDetailData?.basic.tel && (
               <div className="flex items-center gap-2">
@@ -352,7 +363,16 @@ export default function SearchDetailPage() {
               <button
                 className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
                 onClick={() => {
-                  navigate(`/write-review`);
+                  if (spotDetailData && contentId && contentTypeId) {
+                    setReviewData({
+                      contentId: contentId,
+                      spotName: spotDetailData.basic.title,
+                      contentTypeId: contentTypeId,
+                    });
+                    navigate(`/write-review`);
+                  } else {
+                    toast.error('리뷰를 작성할 장소 정보가 유효하지 않습니다.');
+                  }
                 }}
               >
                 리뷰 쓰기
@@ -427,7 +447,15 @@ export default function SearchDetailPage() {
               <button
                 className="w-full mt-[16px] flex h-[48px] px-[12px] justify-center items-center flex-shrink-0 self-stretch rounded-[10px] bg-[#F78938] text-[#FFF] text-center font-[Pretendard] text-[16px] not-italic font-semibold leading-[22px]"
                 onClick={() => {
-                  navigate(`/create-room`);
+                  if (spotDetailData && contentId) {
+                    setCreateRoomData({
+                      contentId: contentId,
+                      spotName: spotDetailData.basic.title,
+                    });
+                    navigate(`/create-room`);
+                  } else {
+                    toast.error('동행방을 개설할 장소 정보가 유효하지 않습니다.');
+                  }
                 }}
               >
                 새 동행방 개설하기
