@@ -7,6 +7,7 @@ import { useProfile } from '../../../hooks/profile/useProfile';
 import defaultProfile from '../../../assets/profileDefault.svg';
 import editIcon from '../../../assets/edit-icon.svg';
 import toast from 'react-hot-toast';
+
 import {
   uploadImageToS3,
   validateImageFile,
