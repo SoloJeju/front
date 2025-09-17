@@ -10,7 +10,7 @@ import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import Cart from '../../assets/cartIcon.svg';
+import Cart from '../../assets/cartIcon.svg?react';
 import { addToCart } from '../../apis/cart';
 import toast from 'react-hot-toast';
 import { getTouristDetail } from '../../apis/tourist';
@@ -135,13 +135,16 @@ export default function SearchDetailPage() {
     try {
       const response = await addToCart(contentId);
       if (response.isSuccess) {
-        navigate('/cart');
-      } else {
-        alert(response.message);
+        alert("장바구니에 추가되었습니다!");
       }
-    } catch (error) {
-      console.error(error);
-      alert('장소 담기에 실패했습니다.');
+    } catch (e: unknown) {
+      console.error(e);
+      const error = e as { response?: { data?: { message: string } } };
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -194,8 +197,8 @@ export default function SearchDetailPage() {
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
               해당 장소가 보이지 않나요?
             </p>
-            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
-              1:1 문의하기(폐업/오류 신고)
+            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]" onClick={()=>navigate('/inquiry')}>
+              1:1 문의하기 (폐업/오류 신고)
             </p>
           </div>
         )}
@@ -257,35 +260,42 @@ export default function SearchDetailPage() {
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-start gap-2">
                 <ClockIcon className="w-4 h-4" />
-                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  오픈: {spotDetailData?.intro.opentimefood || '--'}
+                <p className="text-[14px] font-normal leading-[20px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard] whitespace-pre-wrap">
+                  오픈: {spotDetailData?.intro.opentimefood?.replace(/<br\s*\/?>/gi, '\n') || '--'}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 flex-shrink-0" />
-                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  휴일: {spotDetailData?.intro.restdatefood || '--'}
+                <p className="text-[14px] font-normal leading-[20px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard] whitespace-pre-wrap">
+                  휴일: {spotDetailData?.intro.restdatefood?.replace(/<br\s*\/?>/gi, '\n') || '--'}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2">
               <WebIcon className="w-4 h-4" />
-              {spotDetailData?.basic.homepage ? (
-                <a
-                  href={spotDetailData.basic.homepage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#033C81] hover:underline"
-                >
-                  {spotDetailData.basic.homepage.replace(/<[^>]*>?/gm, '')}
-                </a>
-              ) : (
-                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  --
-                </p>
-              )}
+              <div className="flex flex-col">
+                {spotDetailData?.basic.homepage ? (
+                  spotDetailData.basic.homepage.split('\n').map((url, index) => (
+                    url.trim() && (
+                      <a
+                        key={index}
+                        href={url.trim()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#033C81] hover:underline font-[Pretendard] break-all"
+                      >
+                        {url.trim().replace(/<[^>]*>?/gm, '')}
+                      </a>
+                    )
+                  ))
+                ) : (
+                  <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+                    --
+                  </p>
+                )}
+              </div>
             </div>
             {spotDetailData?.basic.tel && (
               <div className="flex items-center gap-2">
@@ -299,7 +309,7 @@ export default function SearchDetailPage() {
               <div className="flex items-center gap-2">
                 <InfoIcon className="w-4 h-4" />
                 <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  주차 {spotDetailData?.intro.parkingfood}
+                  주차 {spotDetailData?.intro.parkingfood.replace(/<br\s*\/?>/gi, '\n') || '--'}
                 </p>
               </div>
             )}
@@ -343,7 +353,6 @@ export default function SearchDetailPage() {
                 </div>
               );
             })}
-
             <div ref={imageRef}></div>
           </>
         )}
@@ -411,7 +420,6 @@ export default function SearchDetailPage() {
               <>
                 {reviews?.pages.flatMap((page, idx) => {
                   const reivewList = page.result.reviews || [];
-
                   return <ReviewList key={idx} reviewList={reivewList} />;
                 })}
                 <div ref={reviewRef}></div>
@@ -423,7 +431,7 @@ export default function SearchDetailPage() {
         {activeTab === '동행방' && (
           <div className="mt-1">
             <div className="pb-6">
-              <p className="mb-[12px] text-blasck font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
+              <p className="mb-[12px] text-black font-[Pretendard] text-[18px] not-italic font-semibold leading-[20px] tracking-[-0.36px]">
                 지금 열려있는 동행방
               </p>
               {chatRooms.length > 0 ? (
@@ -464,13 +472,13 @@ export default function SearchDetailPage() {
           </div>
         )}
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end p-6">
         <button
           type="button"
           className="fixed bottom-25 p-3 rounded-full bg-[#fffffd] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer"
           onClick={handleAddCart}
         >
-          <img src={Cart} alt="장소 담기" />
+          <Cart className="w-9 h-9" />
         </button>
       </div>
     </div>

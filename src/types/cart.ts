@@ -17,6 +17,7 @@ export type CartListResponse = CommonResponse<CartListResult>;
 
 export type PlaceCardProps = {
   contentid: number;
+  contenttypeid: number;
   firstimage?: string;
   title: string;
   addr1?: string|null;

@@ -120,7 +120,7 @@ const SirenConfirmModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 font-[Pretendard]">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 font-[Pretendard]">
       <div className="bg-white rounded-2xl p-6 mx-4 text-center max-w-sm w-full shadow-2xl">
         <div className="text-4xl mb-4">🚨</div>
         <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -357,7 +357,7 @@ const SafetyCheckPage = () => {
       </div>
 
       {/* 헤더 영역 */}
-      <div className="pt-6 px-4 pb-6">
+      <div className="pt-6 pb-6">
         {/* 도움말 섹션 */}
         <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between">
@@ -473,7 +473,7 @@ const SafetyCheckPage = () => {
       </div>
 
       {/* 카테고리 리스트 */}
-      <div className="px-4 pb-20">
+      <div className="pb-20">
         {safetyData.categories.map((category) => {
           const progress = getCategoryProgress(category);
           const isExpanded = expandedCategories.has(category.id);
