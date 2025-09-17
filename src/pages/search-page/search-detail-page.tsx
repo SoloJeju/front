@@ -25,6 +25,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ExImage from '../../assets/ex-place.svg';
 import { useWriteReviewStore } from '../../stores/writereview-store';
 import { useCreateRoomStore } from '../../stores/createroom-store';
+import GyulIcon from '../../assets/gyul.svg?react';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -53,6 +54,7 @@ export default function SearchDetailPage() {
     { label: '동행방' },
   ];
 
+  const [showOverview, setShowOverview] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [spotDetailData, setSpotDetailData] = useState<SpotDetail | null>(null);
@@ -186,7 +188,7 @@ export default function SearchDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
         <button
-          className="absolute top-3 right-3 p-1 bg-black/40 rounded-full"
+          className="absolute top-3 right-3 p-1 bg-black/40 rounded-full cursor-pointer z-10"
           onClick={() => setShowPopup((prev) => !prev)}
         >
           <QuestionIcon className="w-6 h-6 text-white" />
@@ -200,6 +202,44 @@ export default function SearchDetailPage() {
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]" onClick={()=>navigate('/inquiry')}>
               1:1 문의하기 (폐업/오류 신고)
             </p>
+          </div>
+        )}
+
+        {spotDetailData?.basic.overview && (
+          <div
+            className="absolute top-44 right-3 z-30"
+            onMouseEnter={() => setShowOverview(true)}
+            onMouseLeave={() => setShowOverview(false)}
+          >
+            <div
+              className="relative cursor-pointer"
+              onClick={() => setShowOverview((prev) => !prev)}
+            >
+              <GyulIcon className="w-10 h-10" />
+              {!showOverview && (
+                <span className="absolute top-0 right-0 block h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-orange-500"></span>
+                </span>
+              )}
+            </div>
+            {showOverview && (
+              <div className="absolute bottom-full right-0 mb-2 w-[260px]">
+                <div className="relative rounded-lg border border-gray-300 bg-white p-3 shadow-lg">
+                  <p className="max-h-[100px] overflow-y-auto font-['Pretendard'] text-[14px] leading-[18px] text-black">
+                    {spotDetailData.basic.overview}
+                  </p>
+                  <div
+                    className="absolute -bottom-[10px] right-[10px] h-0 w-0"
+                    style={{
+                      borderLeft: '10px solid transparent',
+                      borderRight: '10px solid transparent',
+                      borderTop: '10px solid white',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
