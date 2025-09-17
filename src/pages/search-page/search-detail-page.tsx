@@ -137,8 +137,9 @@ export default function SearchDetailPage() {
       if (response.isSuccess) {
         alert("장바구니에 추가되었습니다!");
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (e: unknown) {
+      console.error(e);
+      const error = e as { response?: { data?: { message: string } } };
       if (error.response?.data?.message) {
         alert(error.response.data.message);
       } else {
