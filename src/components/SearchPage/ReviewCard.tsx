@@ -22,7 +22,7 @@ const levelIcon: {
   [key: string]: React.FC<React.SVGProps<SVGSVGElement>>;
 } = {
   EASY: EASYIcon,
-  NORMAL: NORMALIcon,
+  MEDIUM: NORMALIcon,
   HARD: HARDIcon,
 };
 

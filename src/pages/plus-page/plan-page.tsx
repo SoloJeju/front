@@ -177,7 +177,7 @@ const PlanPage = () => {
       {isLoading && (
         <div className="flex-col fixed inset-0 bg-black/50 z-[100] flex justify-center items-center">
           <img src={LoadingImg} alt="Loading" className="w-48" />
-          <div className="text-white text-xl">AI가 열심히 계획을 짜고 있어요...🍊</div>
+          <div className="text-white text-xl font-['Pretendard']">AI가 열심히 계획을 짜고 있어요...🍊</div>
         </div>
       )}
       <div className="w-full max-w-[480px] pb-24">
