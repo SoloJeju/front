@@ -32,7 +32,7 @@ const RecentReviewCard = ({
       <img
         src={image ? image : ExamplePlace}
         alt={name}
-        className="h-[158px] rounded-xl brightness-75"
+        className="h-[158px] rounded-xl brightness-75 object-cover w-full"
       />
       <figcaption className="absolute bottom-2 w-full flex flex-col p-3 pb-1">
         <div className="text-left">

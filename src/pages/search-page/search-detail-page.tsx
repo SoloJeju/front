@@ -205,9 +205,9 @@ export default function SearchDetailPage() {
 
         <div className="absolute left-0 right-0 bottom-3 drop-shadow-sm flex flex-col gap-2 px-6 py-6  font-[pretendard]">
           <p
-            className={`w-fit px-1 py-0.5 font-bold text-[10px] rounded-sm   ${spotDetailData?.difficulty === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : spotDetailData?.difficulty === 'NORMAL' ? 'text-[#FFC32A] bg-[#FFEE8C]' : spotDetailData?.difficulty === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
+            className={`w-fit px-1 py-0.5 font-bold text-[10px] rounded-sm   ${spotDetailData?.difficulty === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : spotDetailData?.difficulty === 'MEDIUM' ? 'text-[#F78938] bg-[#FFEE8C]' : spotDetailData?.difficulty === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
           >
-            {spotDetailData?.difficulty}
+            {spotDetailData?.difficulty === 'MEDIUM' ? 'NORMAL' : spotDetailData?.difficulty}
           </p>
           <div className="flex items-center gap-2">
             <h1 className="text-white font-Pretendard text-[20px] font-semibold leading-[22px]">
