@@ -18,8 +18,8 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
   const StarEmpty = 5 - Star;
 
   return (
-    <div className="w-full flex flex-col gap-4 mt-8">
-      <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
+    <div className="w-full flex flex-col gap-4 mt-8 border-t-8 border-[#F5F5F5]">
+      <h2 className="mt-6 font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
         리뷰
       </h2>
       <div className="inline-flex items-center gap-[12px]">

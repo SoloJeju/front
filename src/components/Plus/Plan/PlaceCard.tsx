@@ -1,9 +1,12 @@
 import ClockIcon from '../../../assets/clock.svg?react';
+import { useNavigate } from 'react-router-dom';
 
 interface Place {
   name: string;
   memo: string;
   time: string;
+  contentId?: number;
+  contenttypeId?: number;
 }
 
 interface PlaceCardProps {
@@ -14,11 +17,11 @@ interface PlaceCardProps {
 }
 
 const PlaceCard = ({ place, index, isEditing, onClick }: PlaceCardProps) => {
+  const navigate = useNavigate();
   return (
     <div
       className={`flex items-start mb-4 ${isEditing ? 'cursor-pointer' : ''}`}
-      onClick={isEditing ? onClick : undefined}
-    >
+      onClick={isEditing ? onClick : () => navigate(`/search-detail/${place.contentId}`, { state: { contentTypeId: place.contenttypeId } })} >
       <div className="flex flex-col items-center mr-4">
         <div className="w-9 h-9 flex items-center justify-center bg-[#F78937] text-white font-bold rounded-full z-10">
           {index + 1}

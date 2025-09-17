@@ -364,7 +364,7 @@ export default function SearchDetailPage() {
                 <span className="text-[#F78938]">
                   {spotDetailData?.basic.title}
                 </span>
-                다녀오셨다면,
+                {" "}다녀오셨다면,
               </h2>
               <h2 className="mt-[4px] font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
                 짧은 리뷰로 여행의 기억을 남겨보세요!
@@ -393,7 +393,7 @@ export default function SearchDetailPage() {
                 <ReviewStats
                   key={idx}
                   easy={reviewStats.easyPct}
-                  meduim={reviewStats.mediumPct}
+                  medium={reviewStats.mediumPct}
                   hard={reviewStats.hardPct}
                   topTags={reviewStats.topTags}
                 />
