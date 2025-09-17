@@ -95,16 +95,14 @@ const PlanDetailPage = () => {
 
     console.log('New spot data:', newSpotData);
 
-    setTimeout(() => {
-      if (mode === 'replace' && editingSpot && locationIdToReplace === editingSpot.spot.locationId) {
+    if (mode === 'replace' && locationIdToReplace) {
         console.log('Replacing spot');
-        updateSpot(editingSpot.dayIndex, editingSpot.spot.locationId, newSpotData);
+        updateSpot(targetDayIndex, locationIdToReplace, newSpotData);
         setEditingSpot(null);
-      } else if (mode === 'add') {
+    } else if (mode === 'add') {
         console.log('Adding new spot to day', targetDayIndex);
         addSpotToDay(targetDayIndex, newSpotData);
-      }
-    }, 0);
+    }
   }, [location.state?.selectedSpotForReplacement, location.state?.mode, location.state?.dayIndex, isEditing, plan?.planId]);
 
   const handleSave = async () => {
