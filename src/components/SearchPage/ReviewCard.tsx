@@ -79,9 +79,9 @@ export default function ReviewCard({
           {new Date(date).toLocaleDateString()}
         </p>
         {receipt && (
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <p className="text-[#666] font-[Pretendard] text-[12px] not-italic font-normal leading-[14px] tracking-[-0.24px]">
-              ㆍ{receipt}
+              ㆍ 영수증
             </p>
             <ReceiptIcon className="w-4 h-4" />
           </div>

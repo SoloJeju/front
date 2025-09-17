@@ -46,6 +46,7 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
               rating={review.rating}
               content={review.text}
               profile={review.userProfileImageUrl}
+              receipt={review.receipt}
               images={review.imageUrls}
             />
           ))}
