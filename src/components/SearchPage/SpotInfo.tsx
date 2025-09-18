@@ -21,13 +21,11 @@ interface CourseInfo {
   subdetailoverview: string;
   subdetailimg?: string;
   subdetailalt?: string;
-  [key: string]: any;
 }
 
 interface ExtraInfo {
   infoname: string;
   infotext: string;
-  [key: string]: any;
 }
 
 interface BasicInfo {
@@ -36,12 +34,11 @@ interface BasicInfo {
   addr2?: string;
   homepage?: string;
   tel?: string;
-  [key: string]: any;
 }
 
 interface SpotInfoProps {
   basic: BasicInfo;
-  intro: Record<string, any>;
+  intro: Record<string, string | number | null>;
   infoList: (CourseInfo | ExtraInfo)[];
 }
 
@@ -72,7 +69,10 @@ const InfoItem: FC<InfoItemProps> = ({ icon, label, value, isTel = false }) => {
   );
 };
 
-const renderHours = (type: string, intro: Record<string, any>) => {
+const renderHours = (
+  type: string,
+  intro: Record<string, string | number | null>,
+) => {
   switch(type) {
     case "12":
       return (
@@ -133,7 +133,8 @@ const renderHours = (type: string, intro: Record<string, any>) => {
   }
 };
 
-const renderContact = (type: string, intro: Record<string, any>) => {
+const renderContact = (type: string, intro: Record<string, string | number | null>,
+) => {
   switch(type) {
     case "14":
       return <InfoItem icon={<TelIcon className="w-4 h-4 mt-0.5" />} label="문의" value={intro.infocenterculture} isTel />;
@@ -152,7 +153,7 @@ const renderContact = (type: string, intro: Record<string, any>) => {
   }
 };
 
-const renderEtcInfo = (type: string, intro: Record<string, any>, infoList?: (CourseInfo | ExtraInfo)[]) => {
+const renderEtcInfo = (type: string, intro: Record<string, string | number | null>, infoList?: (CourseInfo | ExtraInfo)[],) => {
   switch(type) {
     case "12": {
       const tourInfoList = infoList as ExtraInfo[];
@@ -261,11 +262,10 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
   const { contenttypeid, tel: genericTel } = basic;
   const type = String(contenttypeid);
   const [isExpanded, setIsExpanded] = useState(false);
-  
   const etcInfoContent = renderEtcInfo(type, intro, infoList);
   const hasEtcInfo = etcInfoContent && React.Children.count(etcInfoContent.props.children) > 0;
 
-  let specificContact: string | null = null;
+  let specificContact: string | number | null = null;
   switch(type) {
     case "12": specificContact = intro.infocenter; break;
     case "14": specificContact = intro.infocenterculture; break;
@@ -276,7 +276,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
     case "39": specificContact = intro.infocenterfood; break;
   }
   
-  const showGenericTel = genericTel && stripHtml(genericTel) !== stripHtml(specificContact || '');
+  const showGenericTel = genericTel && stripHtml(String(genericTel)) !== stripHtml(String(specificContact) || '');
   const mainContact = intro.infocenter || genericTel;
 
   return (
@@ -286,7 +286,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
       {renderHours(type, intro)}
       
       {type === '12' ? (
-        <InfoItem icon={<TelIcon className="w-4 h-4 mt-0.5" />} label="문의" value={mainContact} isTel />
+        <InfoItem icon={<TelIcon className="w-4 h-4 mt-0.5" />} label="문의" value={mainContact || null} isTel />
       ) : (
         renderContact(type, intro)
       )}
