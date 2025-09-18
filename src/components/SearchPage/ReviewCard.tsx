@@ -1,7 +1,4 @@
 import ProfileDefImg from '/src/assets/profileDefault.svg?react';
-import EASYIcon from '/src/assets/TagEASY.svg?react';
-import NORMALIcon from '/src/assets/TagNORMAL.svg?react';
-import HARDIcon from '/src/assets/TagHARD.svg?react';
 import StarIcon from '/src/assets/Star.svg?react';
 import StarEmptyIcon from '/src/assets/StarEmpty.svg?react';
 import ReceiptIcon from '/src/assets/receipt.svg?react';
@@ -13,17 +10,8 @@ type ReviewCardProps = {
   content: string;
   profile?: string;
   images?: string[];
-  receipt?: string;
+  receipt?: boolean;
   rating: number;
-};
-
-// 레벨별 아이콘 매핑
-const levelIcon: {
-  [key: string]: React.FC<React.SVGProps<SVGSVGElement>>;
-} = {
-  EASY: EASYIcon,
-  MEDIUM: NORMALIcon,
-  HARD: HARDIcon,
 };
 
 export default function ReviewCard({
@@ -36,8 +24,6 @@ export default function ReviewCard({
   receipt,
   rating,
 }: ReviewCardProps) {
-  const LevelIcon = levelIcon[level];
-
   const Star = Math.floor(rating);
   const StarEmpty = 5 - Star;
 
@@ -71,7 +57,10 @@ export default function ReviewCard({
           </div>
         </div>
         <div className="flex items-center">
-          {LevelIcon && <LevelIcon className="w-14 h-12" />}
+          <p
+            className={`w-fit px-1 py-0.5 font-bold text-[10px] rounded-sm   ${level === 'EASY' ? 'text-[#006259] bg-[#C8F5DA]' : level === 'MEDIUM' ? 'text-[#F78938] bg-[#FFEE8C]' : level === 'HARD' ? 'text-[#FF3E3E] bg-[#FFBBBB]' : 'text-[#707070] bg-[#C2C6C4]'}`}
+          >{level === 'MEDIUM' ? 'NORMAL' : level}
+          </p>
         </div>
       </div>
       {images &&
@@ -90,9 +79,9 @@ export default function ReviewCard({
           {new Date(date).toLocaleDateString()}
         </p>
         {receipt && (
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <p className="text-[#666] font-[Pretendard] text-[12px] not-italic font-normal leading-[14px] tracking-[-0.24px]">
-              ㆍ{receipt}
+              ㆍ 영수증
             </p>
             <ReceiptIcon className="w-4 h-4" />
           </div>

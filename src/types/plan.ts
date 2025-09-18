@@ -71,6 +71,7 @@ export type PlanDetailResponse = {
         duringDate: string
         memo: string
         contentId: number
+        contentTypeId: number
         spotTitle: string
         spotAddress: string
         spotImageUrl: string

@@ -125,7 +125,7 @@ const PostDetailCard = ({
         )}
       </div>
 
-      <h3 className="font-[pretendard] font-semibold text-black text-lg">
+      <h3 className="font-[pretendard] font-medium text-black text-lg">
         {title}
       </h3>
 
@@ -145,12 +145,12 @@ const PostDetailCard = ({
         </div>
 
         <time className="font-[pretendard] font-normal text-xs text-[#5D5D5D]">
-          {new Date(time).toLocaleDateString()}
+          {new Date(time).toLocaleString()}
         </time>
       </div>
 
       <div>
-        <p className="font-[pretendard] font-medium text-[#262626] break-keep">
+        <p className="font-[pretendard] font-normal text-base text-[#262626] break-keep">
           {content}
         </p>
         {images ? (
@@ -177,21 +177,21 @@ const PostDetailCard = ({
       )}
 
       <div className="flex justify-end gap-1">
-        <div className="flex gap-1 items-center">
-          <img src={Comment} alt="댓글 수" className="w-6 h-6" />
+        <div className="flex gap-0.5 items-center">
+          <img src={Comment} alt="댓글 수" className="w-7 h-7" />
           <span className="font-[pretendard] font-medium text-xs text-[#F78938]">
             {commentNumber}
           </span>
         </div>
         <button
           type="button"
-          className="flex gap-1 items-center cursor-pointer"
+          className="flex gap-0.5 items-center cursor-pointer"
           onClick={handleScrap}
         >
           <img
             src={isScraped ? FilledScript : Script}
             alt="스크립 수"
-            className="w-6 h-6"
+            className="w-7 h-7"
           />
           <span className="font-[pretendard] font-medium text-xs text-[#F78938]">
             {scriptNumber}
