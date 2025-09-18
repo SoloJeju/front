@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import LogoutModal from './modal/LogoutModal';
 import DeleteAccountModal from './modal/DeleteAccountModal';
-import { logout } from '../../apis/auth';
-import toast from 'react-hot-toast';
 import { useUnreadMessages } from '../../hooks/mypage/useUnreadMessages';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
 import { useDeleteProfile } from '../../hooks/mypage/useDeleteAccount';
+import { useLogout } from '../../hooks/auth/useLogout';
 
 type MenuItemProps = {
   to?: string;
@@ -35,10 +34,11 @@ const MenuItem = ({ to, children, className = '', onClick }: MenuItemProps) =>
   );
 
 const MyPage = () => {
-  const navigate = useNavigate();
   const { data: myInfoResponse, isLoading, isError } = useGetMyInfo();
   const { data: unreadMessagesData } = useUnreadMessages();
   const profile = myInfoResponse?.result;
+
+  const { executeLogout, isLoggingOut } = useLogout();
 
   const DEFAULT_PROFILE = '/default-profile.svg';
   const imageUrl = profile?.imageUrl || DEFAULT_PROFILE;
@@ -50,25 +50,12 @@ const MyPage = () => {
   const hasUnreadMessages = unreadMessagesData?.result;
 
   const [logoutOpen, setLogoutOpen] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const openLogout = () => setLogoutOpen(true);
   const closeLogout = () => setLogoutOpen(false);
 
-  const handleLogoutConfirm = async () => {
-    setIsLoggingOut(true);
-    try {
-      await logout();
-      toast.success('로그아웃되었습니다.');
-    } catch (error) {
-      console.error('로그아웃 API 실패:', error);
-      toast.error('로그아웃 중 오류가 발생했습니다.');
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      setIsLoggingOut(false);
-      closeLogout();
-      navigate('/login');
-    }
+  const handleLogoutConfirm = () => {
+    executeLogout();
+    closeLogout();
   };
 
   const [deleteOpen, setDeleteOpen] = useState(false);
