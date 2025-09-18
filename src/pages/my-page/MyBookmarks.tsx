@@ -57,12 +57,12 @@ export default function MyBookmarks() {
               <PostCard
                 key={post.postId}
                 id={post.postId}
-                type="스크랩"
+                type={post.postCategory}
                 title={post.title}
-                content=""
-                commentNumber={0}
+                content={post.content}
+                commentNumber={post.commentCount}
                 time={post.createdAt ?? ''}
-                writer=""
+                writer={post.authorNickname}
                 image={post.thumbnailUrl ?? null}
               />
             ))}

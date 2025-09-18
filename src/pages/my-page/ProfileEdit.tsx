@@ -5,28 +5,31 @@ import Button from '../../components/common/Button';
 import { useProfileStore, initialState } from '../../stores/profile-store';
 import editIcon from '../../assets/edit-icon.svg';
 import toast from 'react-hot-toast';
-import { checkNickname as apiCheckNickname } from '../../apis/auth';
-import { updateMyProfile } from '../../apis/mypage';
-import { useQueryClient } from '@tanstack/react-query';
 import { validateImageFile, uploadImageToS3 } from '../../apis/s3';
-import axios from 'axios';
 import useGetMyInfo from '../../hooks/mypage/useGetMyInfo';
+import { useProfile } from '../../hooks/profile/useProfile';
 
 const MAX_BIO_LEN = 25;
 const DEFAULT_IMG = '/default-profile.svg';
 
-const handleImgError: React.ReactEventHandler<HTMLImageElement> = (e) => {
-  e.currentTarget.src = DEFAULT_IMG;
+const handleImgError: React.ReactEventHandler<HTMLImageElement> = (evt) => {
+  evt.currentTarget.src = DEFAULT_IMG;
 };
 
 export default function ProfileEdit() {
   const { nickName, setNickName, profileImage, setProfileImage, bio, setBio } =
     useProfileStore();
-  const qc = useQueryClient();
 
   const navigate = useNavigate();
 
   const { data: myInfoResponse, isLoading, isError } = useGetMyInfo();
+
+  const {
+    executeCheckNickname,
+    isCheckingNickname,
+    executeUpdateProfile,
+    isUpdatingProfile,
+  } = useProfile();
 
   const originalNickname = useRef(nickName);
   const [isNicknameChecked, setIsNicknameChecked] = useState(true);
@@ -34,8 +37,6 @@ export default function ProfileEdit() {
   const [bioLen, setBioLen] = useState<number>(
     bio ? Math.min(bio.length, MAX_BIO_LEN) : 0
   );
-  const [isChecking, setIsChecking] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -55,10 +56,10 @@ export default function ProfileEdit() {
   }, [bio]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) =>
-      e.key === 'Escape' && setIsProfileMenuOpen(false);
-    const onClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+    const onKey = (evt: KeyboardEvent) =>
+      evt.key === 'Escape' && setIsProfileMenuOpen(false);
+    const onClickOutside = (evt: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(evt.target as Node)) {
         setIsProfileMenuOpen(false);
       }
     };
@@ -75,40 +76,31 @@ export default function ProfileEdit() {
   const openProfileMenu = () => setIsProfileMenuOpen(true);
   const closeProfileMenu = () => setIsProfileMenuOpen(false);
 
-  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
+  const handleNicknameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const next = evt.target.value;
     setNickName(next);
     setIsNicknameChecked(next === originalNickname.current);
   };
 
-  const handleCheckNickname = async () => {
+  const handleCheckNickname = () => {
     if (!nickName) return;
     if (nickName === originalNickname.current) {
-      setIsNicknameChecked(true);
       toast.success('현재 닉네임 그대로 사용합니다.');
+      setIsNicknameChecked(true);
       return;
     }
-    try {
-      setIsChecking(true);
-      const res = await apiCheckNickname({ nickName });
-      if (res.isSuccess) {
-        setIsNicknameChecked(true);
-        toast.success(res.result || '사용 가능한 닉네임입니다.');
-      } else {
-        setIsNicknameChecked(false);
-        toast.error(res.message || '사용할 수 없는 닉네임입니다.');
+
+    executeCheckNickname(
+      { nickName },
+      {
+        onSuccess: () => setIsNicknameChecked(true),
+        onError: () => setIsNicknameChecked(false),
       }
-    } catch (e: unknown) {
-      setIsNicknameChecked(false);
-      console.error('닉네임 확인 오류:', e);
-      toast.error('닉네임 확인 중 오류가 발생했습니다.');
-    } finally {
-      setIsChecking(false);
-    }
+    );
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const file = evt.target.files?.[0];
     if (!file) return;
 
     const { isValid, errorMessage } = validateImageFile(file);
@@ -125,11 +117,11 @@ export default function ProfileEdit() {
       } else {
         toast.error(res.message || '이미지 업로드에 실패했습니다.');
       }
-    } catch (err: unknown) {
-      console.error('이미지 업로드 오류:', err);
+    } catch (error: unknown) {
+      console.error('이미지 업로드 오류:', error);
       toast.error('이미지 업로드 중 오류가 발생했습니다.');
     } finally {
-      if (e.target) e.target.value = '';
+      if (evt.target) evt.target.value = '';
     }
   };
 
@@ -144,25 +136,35 @@ export default function ProfileEdit() {
     closeProfileMenu();
   };
 
-  const handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value ?? '';
+  const handleBioChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const v = evt.target.value ?? '';
     const trimmed = v.slice(0, MAX_BIO_LEN);
     setBio(trimmed);
     setBioLen(trimmed.length);
   };
 
+  const originalProfile = myInfoResponse?.result;
+  const hasNicknameChanged = nickName !== (originalProfile?.nickName ?? '');
+  const hasBioChanged = (bio ?? '') !== (originalProfile?.bio ?? '');
+  const hasImageChanged =
+    (profileImage || initialState.profileImage) !==
+    (originalProfile?.imageUrl || initialState.profileImage);
+  const hasChanges = hasNicknameChanged || hasBioChanged || hasImageChanged;
+
   const canSave =
+    hasChanges &&
     !!nickName &&
     (nickName === originalNickname.current || isNicknameChecked) &&
-    !isSaving;
+    !isUpdatingProfile;
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!canSave) {
-      toast.error('닉네임 중복 확인을 완료해주세요.');
+      if (!isNicknameChecked) {
+        toast.error('닉네임 중복 확인을 완료해주세요.');
+      }
       return;
     }
 
-    const originalProfile = myInfoResponse?.result;
     const payload: {
       nickName?: string;
       imageName?: string;
@@ -170,11 +172,8 @@ export default function ProfileEdit() {
       bio?: string;
     } = {};
 
-    if (nickName !== originalProfile?.nickName) {
-      payload.nickName = nickName;
-    }
-
-    if (profileImage !== originalProfile?.imageUrl) {
+    if (hasNicknameChanged) payload.nickName = nickName;
+    if (hasImageChanged) {
       const isDefault = profileImage === initialState.profileImage;
       if (isDefault) {
         payload.imageName = 'default-profile.svg';
@@ -183,38 +182,13 @@ export default function ProfileEdit() {
         payload.imageName = profileImage.split('/').pop() || 'profile.jpg';
       }
     }
+    if (hasBioChanged) payload.bio = bio.slice(0, MAX_BIO_LEN);
 
-    if (bio !== originalProfile?.bio) {
-      payload.bio = bio.slice(0, MAX_BIO_LEN);
-    }
-
-    if (Object.keys(payload).length === 0) {
-      toast('변경사항이 없습니다.');
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      const res = await updateMyProfile(payload);
-      if (res.isSuccess) {
-        toast.success('프로필이 수정되었습니다.');
-        await qc.invalidateQueries({ queryKey: ['myInfo'] });
+    executeUpdateProfile(payload, {
+      onSuccess: () => {
         navigate('/mypage');
-      } else {
-        toast.error(res.message || '수정에 실패했습니다.');
-      }
-    } catch (err: unknown) {
-      let msg = '서버 오류가 발생했습니다.';
-      if (axios.isAxiosError(err)) {
-        const data = err.response?.data as { message?: string } | undefined;
-        msg = data?.message ?? err.message ?? msg;
-      } else if (err instanceof Error) {
-        msg = err.message;
-      }
-      toast.error(`수정 실패: ${msg}`);
-    } finally {
-      setIsSaving(false);
-    }
+      },
+    });
   };
 
   if (isLoading) return <div>프로필 정보를 불러오는 중...</div>;
@@ -305,9 +279,9 @@ export default function ProfileEdit() {
             size="small"
             variant="primary"
             onClick={handleCheckNickname}
-            disabled={!nickName || isChecking}
+            disabled={!nickName || isCheckingNickname}
           >
-            {isChecking ? '확인중…' : '중복확인'}
+            {isCheckingNickname ? '확인중…' : '중복확인'}
           </Button>
         </div>
         {nickName !== originalNickname.current && isNicknameChecked && (
@@ -340,7 +314,7 @@ export default function ProfileEdit() {
         onClick={handleSave}
         disabled={!canSave}
       >
-        {isSaving ? '저장 중…' : '저장하기'}
+        {isUpdatingProfile ? '저장 중…' : '저장하기'}
       </Button>
     </div>
   );
