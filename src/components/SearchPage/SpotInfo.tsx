@@ -171,7 +171,7 @@ const renderEtcInfo = (type: string, intro: Record<string, string | number | nul
         </>
       );
     }
-    case "14":
+    case "14":{
       return (
         <>
           <InfoItem icon={<TagIcon className="w-4 h-4 mt-0.5" />} label="이용 요금" value={intro.usefee} />
@@ -179,15 +179,15 @@ const renderEtcInfo = (type: string, intro: Record<string, string | number | nul
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parkingculture ? `${intro.parkingculture} (${intro.parkingfee || '요금 정보 없음'})` : null} />
           <InfoItem icon={<TagIcon className="w-4 h-4 mt-0.5" />} label="할인 정보" value={intro.discountinfo} />
         </>
-      );
-    case "15":
+      );}
+    case "15": {
       return (
         <>
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="행사 장소" value={intro.eventplace} />
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="이용 요금" value={intro.usetimefestival} />
         </>
-      );
-    case "25":
+      );}
+    case "25":{
       const courseInfoList = infoList as CourseInfo[];
       return (
         <>
@@ -206,7 +206,7 @@ const renderEtcInfo = (type: string, intro: Record<string, string | number | nul
             )}
           </div>
         </>
-      );
+      );}
     case "28": {
       const leportsInfoList = infoList as ExtraInfo[];
       return (
@@ -229,7 +229,7 @@ const renderEtcInfo = (type: string, intro: Record<string, string | number | nul
         </>
       );
     }
-    case "32":
+    case "32":{
       return (
         <>
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="객실 수" value={intro.roomcount} />
@@ -237,24 +237,25 @@ const renderEtcInfo = (type: string, intro: Record<string, string | number | nul
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="수용 인원" value={intro.accomcountlodging} />
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parkinglodging} />
         </>
-      );
-    case "38":
+      );}
+    case "38":{
       return (
         <>
           <InfoItem icon={<TagIcon className="w-4 h-4 mt-0.5" />} label="판매 품목" value={intro.saleitem} />
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parkingshopping} />
         </>
-      );
-    case "39":
+      );}
+    case "39":{
       return (
         <>
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="대표 메뉴" value={intro.firstmenu} />
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="취급 메뉴" value={intro.treatmenu} />
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parkingfood} />
         </>
-      );
-    default:
+      );}
+    default:{
       return null;
+    }
   }
 };
 
