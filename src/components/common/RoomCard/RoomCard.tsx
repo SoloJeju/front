@@ -85,8 +85,8 @@ const RoomCard = ({
             <div
               className={`text-base font-['Pretendard'] leading-tight tracking-tight ${
                 hasUnreadMessages
-                  ? 'text-black font-bold'
-                  : 'text-black font-semibold'
+                  ? 'text-black font-semibold'
+                  : 'text-black font-medium'
               }`}
             >
               {title}

@@ -144,6 +144,7 @@ export type SpotReview = {
   difficulty: string;
   rating: number;
   createdAt: Date;
+  receipt: boolean;
 };
 
 export type ResponseSpotReviewDto = CommonCursorResponse<{

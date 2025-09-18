@@ -37,7 +37,7 @@ const RecommendPlace = ({
         <img
           src={image ? image : ExamplePlace}
           alt={title}
-          className="h-32 rounded-2xl"
+          className="h-32 rounded-2xl object-cover w-full"
         />
         <figcaption className="text-center font-[pretendard] font-medium text-black">
           {title}
