@@ -63,12 +63,12 @@ const PostCard = ({
           {content}
         </p>
 
-        <div className="flex gap-1">
+        <div className="flex gap-1 items-center">
           <div className="flex gap-1">
-            <img src={Comment} alt="댓글" />
+            <img src={Comment} alt="댓글" className="w-4 h-4" />
             <span
               aria-label="댓글 수"
-              className='font-[pretendard] font-medium text-xs text-[#F78938] after:content-["|"] after:pl-1 after:text-[#666666]'
+              className='font-[pretendard] font-normal text-xs text-[#F78938] after:content-["|"] after:pl-1 after:text-[#666666]'
             >
               {commentNumber}
             </span>

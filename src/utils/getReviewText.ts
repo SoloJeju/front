@@ -1,14 +1,14 @@
-interface getReveiwTextProps {
+interface getReviewTextProps {
   easy: number;
   normal: number;
   hard: number;
 }
 
-export function getReveiwText({
+export function getReviewText({
   easy,
   normal,
   hard,
-}: getReveiwTextProps): string[] | string {
+}: getReviewTextProps): string[] | string {
   if (easy >= 70) {
     return ['대부분이 Easy를 골랐어요!', '혼자가기 부담 없는 곳이에요 😌'];
   } else if (normal >= 70) {

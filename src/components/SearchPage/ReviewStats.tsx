@@ -1,10 +1,10 @@
-import { getReveiwText } from '../../utils/getReviewText';
+import { getReviewText } from '../../utils/getReviewText';
 
 const colors = ['#FAA14B', '#F7C999', '#F78938'];
 
 interface ReviewStatsProps {
   easy: number;
-  meduim: number;
+  medium: number;
   hard: number;
   topTags: {
     tagCode: number;
@@ -16,11 +16,11 @@ interface ReviewStatsProps {
 
 export default function ReviewStats({
   easy,
-  meduim,
+  medium,
   hard,
   topTags,
 }: ReviewStatsProps) {
-  const reviewText = getReveiwText({ easy, normal: meduim, hard });
+  const reviewText = getReviewText({ easy, normal: medium, hard });
 
   return (
     <div className="flex-col items-start w-full flex-shrink-0 pt-6">
@@ -39,9 +39,9 @@ export default function ReviewStats({
               )}
             </div>
           </div>
-          <div className="h-full" style={{ width: `${meduim}%` }}>
+          <div className="h-full" style={{ width: `${medium}%` }}>
             <div className="h-full bg-[#FAA14B]" style={{ width: '100%' }}>
-              {meduim > 0 && (
+              {medium > 0 && (
                 <span className="h-full flex justify-center items-center text-gray-50 text-xs">
                   NORMAL
                 </span>
