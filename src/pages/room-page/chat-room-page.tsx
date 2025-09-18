@@ -98,7 +98,7 @@ export default function ChatRoomPage() {
     ): { name: string; avatar: string } => {
       const fromMap = userProfileMap.get(senderId);
       const name = fromMap?.username ?? fallbackName ?? '사용자';
-      const avatar = fromMap?.profileImage ?? fallbackImage ?? BasicProfile;
+      const avatar = fromMap?.profileImage || fallbackImage || BasicProfile;
       return { name, avatar };
     },
     [userProfileMap]
