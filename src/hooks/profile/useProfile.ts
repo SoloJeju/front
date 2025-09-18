@@ -6,6 +6,7 @@ import type {
   UpdateProfileRequest,
   UpdateProfileResponse,
 } from '../../types/mypage';
+import axios from 'axios';
 
 export const useProfile = () => {
   const qc = useQueryClient();
@@ -16,12 +17,14 @@ export const useProfile = () => {
       mutationFn: checkNickname,
       onSuccess: () => toast.success('사용 가능한 닉네임입니다.'),
       onError: (error: unknown) => {
-        const message =
-          error instanceof Error
-            ? error.message
-            : '이미 사용 중이거나 사용할 수 없는 닉네임입니다.';
-        console.error('닉네임 중복 확인 실패:', error);
+        let message = '이미 사용 중이거나 사용할 수 없는 닉네임입니다.';
+
+        if (axios.isAxiosError(error) && error.response?.data?.message) {
+          message = error.response.data.message;
+        }
+
         toast.error(message);
+        console.error('닉네임 중복 확인 실패:', error);
       },
     });
 

@@ -61,12 +61,12 @@ const KakaoMap = ({
             map.setCenter(new kakao.maps.LatLng(myLat, myLng));
           },
           () => {
-            createMyLocationMarker(initialLat, initialLng); // fallback
+            createMyLocationMarker(initialLat, initialLng);
             map.setCenter(new kakao.maps.LatLng(initialLat, initialLng));
           }
         );
       } else {
-        createMyLocationMarker(initialLat, initialLng); // fallback
+        createMyLocationMarker(initialLat, initialLng);
         map.setCenter(new kakao.maps.LatLng(initialLat, initialLng));
       }
 
@@ -128,7 +128,7 @@ const KakaoMap = ({
                   <img src="${contentTypeIcon}" class="w-[12px] h-[12px]" />
                   <img src="${difficultyIcon}" class="w-[24px] h-[12px]" />
                 </div>
-                <a href="/search-detail/${spot.contentId}">
+                  <a href="/search-detail/${spot.contentId}?contentTypeId=${spot.contentTypeId}">
                   <img src="${more}" class="w-[12px] h-[12px]" />
                 </a>
               </div>
@@ -170,12 +170,13 @@ const KakaoMap = ({
 
       const isAllCategory = selectedCategory === "전체";
       const categoryId = CATEGORY_CONTENT_TYPE_MAP[selectedCategory];
+      const isValidCategoryId = typeof categoryId === "number" && !isNaN(categoryId);
 
       const params = {
         latitude: initialLat,
         longitude: initialLng,
         radius: 1000,
-        ...(isAllCategory ? {} : { contentTypeId: categoryId }),
+        ...(isAllCategory || !isValidCategoryId ? {} : { contentTypeId: categoryId }),
       };
 
       try {

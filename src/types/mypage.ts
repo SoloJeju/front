@@ -55,6 +55,10 @@ export type ScrapItem = {
   title: string;
   thumbnailUrl?: string | null;
   createdAt?: string;
+  postCategory: string;
+  content: string;
+  commentCount: number;
+  authorNickname: string;
 };
 export type ResponseMyScrapsDto = CommonResponse<
   OffsetPage<ScrapItem> | CursorPage<ScrapItem>
@@ -71,7 +75,6 @@ export type ResponseMyPostsDto = CommonResponse<MyPostsPage>;
  * ---------------------------- */
 export type MyCommentedPostsPage = OffsetPage<Post> | CursorPage<Post>;
 export type ResponseMyCommentedPostsDto = CommonResponse<MyCommentedPostsPage>;
-
 
 export type ResponseMyPlansDto = CommonResponse<{
   content: PlanItem[];
