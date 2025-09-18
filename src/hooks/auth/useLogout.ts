@@ -19,7 +19,7 @@ export const useLogout = () => {
 
       useProfileStore.getState().reset();
 
-      useProfileStore.persist.clearStorage();
+      localStorage.removeItem('user-profile-storage');
 
       toast.success('로그아웃되었습니다.');
       navigate('/login');
@@ -34,11 +34,12 @@ export const useLogout = () => {
 
       toast.error(message);
 
+      // 인증 만료(401) 시에도 모든 데이터 초기화
       if (isAxiosError(error) && error.response?.status === 401) {
         clearAuthData();
         queryClient.clear();
         useProfileStore.getState().reset();
-        useProfileStore.persist.clearStorage();
+        localStorage.removeItem('user-profile-storage');
         navigate('/login');
       }
     },
