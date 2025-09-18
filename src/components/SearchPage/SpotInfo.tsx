@@ -56,7 +56,7 @@ const InfoItem: FC<InfoItemProps> = ({ icon, label, value, isTel = false }) => {
     <div className="flex items-start gap-2">
       {icon}
       <div className="flex w-full text-[15px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-        <span className="w-24 flex-shrink-0 font-semibold">{label}</span>
+        <span className="w-22 flex-shrink-0 font-semibold">{label}</span>
         {isTel ? (
           <a href={`tel:${stripHtml(formattedValue)}`} className="text-[#033C81] hover:underline">
             {formattedValue}
@@ -319,7 +319,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
           <div className="flex items-start gap-2">
             <WebIcon className="w-4 h-4 mt-0.5" />
             <div className="flex w-full text-[15px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                <span className="w-24 flex-shrink-0 font-semibold">사이트</span>
+                <span className="w-22 flex-shrink-0 font-semibold">사이트</span>
                 <div className="flex flex-col">
                   {basic.homepage.split('\n').map((url, index) =>
                       url.trim() && (

@@ -24,3 +24,16 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
+
+@keyframes draw-animation {
+  from {
+    stroke-dashoffset: 377;
+  }
+  to {
+    stroke-dashoffset: var(--final-offset);
+  }
+}
+
+.circle-segment {
+  animation: draw-animation 1.5s ease-out forwards;
+}

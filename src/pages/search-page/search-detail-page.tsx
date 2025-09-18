@@ -56,7 +56,6 @@ export default function SearchDetailPage() {
 
   const [showOverview, setShowOverview] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [spotDetailData, setSpotDetailData] = useState<SpotDetail | null>(null);
   const [isLoadingDetailData, setIsLoadingDetailData] = useState(false);
@@ -368,16 +367,15 @@ export default function SearchDetailPage() {
               );
             })}
 
-            {!showAllReviews && (
+            {/* {!showAllReviews && (
               <button
                 className="w-full max-w-[480px] mt-4 py-2 flex justify-center text-center text-[#F78938] font-[Pretendard] text-[16px] not-italic font-medium leading-[18px] tracking-[-0.32px]"
                 onClick={() => setShowAllReviews(true)}
               >
                 + 더보기
               </button>
-            )}
+            )} */}
 
-            {showAllReviews && (
               <>
                 {reviews?.pages.flatMap((page, idx) => {
                   const reivewList = page.result.reviews || [];
@@ -385,7 +383,6 @@ export default function SearchDetailPage() {
                 })}
                 <div ref={reviewRef}></div>
               </>
-            )}
           </div>
         )}
 
