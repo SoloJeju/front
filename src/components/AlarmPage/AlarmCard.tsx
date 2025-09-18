@@ -46,7 +46,7 @@ const AlarmCard = ({
     >
       {unreadCount !== 0 && (
         <div
-          className="bg-red-500 text-white rounded-full absolute right-3 top-5 px-2 flex justify-center"
+          className="bg-red-500 text-white rounded-full absolute right-3 top-5 flex justify-center items-center w-6 h-6"
           aria-label="읽지 않은 알림"
         >
           {unreadCount}
@@ -58,7 +58,9 @@ const AlarmCard = ({
       <h3 className="font-semibold text-black">
         {type === 'MESSAGE'
           ? '동행방에 새로운 메시지가 있어요!'
-          : '게시글에 새로운 댓글이 달렸어요!'}
+          : type === 'COMMENT'
+            ? '게시글에 새로운 댓글이 달렸어요!'
+            : ''}
       </h3>
       <p className="font-normal text-[#5D5D5D]">{message}</p>
     </div>
