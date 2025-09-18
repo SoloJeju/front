@@ -131,7 +131,7 @@ export default function ProfileEdit() {
   };
 
   const handleResetToDefault = () => {
-    setProfileImage(initialState.profileImage);
+    setProfileImage('/default-profile.svg');
     if (fileInputRef.current) fileInputRef.current.value = '';
     closeProfileMenu();
   };
@@ -143,12 +143,15 @@ export default function ProfileEdit() {
     setBioLen(trimmed.length);
   };
 
+  const defaultImageUrl = '/default-profile.svg';
+
   const originalProfile = myInfoResponse?.result;
   const hasNicknameChanged = nickName !== (originalProfile?.nickName ?? '');
   const hasBioChanged = (bio ?? '') !== (originalProfile?.bio ?? '');
+
   const hasImageChanged =
-    (profileImage || initialState.profileImage) !==
-    (originalProfile?.imageUrl || initialState.profileImage);
+    (profileImage || defaultImageUrl) !==
+    (originalProfile?.imageUrl || defaultImageUrl);
   const hasChanges = hasNicknameChanged || hasBioChanged || hasImageChanged;
 
   const canSave =
@@ -174,8 +177,9 @@ export default function ProfileEdit() {
 
     if (hasNicknameChanged) payload.nickName = nickName;
     if (hasImageChanged) {
-      const isDefault = profileImage === initialState.profileImage;
+      const isDefault = profileImage === defaultImageUrl || !profileImage;
       if (isDefault) {
+        payload.imageUrl = '/default-profile.svg';
         payload.imageName = 'default-profile.svg';
       } else if (profileImage) {
         payload.imageUrl = profileImage;
@@ -212,7 +216,7 @@ export default function ProfileEdit() {
       </h1>
       <div className="relative mb-10">
         <img
-          src={profileImage || initialState.profileImage || DEFAULT_IMG}
+          src={profileImage || DEFAULT_IMG}
           alt="프로필 이미지"
           className="w-32 h-32 rounded-full object-cover"
           onError={handleImgError}
@@ -246,14 +250,14 @@ export default function ProfileEdit() {
             <button
               type="button"
               onClick={
-                profileImage !== initialState.profileImage
+                profileImage !== defaultImageUrl
                   ? handleResetToDefault
                   : undefined
               }
-              disabled={profileImage === initialState.profileImage}
+              disabled={profileImage === defaultImageUrl || !profileImage}
               role="menuitem"
               className={`w-full text-left px-4 py-3 text-sm outline-none ${
-                profileImage === initialState.profileImage
+                profileImage === defaultImageUrl || !profileImage
                   ? 'text-[#262626]/40 cursor-default'
                   : 'text-[#262626] hover:bg-gray-50 cursor-pointer'
               }`}

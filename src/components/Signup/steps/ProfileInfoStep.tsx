@@ -4,7 +4,6 @@ import Input from '../../common/Input';
 import Button from '../../common/Button';
 import { useProfileStore } from '../../../stores/profile-store';
 import { useProfile } from '../../../hooks/profile/useProfile';
-import defaultProfile from '../../../assets/profileDefault.svg';
 import editIcon from '../../../assets/edit-icon.svg';
 import toast from 'react-hot-toast';
 
@@ -15,7 +14,7 @@ import {
 } from '../../../apis/s3';
 
 const MAX_BIO_LEN = 25;
-const DEFAULT_PROFILE = defaultProfile;
+const DEFAULT_PROFILE = '/default-profile.svg';
 
 const isValidYMD = (s: string, min = '1900-01-01', max?: string) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -144,7 +143,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
         await deleteImageFromS3(uploadedImage.name);
       }
       setUploadedImage(null);
-      setProfileImage('');
+      setProfileImage('/default-profile.svg');
       if (fileInputRef.current) fileInputRef.current.value = '';
       toast.success('기본 이미지로 변경되었습니다.');
     } catch (error) {
@@ -171,9 +170,7 @@ export default function ProfileInfoStep({ onNext }: { onNext: () => void }) {
 
   const isDefaultImage =
     !uploadedImage &&
-    (!profileImage ||
-      profileImage === DEFAULT_PROFILE ||
-      profileImage.startsWith('data:image'));
+    (profileImage === '/default-profile.svg' || !profileImage);
 
   const isFormValid =
     !!name && !!nickName && !!gender && birthIsValid && isNicknameChecked;
