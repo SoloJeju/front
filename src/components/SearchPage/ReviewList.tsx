@@ -24,7 +24,7 @@ export default function ReviewList({ reviewList }: ReviewListProps) {
       </h2>
       <div className="inline-flex items-center gap-[12px]">
         <h2 className="font-[Pretendard] text-[18px] font-semibold leading-[20px] tracking-[-0.36px]">
-          {rating}
+          {rating.toFixed(2)}
         </h2>
         <div className="flex gap-1">
           {Array.from({ length: Star }).map((_, i) => (
