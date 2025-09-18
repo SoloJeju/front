@@ -6,7 +6,7 @@ interface Place {
   memo: string;
   time: string;
   contentId?: number;
-  contenttypeId?: number;
+  contentTypeId?: number;
 }
 
 interface PlaceCardProps {
@@ -21,7 +21,7 @@ const PlaceCard = ({ place, index, isEditing, onClick }: PlaceCardProps) => {
   return (
     <div
       className={`flex items-start mb-4 ${isEditing ? 'cursor-pointer' : ''}`}
-      onClick={isEditing ? onClick : () => navigate(`/search-detail/${place.contentId}`, { state: { contentTypeId: place.contenttypeId } })} >
+      onClick={isEditing ? onClick : () => navigate(`/search-detail/${place.contentId}`, { state: { contentTypeId: place.contentTypeId } })} >
       <div className="flex flex-col items-center mr-4">
         <div className="w-9 h-9 flex items-center justify-center bg-[#F78937] text-white font-bold rounded-full z-10">
           {index + 1}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import ClockIcon from '../../assets/clock.svg?react';
 import TelIcon from '../../assets/tel.svg?react';
@@ -263,6 +263,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const etcInfoContent = renderEtcInfo(type, intro, infoList);
+  const hasEtcInfo = etcInfoContent && React.Children.count(etcInfoContent.props.children) > 0;
 
   let specificContact: string | null = null;
   switch(type) {
@@ -316,7 +317,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
           </div>
       )}
 
-      {etcInfoContent && (
+      {hasEtcInfo && (
         <>
           <div className="w-full flex items-center gap-2 pt-2 font-[Pretendard]">
             <div className="flex-grow h-px bg-gray-200"></div>

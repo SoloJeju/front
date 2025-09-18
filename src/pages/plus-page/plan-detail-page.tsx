@@ -84,7 +84,7 @@ const PlanDetailPage = () => {
     const newSpotData: SpotDetail = {
       locationId: newLocationId,
       contentId: Number(spotFromSearch.contentid),
-      contenttypeid: Number(spotFromSearch.contenttypeid),
+      contentTypeId: Number(spotFromSearch.contenttypeid),
       spotTitle: spotFromSearch.title,
       spotAddress: spotFromSearch.addr1,
       spotImageUrl: spotFromSearch.firstimage || '',
@@ -233,7 +233,7 @@ const PlanDetailPage = () => {
                           name: spot.spotTitle,
                           memo: spot.memo,
                           contentId: spot.contentId,
-                          contenttypeId: spot.contenttypeid,
+                          contentTypeId: spot.contentTypeId,
                           time: `${dayjs(spot.arrivalDate).format('HH:mm')} - ${dayjs(spot.duringDate).format(
                             'HH:mm',
                           )}`,
