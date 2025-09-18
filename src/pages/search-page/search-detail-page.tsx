@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react';
 import BackIcon from '../../assets/beforeArrow.svg?react';
 import QuestionIcon from '../../assets/question.svg?react';
-import MapIcon from '../../assets/mapPin.svg?react';
-import ClockIcon from '../../assets/clock.svg?react';
-import WebIcon from '../../assets/web.svg?react';
-import TelIcon from '../../assets/tel.svg?react';
-import InfoIcon from '../../assets/info.svg?react';
 import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
@@ -26,6 +21,7 @@ import ExImage from '../../assets/ex-place.svg';
 import { useWriteReviewStore } from '../../stores/writereview-store';
 import { useCreateRoomStore } from '../../stores/createroom-store';
 import GyulIcon from '../../assets/gyul.svg?react';
+import SpotInfo from '../../components/SearchPage/SpotInfo';
 
 interface SpotDetail {
   basic: BasicSpotDetail;
@@ -55,6 +51,7 @@ export default function SearchDetailPage() {
   ];
 
   const [showOverview, setShowOverview] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [spotDetailData, setSpotDetailData] = useState<SpotDetail | null>(null);
@@ -65,7 +62,6 @@ export default function SearchDetailPage() {
       setIsLoadingDetailData(true);
       try {
         const res = await getTouristDetail(contentId, contentTypeId);
-
         if (res.isSuccess) {
           setSpotDetailData(res.result);
         }
@@ -88,22 +84,12 @@ export default function SearchDetailPage() {
     hasNextPage: hasNextSpotImages,
     fetchNextPage: fetchNextSpotImages,
   } = useGetInfiniteSpotImages(contentId);
-
-  const { ref: imageRef, inView: imageInView } = useInView({
-    threshold: 0,
-  });
-
+  const { ref: imageRef, inView: imageInView } = useInView({ threshold: 0 });
   useEffect(() => {
     if (imageInView && !isFetchingSpotImages && hasNextSpotImages) {
       fetchNextSpotImages();
     }
-  }, [
-    imageInView,
-    isFetchingSpotImages,
-    hasNextSpotImages,
-    fetchNextSpotImages,
-  ]);
-
+  }, [imageInView, isFetchingSpotImages, hasNextSpotImages, fetchNextSpotImages]);
   const {
     data: reviews,
     isFetching: isFetchingReviews,
@@ -112,17 +98,12 @@ export default function SearchDetailPage() {
     isError: isErrorReviews,
     fetchNextPage: fetchNextReviews,
   } = useGetInfiniteReveiws(contentId);
-
-  const { ref: reviewRef, inView: reviewInView } = useInView({
-    threshold: 0,
-  });
-
+  const { ref: reviewRef, inView: reviewInView } = useInView({ threshold: 0 });
   useEffect(() => {
     if (reviewInView && !isFetchingReviews && hasNextReviews) {
       fetchNextReviews();
     }
   }, [reviewInView, isFetchingReviews, hasNextReviews, fetchNextReviews]);
-
   const {
     data: chatRooms,
     isPending: isPendingChatRooms,
@@ -150,12 +131,7 @@ export default function SearchDetailPage() {
     }
   };
 
-  if (
-    isLoadingDetailData ||
-    isPendingImages ||
-    isPendingReviews ||
-    isPendingChatRooms
-  ) {
+  if (isLoadingDetailData || isPendingImages || isPendingReviews || isPendingChatRooms) {
     return <LoadingSpinner color={'#ffffff'} />;
   }
 
@@ -177,11 +153,7 @@ export default function SearchDetailPage() {
 
       <div className="relative w-full h-[240px] flex-shrink-0">
         <img
-          src={
-            spotDetailData?.basic.firstimage ||
-            spotDetailData?.basic.firstimage2 ||
-            ExImage
-          }
+          src={spotDetailData?.basic.firstimage || spotDetailData?.basic.firstimage2 || ExImage}
           alt={spotDetailData?.basic.title || '이미지 없음'}
           className="w-full h-full object-cover"
         />
@@ -195,11 +167,11 @@ export default function SearchDetailPage() {
         </button>
 
         {showPopup && (
-          <div className="absolute top-12 right-3 flex flex-col items-center gap-1 p-4 rounded-[12px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.25)] z-10">
+          <div className="absolute top-12 right-3 flex flex-col items-center gap-1 p-4 rounded-[12px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.25)] z-20">
             <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]">
               해당 장소가 보이지 않나요?
             </p>
-            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px]" onClick={()=>navigate('/inquiry')}>
+            <p className="text-black font-[Pretendard] text-[14px] font-normal leading-[18px] cursor-pointer" onClick={() => navigate('/inquiry')}>
               1:1 문의하기 (폐업/오류 신고)
             </p>
           </div>
@@ -208,15 +180,16 @@ export default function SearchDetailPage() {
         {spotDetailData?.basic.overview && (
           <div
             className="absolute top-44 right-3 z-30"
-            onMouseEnter={() => setShowOverview(true)}
-            onMouseLeave={() => setShowOverview(false)}
+            onMouseEnter={() => { if (!isPinned) setShowOverview(true); }}
+            onMouseLeave={() => { if (!isPinned) setShowOverview(false); }}
+            onClick={() => {
+              setIsPinned((prev) => !prev);
+              setShowOverview(true);
+            }}
           >
-            <div
-              className="relative cursor-pointer"
-              onClick={() => setShowOverview((prev) => !prev)}
-            >
+            <div className="relative cursor-pointer">
               <GyulIcon className="w-10 h-10" />
-              {!showOverview && (
+              {!(isPinned || showOverview) && (
                 <span className="absolute top-0 right-0 block h-3 w-3">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex h-3 w-3 rounded-full bg-orange-500"></span>
@@ -291,67 +264,12 @@ export default function SearchDetailPage() {
       <div className="p-6">
         {activeTab === '홈' && (
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <MapIcon className="w-4 h-4" />
-              <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                {spotDetailData?.basic.addr1 ||
-                  spotDetailData?.basic.addr2 ||
-                  '--'}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-start gap-2">
-                <ClockIcon className="w-4 h-4" />
-                <p className="text-[14px] font-normal leading-[20px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard] whitespace-pre-wrap">
-                  오픈: {spotDetailData?.intro.opentimefood?.replace(/<br\s*\/?>/gi, '\n') || '--'}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 flex-shrink-0" />
-                <p className="text-[14px] font-normal leading-[20px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard] whitespace-pre-wrap">
-                  휴일: {spotDetailData?.intro.restdatefood?.replace(/<br\s*\/?>/gi, '\n') || '--'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <WebIcon className="w-4 h-4" />
-              <div className="flex flex-col">
-                {spotDetailData?.basic.homepage ? (
-                  spotDetailData.basic.homepage.split('\n').map((url, index) => (
-                    url.trim() && (
-                      <a
-                        key={index}
-                        href={url.trim()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#033C81] hover:underline font-[Pretendard] break-all"
-                      >
-                        {url.trim().replace(/<[^>]*>?/gm, '')}
-                      </a>
-                    )
-                  ))
-                ) : (
-                  <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                    --
-                  </p>
-                )}
-              </div>
-            </div>
-            {spotDetailData?.basic.tel && (
-              <div className="flex items-center gap-2">
-                <TelIcon className="w-4 h-4" />
-                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  {spotDetailData?.basic.tel}
-                </p>
-              </div>
-            )}
-            {spotDetailData?.intro.parkingfood && (
-              <div className="flex items-center gap-2">
-                <InfoIcon className="w-4 h-4" />
-                <p className="text-[14px] font-normal leading-[16px] tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-                  주차 {spotDetailData?.intro.parkingfood.replace(/<br\s*\/?>/gi, '\n') || '--'}
-                </p>
-              </div>
+            {spotDetailData && (
+              <SpotInfo
+                basic={spotDetailData.basic}
+                intro={spotDetailData.intro}
+                infoList={spotDetailData.info}
+              />
             )}
           </div>
         )}
@@ -396,7 +314,6 @@ export default function SearchDetailPage() {
             <div ref={imageRef}></div>
           </>
         )}
-
         {activeTab === '리뷰' && (
           <div className="flex flex-col items-start w-full flex-shrink-0">
             <div className="w-full pb-6 border-b-8 border-[#F5F5F5]">
