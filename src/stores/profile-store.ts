@@ -1,24 +1,24 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { type UserType } from '../constants/userTypeImages'; // 타입 안정성을 위해 import
-import { determineUserType } from '../utils/calculateUserType'; // 계산 함수 import
+import { type UserType } from '../constants/userTypeImages';
+import { determineUserType } from '../utils/calculateUserType';
 
 // 프로필 상태 타입 정의
 export interface ProfileState {
   // 기본 정보
   name: string;
   nickName: string;
-  gender: '남자' | '여자';
+  gender: '남자' | '여자' | '';
   birthdate: string;
   profileImage: string;
-  userType: UserType | ''; // string 대신 구체적인 UserType으로 변경
+  userType: UserType | '';
   bio: string;
   email: string;
   password: string;
   // 경험 횟수
   soloTripCount: number;
   companionRoomCount: number;
-  
+
   // 여행 성향 질문 답변
   q1_expect: string;
   q2_habit: string;
@@ -29,10 +29,10 @@ export interface ProfileState {
   // 상태 변경 액션
   setName: (name: string) => void;
   setNickName: (nickName: string) => void;
-  setGender: (gender: '남자' | '여자') => void;
+  setGender: (gender: '남자' | '여자' | '') => void;
   setBirthdate: (birthdate: string) => void;
   setProfileImage: (image: string) => void;
-  setUserType: (type: UserType) => void; 
+  setUserType: (type: UserType) => void;
   setBio: (bio: string) => void;
   setQ1: (answer: string) => void;
   setQ2: (answer: string) => void;
@@ -43,17 +43,32 @@ export interface ProfileState {
   setProfileData: (data: Partial<ProfileData>) => void;
   setSoloTripCount: (count: number) => void;
   setCompanionRoomCount: (count: number) => void;
-  setEmail: (email: string) => void;      
+  setEmail: (email: string) => void;
   setPassword: (password: string) => void;
-  calculateUserType: () => void; // 사용자 유형 계산 액션
+  calculateUserType: () => void;
 }
 
 // 액션을 제외한 순수 데이터 타입
-type ProfileData = Omit<ProfileState,
-  | 'setName' | 'setNickName' | 'setGender' | 'setBirthdate'
-  | 'setProfileImage' | 'setUserType' | 'setBio' | 'setQ1' | 'setQ2'
-  | 'setQ3' | 'setQ4' | 'setQ5' | 'reset' | 'setProfileData'
-  | 'setSoloTripCount' | 'setCompanionRoomCount' | 'setEmail' | 'setPassword'
+type ProfileData = Omit<
+  ProfileState,
+  | 'setName'
+  | 'setNickName'
+  | 'setGender'
+  | 'setBirthdate'
+  | 'setProfileImage'
+  | 'setUserType'
+  | 'setBio'
+  | 'setQ1'
+  | 'setQ2'
+  | 'setQ3'
+  | 'setQ4'
+  | 'setQ5'
+  | 'reset'
+  | 'setProfileData'
+  | 'setSoloTripCount'
+  | 'setCompanionRoomCount'
+  | 'setEmail'
+  | 'setPassword'
   | 'calculateUserType'
 >;
 
@@ -61,10 +76,10 @@ type ProfileData = Omit<ProfileState,
 export const initialState: ProfileData = {
   name: '',
   nickName: '',
-  gender: '남자',
+  gender: '', // '남자' 대신 빈 값으로 초기화
   birthdate: '',
   profileImage: '',
-  userType: '', // 초기값은 빈 문자열
+  userType: '',
   bio: '',
   soloTripCount: 0,
   companionRoomCount: 0,
@@ -97,24 +112,29 @@ export const useProfileStore = create(
       setQ5: (answer) => set({ q5_necessity: answer }),
       setSoloTripCount: (count) => set({ soloTripCount: count }),
       setCompanionRoomCount: (count) => set({ companionRoomCount: count }),
-      setEmail: (email) => set({ email }),      
-      setPassword: (password) => set({ password }), 
+      setEmail: (email) => set({ email }),
+      setPassword: (password) => set({ password }),
 
-      // 외부 계산 함수를 호출하여 사용자 유형을 결정하고 상태를 업데이트하는 액션
       calculateUserType: () => {
-        const { q1_expect, q2_habit, q3_avoid, q4_feeling, q5_necessity } = get();
-        const answers = { q1_expect, q2_habit, q3_avoid, q4_feeling, q5_necessity };
-
+        const { q1_expect, q2_habit, q3_avoid, q4_feeling, q5_necessity } =
+          get();
+        const answers = {
+          q1_expect,
+          q2_habit,
+          q3_avoid,
+          q4_feeling,
+          q5_necessity,
+        };
         const finalType = determineUserType(answers);
-
         set({ userType: finalType });
       },
 
       reset: () => set(initialState),
+
       setProfileData: (data) => set((state) => ({ ...state, ...data })),
     }),
     {
-      name: 'user-profile-storage', // localStorage에 저장될 때 사용될 키 이름
-    },
-  ),
+      name: 'user-profile-storage',
+    }
+  )
 );

@@ -5,6 +5,7 @@ import RoomCardList from '../../components/common/RoomCard/RoomCardList';
 import ReviewList from '../../components/SearchPage/ReviewList';
 import ReviewStats from '../../components/SearchPage/ReviewStats';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Cart from '../../assets/cartIcon.svg?react';
 import { addToCart } from '../../apis/cart';
 import toast from 'react-hot-toast';
@@ -36,9 +37,12 @@ export default function SearchDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
+
+  const [searchParams] = useSearchParams();
+  const contentTypeId = Number(location.state?.contentTypeId ?? searchParams.get('contentTypeId'));
+
   const setReviewData = useWriteReviewStore((state) => state.setFormData);
   const setCreateRoomData = useCreateRoomStore((state) => state.setFormData);
-  const contentTypeId = Number(location.state?.contentTypeId);
   const selectTab = location.state?.selectTab;
   const [activeTab, setActiveTab] = useState(selectTab ? selectTab : '홈');
   const contentId = Number(params.placeId) || location.state?.placeId || null;

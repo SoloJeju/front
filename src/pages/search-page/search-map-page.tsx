@@ -30,7 +30,6 @@ const SearchMapPage = () => {
           </button>
         </div>
         <div className="w-full h-full">
-          {/* 카테고리 선택값만 전달 */}
           <KakaoMap selectedCategory={selectedCategory} />
         </div>
       </div>
