@@ -24,7 +24,7 @@ interface CourseInfo {
   [key: string]: any;
 }
 
-interface LeportsExtraInfo {
+interface ExtraInfo {
   infoname: string;
   infotext: string;
   [key: string]: any;
@@ -42,7 +42,7 @@ interface BasicInfo {
 interface SpotInfoProps {
   basic: BasicInfo;
   intro: Record<string, any>;
-  infoList: (CourseInfo | LeportsExtraInfo)[];
+  infoList: (CourseInfo | ExtraInfo)[];
 }
 
 const stripHtml = (html: string): string => {
@@ -58,7 +58,7 @@ const InfoItem: FC<InfoItemProps> = ({ icon, label, value, isTel = false }) => {
   return (
     <div className="flex items-start gap-2">
       {icon}
-      <div className="flex w-full text-[16px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+      <div className="flex w-full text-[15px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
         <span className="w-24 flex-shrink-0 font-semibold">{label}</span>
         {isTel ? (
           <a href={`tel:${stripHtml(formattedValue)}`} className="text-[#033C81] hover:underline">
@@ -152,10 +152,24 @@ const renderContact = (type: string, intro: Record<string, any>) => {
   }
 };
 
-const renderEtcInfo = (type: string, intro: Record<string, any>, infoList?: (CourseInfo | LeportsExtraInfo)[]) => {
+const renderEtcInfo = (type: string, intro: Record<string, any>, infoList?: (CourseInfo | ExtraInfo)[]) => {
   switch(type) {
-    case "12":
-      return <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parking} />;
+    case "12": {
+      const tourInfoList = infoList as ExtraInfo[];
+      return (
+        <>
+          <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parking} />
+          {tourInfoList && tourInfoList.map((item, index) => (
+            <InfoItem
+              key={index}
+              icon={<TagIcon className="w-4 h-4 mt-0.5" />}
+              label={item.infoname}
+              value={item.infotext}
+            />
+          ))}
+        </>
+      );
+    }
     case "14":
       return (
         <>
@@ -193,7 +207,7 @@ const renderEtcInfo = (type: string, intro: Record<string, any>, infoList?: (Cou
         </>
       );
     case "28": {
-      const leportsInfoList = infoList as LeportsExtraInfo[];
+      const leportsInfoList = infoList as ExtraInfo[];
       return (
         <>
           <InfoItem icon={<InfoIcon className="w-4 h-4 mt-0.5" />} label="주차" value={intro.parkingleports} />
@@ -252,6 +266,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
 
   let specificContact: string | null = null;
   switch(type) {
+    case "12": specificContact = intro.infocenter; break;
     case "14": specificContact = intro.infocenterculture; break;
     case "15": specificContact = intro.sponsor1tel; break;
     case "28": specificContact = intro.infocenterleports; break;
@@ -261,6 +276,7 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
   }
   
   const showGenericTel = genericTel && stripHtml(genericTel) !== stripHtml(specificContact || '');
+  const mainContact = intro.infocenter || genericTel;
 
   return (
     <div className="flex flex-col gap-3">
@@ -268,31 +284,36 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
       
       {renderHours(type, intro)}
       
-      {renderContact(type, intro)}
+      {type === '12' ? (
+        <InfoItem icon={<TelIcon className="w-4 h-4 mt-0.5" />} label="문의" value={mainContact} isTel />
+      ) : (
+        renderContact(type, intro)
+      )}
+      
       {showGenericTel && <InfoItem icon={<TelIcon className="w-4 h-4 mt-0.5" />} label="대표 연락처" value={genericTel} isTel />}
 
       {basic.homepage && (
-         <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2">
             <WebIcon className="w-4 h-4 mt-0.5" />
-            <div className="flex w-full text-[14px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
-               <span className="w-24 flex-shrink-0 font-semibold">사이트</span>
-               <div className="flex flex-col">
+            <div className="flex w-full text-[15px] font-normal tracking-[-0.28px] text-[#5D5D5D] font-[Pretendard]">
+                <span className="w-24 flex-shrink-0 font-semibold">사이트</span>
+                <div className="flex flex-col">
                   {basic.homepage.split('\n').map((url, index) =>
-                     url.trim() && (
-                     <a
-                        key={index}
-                        href={stripHtml(url.trim())}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#033C81] hover:underline break-all"
-                     >
-                        {stripHtml(url.trim())}
-                     </a>
-                     )
+                      url.trim() && (
+                      <a
+                          key={index}
+                          href={stripHtml(url.trim())}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#033C81] hover:underline break-all"
+                      >
+                          {stripHtml(url.trim())}
+                      </a>
+                      )
                   )}
-               </div>
+                </div>
             </div>
-         </div>
+          </div>
       )}
 
       {etcInfoContent && (
