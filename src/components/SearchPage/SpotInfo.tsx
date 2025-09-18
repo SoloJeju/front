@@ -267,13 +267,34 @@ const SpotInfo: FC<SpotInfoProps> = ({ basic, intro, infoList }) => {
 
   let specificContact: string | number | null = null;
   switch(type) {
-    case "12": specificContact = intro.infocenter; break;
-    case "14": specificContact = intro.infocenterculture; break;
-    case "15": specificContact = intro.sponsor1tel; break;
-    case "28": specificContact = intro.infocenterleports; break;
-    case "32": specificContact = intro.reservationlodging; break;
-    case "38": specificContact = intro.infocentershopping; break;
-    case "39": specificContact = intro.infocenterfood; break;
+    case "12": {
+      specificContact = intro.infocenter;
+      break;
+    }
+    case "14": {
+      specificContact = intro.infocenterculture;
+      break;
+    }
+    case "15": {
+      specificContact = intro.sponsor1tel;
+      break;
+    }
+    case "28": {
+      specificContact = intro.infocenterleports;
+      break;
+    }
+    case "32": {
+      specificContact = intro.reservationlodging;
+      break;
+    }
+    case "38": {
+      specificContact = intro.infocentershopping;
+      break;
+    }
+    case "39": {
+      specificContact = intro.infocenterfood;
+      break;
+    }
   }
   
   const showGenericTel = genericTel && stripHtml(String(genericTel)) !== stripHtml(String(specificContact) || '');
