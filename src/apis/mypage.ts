@@ -156,6 +156,8 @@ export const getMyReviews = async (
   if (page !== undefined) params.append('page', page.toString());
   if (size !== undefined) params.append('size', size.toString());
 
-  const { data } = await authAxios.get(`/api/mypage/reviews?${params.toString()}`);
+  const { data } = await authAxios.get(
+    `/api/mypage/reviews?${params.toString()}`
+  );
   return data;
 };

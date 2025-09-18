@@ -78,7 +78,7 @@ export const initialState: ProfileData = {
   nickName: '',
   gender: '', // '남자' 대신 빈 값으로 초기화
   birthdate: '',
-  profileImage: '',
+  profileImage: '/default-profile.svg',
   userType: '',
   bio: '',
   soloTripCount: 0,
