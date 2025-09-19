@@ -3,7 +3,7 @@ import type { PlaceCardListProps } from '../../types/tourist';
 
 const PlaceCardList = ({ spots, onCardClick }: PlaceCardListProps) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-1.5">
       {spots.map((spot) => (
         <PlaceCard
           key={spot.contentid}
