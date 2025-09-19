@@ -18,6 +18,14 @@ const AppLayout = () => {
     { path: 'search-box' },
     location.pathname
   );
+  const isSearchPage = !!matchPath(
+    { path: 'search' },
+    location.pathname
+  );
+  const isSearchMapPage = !!matchPath(
+    { path: 'search-map' },
+    location.pathname
+  );
 
   // Navbar 숨길 페이지!!
   const hideNavbarPaths = ['/login', '/signup', '/find-password','/splash'];
@@ -30,7 +38,14 @@ const AppLayout = () => {
       <div className="w-full min-h-screen max-w-[480px] flex flex-col justify-between bg-[#FFFFFD]">
         {isHomePage && <AlarmHeader showLogo={true} />}
         {isCommunityPage && <BackHeader title="커뮤니티" />}
-        <div className={`flex-1 ${isSearchDetail?'':'px-6'} ${isSearchDetail || isSearchBoxPage?'':'pt-15'} pb-15`}>
+        <div className={`flex-1 ${isSearchDetail?'':'px-6'} ${isSearchDetail ? '' : 'px-6'} 
+          ${
+            isSearchDetail || isSearchBoxPage
+              ? ''
+              : isSearchMapPage || isSearchPage
+              ? 'pt-6'
+              : 'pt-15'
+          }  pb-15`}>
           <Outlet />
         </div>
         {!shouldHideNavbar && <Navbar />}
