@@ -98,9 +98,9 @@ const LoginPage = () => {
   // <<<
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen font-[Pretendard] bg-white">
+    <div className="flex flex-col items-center justify-start min-h-screen font-[Pretendard] bg-white">
       <main className="w-full mx-auto mb-20">
-        <div className="my-16 text-center">
+        <div className="my-12 text-center">
           <img
             src={logoImage}
             alt="혼자옵서예 로고"

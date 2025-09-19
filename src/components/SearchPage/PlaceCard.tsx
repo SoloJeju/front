@@ -22,7 +22,7 @@ const PlaceCard = ({
 
   return (
     <div
-      className="flex w-full h-[92px] bg-[var(--white-2,#FFFFFD)] items-center font-[Pretendard] cursor-pointer"
+      className="flex w-full pt-1.5 pb-2 bg-[var(--white-2,#FFFFFD)] items-center font-[Pretendard] cursor-pointer"
       style={{ borderBottom: '1px solid #F78938' }}
       onClick={() => onClick(contentid, contenttypeid)}
     >
@@ -42,7 +42,7 @@ const PlaceCard = ({
         )}
       </div>
 
-      <div className="flex flex-col flex-1 justify-center pl-3 gap-2">
+      <div className="flex flex-col flex-1 justify-center pl-3 py-1.5 gap-2">
         <div className="flex items-center gap-1">
           <h2 className="text-black font-medium text-[16px] leading-[18px]">
             {title}

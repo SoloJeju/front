@@ -199,7 +199,7 @@ export default function ProfileEdit() {
   if (isError) return <div>오류가 발생하여 정보를 불러올 수 없습니다.</div>;
 
   return (
-    <div className="bg-white relative flex flex-col items-center px-6 pb-6 font-[Pretendard]">
+    <div className="bg-white relative flex flex-col items-center pb-6 font-[Pretendard]">
       <div
         aria-hidden
         style={{ height: 'calc(56px + env(safe-area-inset-top))' }}
