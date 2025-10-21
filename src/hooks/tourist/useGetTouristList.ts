@@ -11,7 +11,7 @@ interface TouristListFilters {
 export const useGetTouristList = (filters: TouristListFilters) => {
   return useInfiniteQuery({
     queryKey: ['touristSpots', filters],
-    queryFn: ({ pageParam = 0 }) => getTouristSpots({ page: pageParam, size: 100, ...filters }),
+    queryFn: ({ pageParam = 0 }) => getTouristSpots({ page: pageParam, size: 20, ...filters }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage.result.list || lastPage.result.list.length === 0) {
